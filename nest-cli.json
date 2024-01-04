@@ -1,0 +1,32 @@
+{
+  "$schema": "https://json.schemastore.org/nest-cli",
+  "collection": "@nestjs/schematics",
+  "sourceRoot": "apps/snapix/src",
+  "compilerOptions": {
+    "deleteOutDir": true,
+    "webpack": true,
+    "tsConfigPath": "apps/snapix/tsconfig.app.json"
+  },
+  "monorepo": true,
+  "root": "apps/snapix",
+  "projects": {
+    "snapix": {
+      "type": "application",
+      "root": "apps/snapix",
+      "entryFile": "main",
+      "sourceRoot": "apps/snapix/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/snapix/tsconfig.app.json"
+      }
+    },
+    "users-api": {
+      "type": "application",
+      "root": "apps/users-api",
+      "entryFile": "main",
+      "sourceRoot": "apps/users-api/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/users-api/tsconfig.app.json"
+      }
+    }
+  }
+}
