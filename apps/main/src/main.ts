@@ -6,12 +6,13 @@ import { Logger } from '@nestjs/common'
 const PORT = 3000
 
 async function bootstrap() {
+  const logger = new Logger('NestBootstrap')
   const app = await NestFactory.create(MainModule)
 
   const configService = app.get<ConfigService>(ConfigService)
 
   await app.listen(configService.get('PORT', { infer: true }) ?? PORT)
-  Logger.log(`Application is running on: ${await app.getUrl()}`)
+  logger.log(`Application is running on: ${await app.getUrl()}`)
 }
 
 void bootstrap()
