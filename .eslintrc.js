@@ -5,7 +5,6 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   overrides: [
     {
       files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
