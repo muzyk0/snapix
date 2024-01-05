@@ -8,7 +8,7 @@ describe('UsersApiController (e2e)', () => {
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [UsersApiModule],
+      imports: [User sApiModule],
     }).compile();
 
     app = moduleFixture.createNestApplication();
