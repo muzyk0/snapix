@@ -1,31 +1,40 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "apps/snapix/src",
+  "sourceRoot": "apps/main/src",
   "compilerOptions": {
     "deleteOutDir": true,
     "webpack": true,
-    "tsConfigPath": "apps/snapix/tsconfig.app.json"
+    "tsConfigPath": "apps/main/tsconfig.app.json"
   },
   "monorepo": true,
-  "root": "apps/snapix",
+  "root": "apps/main",
   "projects": {
-    "snapix": {
+    "main": {
       "type": "application",
-      "root": "apps/snapix",
+      "root": "apps/main",
       "entryFile": "main",
-      "sourceRoot": "apps/snapix/src",
+      "sourceRoot": "apps/main/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/snapix/tsconfig.app.json"
+        "tsConfigPath": "apps/main/tsconfig.app.json"
       }
     },
-    "users-api": {
+    "storage": {
       "type": "application",
-      "root": "apps/users-api",
+      "root": "apps/storage",
       "entryFile": "main",
-      "sourceRoot": "apps/users-api/src",
+      "sourceRoot": "apps/storage/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/users-api/tsconfig.app.json"
+        "tsConfigPath": "apps/storage/tsconfig.app.json"
+      }
+    },
+    "payments": {
+      "type": "application",
+      "root": "apps/payments",
+      "entryFile": "main",
+      "sourceRoot": "apps/payments/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/payments/tsconfig.app.json"
       }
     }
   }

@@ -11,6 +11,8 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
+    "start:storage:debug": "nest start storage --debug --watch",
+    "start:payments:debug": "nest start payment --debug --watch",
     "start:prod": "node dist/apps/snapix/main",
     "eslint:fix": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "eslint:check": "eslint \"{src,apps,libs,test}/**/*.ts\"",
@@ -30,19 +32,6 @@
     "@nestjs/platform-express": "^10.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
-  },
-  "peerDependencies": {
-    "@typescript-eslint/eslint-plugin": "^6.7.5",
-    "@typescript-eslint/parser": "^6.7.5",
-    "eslint": "^8.51.0",
-    "eslint-config-prettier": "^9.0.0",
-    "eslint-import-resolver-node": "^0.3.9",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.28.1",
-    "eslint-plugin-perfectionist": "^2.1.0",
-    "eslint-plugin-prettier": "^5.0.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0"
   },
   "devDependencies": {
     "@it-incubator/prettier-config": "^0.1.2",
