@@ -1,0 +1,22 @@
+import { Injectable } from '@nestjs/common'
+import { ConfigService } from '@nestjs/config'
+
+@Injectable()
+export class AppConfigService {
+  constructor(private readonly configService: ConfigService) {}
+  get isDev(): boolean {
+    return this.configService.get('NODE_ENV') === 'development'
+  }
+
+  get port(): number {
+    return this.configService.get('PORT', { infer: true }) ?? 3000
+  }
+
+  get appVersion(): string | null {
+    return this.configService.get('npm_package_version') ?? null
+  }
+
+  get globalPrefix(): string | null {
+    return this.configService.get('GLOBAL_PREFIX') ?? null
+  }
+}

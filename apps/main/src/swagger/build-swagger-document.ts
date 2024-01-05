@@ -7,8 +7,8 @@ export const buildSwaggerDocument = (
     globalPrefix,
     swaggerVersion,
   }: {
-    globalPrefix?: string
-    swaggerVersion?: string
+    globalPrefix: string | null
+    swaggerVersion: string | null
   }
 ) => {
   const config = new DocumentBuilder()
@@ -18,14 +18,19 @@ export const buildSwaggerDocument = (
     .setDescription(
       "Sorry I'm working on new modules and don't have time to write swagger documentation. But in time it will be completely written"
     )
-  if (swaggerVersion !== undefined) {
+  if (swaggerVersion !== null) {
     config.setVersion(swaggerVersion)
   }
 
   config.addTag('auth').addBasicAuth()
 
   const document = SwaggerModule.createDocument(app, config.build())
-  SwaggerModule.setup(`${globalPrefix}/swagger`, app, document, {
-    // customfavIcon: '../../../favicon.ico',
-  })
+  SwaggerModule.setup(
+    globalPrefix !== null ? `${globalPrefix}/swagger` : '/swagger',
+    app,
+    document,
+    {
+      // customfavIcon: '../../../favicon.ico',
+    }
+  )
 }

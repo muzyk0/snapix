@@ -2,10 +2,10 @@ import { BadRequestException, type INestApplication, ValidationPipe } from '@nes
 import { useContainer } from 'class-validator'
 import { MainModule } from './main.module'
 
-export function setupApp(app: INestApplication, globalPrefix?: string): INestApplication {
+export function setupApp(app: INestApplication, globalPrefix: string | null): INestApplication {
   app.enableCors()
 
-  if (globalPrefix !== undefined) {
+  if (globalPrefix !== null) {
     app.setGlobalPrefix(globalPrefix)
   }
 
