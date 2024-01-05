@@ -1,6 +1,6 @@
-import { Module } from '@nestjs/common';
-import { PostsApiController } from './posts-api.controller';
-import { PostsApiService } from './posts-api.service';
+import { Module } from '@nestjs/common'
+import { PostsApiController } from './posts-api.controller'
+import { PostsApiService } from './posts-api.service'
 
 @Module({
   imports: [],
