@@ -30,6 +30,12 @@
       ],
       "@app/config/*": [
         "libs/config/src/*"
+      ],
+      "@app/prisma": [
+        "libs/prisma/src"
+      ],
+      "@app/prisma/*": [
+        "libs/prisma/src/*"
       ]
     }
   }
