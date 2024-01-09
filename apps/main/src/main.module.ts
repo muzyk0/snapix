@@ -9,6 +9,7 @@ import { APP_FILTER } from '@nestjs/core'
 import { ErrorExceptionFilter } from './error-exception-filter/error-exception.filter'
 import { HttpExceptionFilter } from './error-exception-filter/http-exception-filter.'
 import { AuditLogModule } from './features/audit-log/audit-log.module'
+import { HealthModule } from '@app/core/health/health.module'
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { AuditLogModule } from './features/audit-log/audit-log.module'
     UsersModule,
     PrismaModule,
     AuditLogModule,
+    HealthModule,
   ],
   controllers: [MainController],
   providers: [
