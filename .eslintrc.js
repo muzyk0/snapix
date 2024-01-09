@@ -5,7 +5,6 @@ module.exports = {
     tsconfigRootDir: __dirname,
     sourceType: 'module',
   },
-  extends: ['plugin:@typescript-eslint/recommended', 'plugin:prettier/recommended'],
   overrides: [
     {
       files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
@@ -18,7 +17,7 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/comma-dangle': 'off',
         '@typescript-eslint/indent': 'off',
-        indent: 'off',
+        '@typescript-eslint/return-await': 'off'
       },
     },
   ],
