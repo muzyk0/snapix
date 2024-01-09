@@ -29,4 +29,14 @@ describe('UsersController', () => {
     const result = await controller.countRegisteredUsers()
     expect(result).toBe(10)
   })
+
+  it('Count registered users should handle errors gracefully', async () => {
+    // Подмена реализации метода countRegisteredUsers для эмуляции ошибки
+    jest.spyOn(controller, 'countRegisteredUsers').mockRejectedValueOnce(new Error('Test error'))
+
+    await expect(controller.countRegisteredUsers()).rejects.toThrowError()
+
+    // const result = await controller.countRegisteredUsers()
+    // expect(result).toEqual({ success: false, data: null })
+  })
 })

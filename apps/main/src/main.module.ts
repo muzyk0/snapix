@@ -5,6 +5,10 @@ import { ConfigModule } from '@nestjs/config'
 import { AppConfigModule } from '@app/config'
 import { UsersModule } from './features/users/users.module'
 import { PrismaModule } from '@app/prisma'
+import { APP_FILTER } from '@nestjs/core'
+import { ErrorExceptionFilter } from './error-exception-filter/error-exception.filter'
+import { HttpExceptionFilter } from './error-exception-filter/http-exception-filter.'
+import { AuditLogModule } from './features/audit-log/audit-log.module'
 
 @Module({
   imports: [
@@ -14,8 +18,23 @@ import { PrismaModule } from '@app/prisma'
     AppConfigModule,
     UsersModule,
     PrismaModule,
+    AuditLogModule,
   ],
   controllers: [MainController],
-  providers: [MainService],
+  providers: [
+    MainService,
+    {
+      provide: APP_FILTER,
+      useClass: ErrorExceptionFilter,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: HttpExceptionFilter,
+    },
+    // {
+    //   provide: AuditLogServiceAbstract,
+    //   useClass: AuditLogService,
+    // },
+  ],
 })
 export class MainModule {}

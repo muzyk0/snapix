@@ -11,17 +11,25 @@ datasource db {
 }
 
 model User {
-  id    Int     @default(autoincrement()) @id
+  id    Int     @id @default(autoincrement())
   email String  @unique
   name  String?
   posts Post[]
 }
 
 model Post {
-  id        Int      @default(autoincrement()) @id
+  id        Int      @id @default(autoincrement())
   title     String
   content   String?
   published Boolean? @default(false)
   author    User?    @relation(fields: [authorId], references: [id])
   authorId  Int?
+}
+
+model AuditLog {
+  id        Int      @id @default(autoincrement())
+  code      Int
+  message   String
+  timestamp DateTime @default(now())
+  extraData Json
 }
