@@ -103,6 +103,6 @@
     }
   },
   "prisma": {
-    "schema": "./apps/main/prisma/prisma.scheme"
+    "schema": "./apps/main/prisma/schema.prisma"
   }
 }
