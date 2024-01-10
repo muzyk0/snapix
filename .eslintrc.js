@@ -16,6 +16,8 @@ module.exports = {
         '@typescript-eslint/explicit-module-boundary-types': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/comma-dangle': 'off',
+        '@typescript-eslint/indent': 'off',
+        '@typescript-eslint/return-await': 'off'
       },
     },
   ],

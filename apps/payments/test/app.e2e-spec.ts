@@ -1,6 +1,6 @@
 import { Test, type TestingModule } from '@nestjs/testing'
 import { type INestApplication } from '@nestjs/common'
-import * as request from 'supertest'
+import request from 'supertest'
 import { PaymentsModule } from './../src/payments.module'
 
 describe('PaymentsController (e2e)', () => {

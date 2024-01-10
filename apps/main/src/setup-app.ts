@@ -1,9 +1,11 @@
 import { BadRequestException, type INestApplication, ValidationPipe } from '@nestjs/common'
 import { useContainer } from 'class-validator'
 import { MainModule } from './main.module'
+import cookieParser from 'cookie-parser'
 
 export function setupApp(app: INestApplication, globalPrefix: string | null): INestApplication {
   app.enableCors()
+  app.use(cookieParser())
 
   if (globalPrefix !== null) {
     app.setGlobalPrefix(globalPrefix)
@@ -25,7 +27,6 @@ export function setupApp(app: INestApplication, globalPrefix: string | null): IN
       },
     })
   )
-  // app.useGlobalFilters(new ErrorExceptionFilter(), new HttpExceptionFilter())
 
   return app
 }
