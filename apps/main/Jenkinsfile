@@ -12,7 +12,6 @@ pipeline {
         DEPLOYMENT_NAME = "snapix-back-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
-        DATABASE_URL = "${env.DATABASE_URL}"
     }
 
     stages {
@@ -26,6 +25,13 @@ pipeline {
                 script {
                     sh "yarn install"
                     sh "yarn test"
+                }
+            }
+        }
+        stage('e2e tests') {
+            steps {
+                script {
+                    sh "yarn test:e2e"
                 }
             }
         }

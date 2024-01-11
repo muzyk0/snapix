@@ -20,12 +20,12 @@ WORKDIR /home/node/dist/${SERVICE}
 
 
 COPY --chown=node package*.json ./
-COPY --chown=node ../../yarn.lock ./
+COPY --chown=node yarn.lock ./
 
-RUN yarn install --frozen-lockfile
+RUN yarn install
 
 # Bundle app source code
-COPY --chown=node ../.. .
+COPY --chown=node . .
 
 RUN yarn main:prisma:generate
 
