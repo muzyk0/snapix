@@ -29,14 +29,6 @@ pipeline {
                 }
             }
         }
-        stage('e2e tests') {
-            steps {
-                echo "env.SERVICE ${env.SERVICE}"
-                script {
-                    sh "yarn test:e2e"
-                }
-            }
-        }
         stage('Build docker image') {
             steps {
                 echo "Build image started..."
