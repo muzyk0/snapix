@@ -21,3 +21,9 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: DATABASE_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-production-config-secret
+                   key: DATABASE_URL
