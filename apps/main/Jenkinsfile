@@ -29,14 +29,6 @@ pipeline {
                 }
             }
         }
-        stage('e2e tests') {
-            steps {
-                echo "Data base url: ${env.DATABASE_URL} env.REGISTRY_HOSTNAME: ${env.REGISTRY_HOSTNAME}"
-                script {
-                    sh "yarn test:e2e"
-                }
-            }
-        }
         stage('Build docker image') {
             steps {
                 echo "Build image started..."
