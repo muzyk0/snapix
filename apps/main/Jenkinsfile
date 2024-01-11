@@ -31,6 +31,7 @@ pipeline {
         }
         stage('e2e tests') {
             steps {
+                echo "Push image started...${env.DATABASE_URL}"
                 script {
                     sh "yarn test:e2e"
                 }
