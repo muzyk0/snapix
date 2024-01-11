@@ -30,8 +30,8 @@ pipeline {
             }
         }
         stage('e2e tests') {
-            echo "env.SERVICE ${env.SERVICE}"
             steps {
+                echo "env.SERVICE ${env.SERVICE}"
                 script {
                     sh "yarn test:e2e"
                 }
