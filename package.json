@@ -10,7 +10,7 @@
     "build:main": "yarn build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
-    "start:main": "node dist/apps/snapix/main",
+    "start:main": "node dist/apps/main/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:storage:debug": "nest start storage --debug --watch",
