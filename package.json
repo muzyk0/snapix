@@ -7,8 +7,10 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "nest build",
+    "build:main": "yarn build",
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "start": "nest start",
+    "start:main": "node dist/apps/main/main",
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:storage:debug": "nest start storage --debug --watch",
@@ -23,7 +25,7 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config apps/postsAPI/test/jest-e2e.json",
+    "test:e2e": "jest --config apps/main/test/jest-e2e.json",
     "main:prisma:generate": "prisma generate --schema ./apps/main/prisma/schema.prisma"
   },
   "dependencies": {
