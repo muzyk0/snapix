@@ -3,7 +3,7 @@ import { UsersQueryRepository } from '../infrastructure/users.query.repository'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
 
 @ApiTags('Users')
-@Controller('api/v1/users')
+@Controller('users')
 export class UsersController {
   constructor(private readonly usersQueryRepository: UsersQueryRepository) {}
 
