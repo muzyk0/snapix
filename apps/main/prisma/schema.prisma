@@ -11,10 +11,29 @@ datasource db {
 }
 
 model User {
-  id    Int     @id @default(autoincrement())
-  email String  @unique
-  name  String?
-  posts Post[]
+  id                  Int            @id @default(autoincrement())
+  email               String         @unique
+  name                String         @unique
+  posts               Post[]
+  password            String
+  emailConfirmed      DateTime?
+  emailConfirmation   Confirmations? @relation(fields: [emailConfirmationId], references: [id])
+  emailConfirmationId Int?           @unique
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @default(now())
+
+  @@unique([email, name, emailConfirmationId])
+}
+
+model Confirmations {
+  id          Int      @id @default(autoincrement())
+  code        String?
+  isConfirmed Boolean  @default(false)
+  expiresIn   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  user        User?
+  userId      Int?
 }
 
 model Post {

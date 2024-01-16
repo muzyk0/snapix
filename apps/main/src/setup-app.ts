@@ -14,7 +14,9 @@ export function setupApp(app: INestApplication, globalPrefix: string | null): IN
   useContainer(app.select(MainModule), { fallbackOnErrors: true })
   app.useGlobalPipes(
     new ValidationPipe({
+      whitelist: true,
       transform: true,
+
       stopAtFirstError: true,
       exceptionFactory: options => {
         const errors = options.map(option =>
