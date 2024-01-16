@@ -1,27 +1,15 @@
-import { Test, type TestingModule } from '@nestjs/testing'
 import { type INestApplication } from '@nestjs/common'
 import request from 'supertest'
-import { MainModule } from '../../src/main.module'
-import { NotificationService } from '../../src/features/notification/services/notification.service'
 import { PrismaService } from '@app/prisma'
-
-const mockNotificationService = {
-  sendEmailConfirmationCode: jest.fn().mockResolvedValue(true),
-}
+import { setupInitApp } from '../setupInitApp'
+import { mockNotificationService } from '../common/mocks/mockNotificationService'
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication
   let prisma: PrismaService
 
   beforeAll(async () => {
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [MainModule],
-    })
-      .overrideProvider(NotificationService)
-      .useValue(mockNotificationService)
-      .compile()
-
-    app = moduleFixture.createNestApplication()
+    app = await setupInitApp()
 
     prisma = app.get(PrismaService)
 
@@ -33,8 +21,9 @@ describe('AuthController (e2e)', () => {
   })
 
   afterEach(async () => {
-    // console.log(prisma)
     await prisma.user.deleteMany()
+    jest.clearAllMocks()
+    jest.clearAllTimers()
   })
 
   it('should be defined prisma service', () => {
@@ -97,4 +86,54 @@ describe('AuthController (e2e)', () => {
 
     expect(response.body.message).toBe('User with this username is already registered')
   })
+
+  it.each([
+    {
+      username: 'short',
+      email: 'not valid email',
+      password: '',
+      equal: {
+        message: 'Validation Exception',
+        errors: {
+          username: {
+            property: 'username',
+            message: 'username must be longer than or equal to 6 characters',
+            meta: {
+              value: 'short',
+              target: { username: 'short', email: 'not valid email', password: '' },
+              children: null,
+            },
+          },
+          email: {
+            property: 'email',
+            message: 'email must be an email',
+            meta: {
+              value: 'not valid email',
+              target: { username: 'short', email: 'not valid email', password: '' },
+              children: null,
+            },
+          },
+          password: {
+            property: 'password',
+            message: 'password should not be empty',
+            meta: {
+              value: '',
+              target: { username: 'short', email: 'not valid email', password: '' },
+              children: null,
+            },
+          },
+        },
+      },
+    },
+  ])(
+    'should not register a user with bad request input',
+    async ({ username, email, password, equal }) => {
+      const response = await request(app.getHttpServer())
+        .post('/auth/register')
+        .send({ username, email, password })
+        .expect(400)
+
+      expect(response.body).toEqual(equal)
+    }
+  )
 })

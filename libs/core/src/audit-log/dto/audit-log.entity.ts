@@ -3,7 +3,9 @@ import { type AuditLog } from '@prisma/client'
 import { JsonValue } from '@prisma/client/runtime/library'
 
 export enum AuditCode {
-  ERROR = 0,
+  SERVER_ERROR = 0,
+  HTTP_ERROR = 1,
+  VALIDATION_ERROR = 2,
 }
 
 export class AuditLogEntity implements AuditLog {

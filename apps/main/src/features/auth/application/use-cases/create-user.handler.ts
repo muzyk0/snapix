@@ -19,6 +19,7 @@ export class CreateUserCommand {
   email!: string
 
   @Length(6, 20)
+  @IsNotEmpty()
   password!: string
 
   constructor(username: string, email: string, password: string) {
