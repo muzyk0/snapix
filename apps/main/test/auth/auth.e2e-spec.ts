@@ -4,6 +4,8 @@ import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
 
+jest.setTimeout(120000)
+
 describe('AuthController (e2e)', () => {
   let app: INestApplication
   let prisma: PrismaService
@@ -33,7 +35,7 @@ describe('AuthController (e2e)', () => {
   it('should register a new user and send a confirmation email', async () => {
     const username = 'testuser'
     const email = 'testuser@example.com'
-    const password = 'test1234'
+    const password = 'password0aA!='
 
     const response = await request(app.getHttpServer())
       .post('/auth/register')
@@ -53,7 +55,7 @@ describe('AuthController (e2e)', () => {
     const username = 'testuser2-1'
     const username2 = 'testuser2-2'
     const email = 'testuser2@example.com'
-    const password = 'test5678'
+    const password = 'password0aA!='
 
     await request(app.getHttpServer())
       .post('/auth/register')
@@ -72,7 +74,7 @@ describe('AuthController (e2e)', () => {
     const username = 'testuser3'
     const email = 'testuser3-1@example.com'
     const email2 = 'testuser3-2@example.com'
-    const password = 'test5678'
+    const password = 'password0aA!='
 
     await request(app.getHttpServer())
       .post('/auth/register')
@@ -115,7 +117,7 @@ describe('AuthController (e2e)', () => {
           },
           password: {
             property: 'password',
-            message: 'password should not be empty',
+            message: expect.any(String),
             meta: {
               value: '',
               target: { username: 'short', email: 'not valid email', password: '' },

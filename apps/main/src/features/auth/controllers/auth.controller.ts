@@ -1,10 +1,17 @@
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
-import { ApiTags } from '@nestjs/swagger'
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { JwtService } from '@nestjs/jwt'
 import { CreateUserCommand } from '../application/use-cases'
 import { type User } from '@prisma/client'
+import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -15,6 +22,7 @@ export class AuthController {
     private readonly commandBus: CommandBus
   ) {}
 
+  @ApiOkResponse({})
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
@@ -24,6 +32,26 @@ export class AuthController {
     }
   }
 
+  @ApiBody({
+    type: () => CreateUserCommand,
+  })
+  @ApiCreatedResponse({
+    status: HttpStatus.CREATED,
+    description: 'User has been registered',
+    schema: {
+      type: 'object',
+      properties: {
+        message: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiBadRequestResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+    type: ValidationExceptionSwaggerDto,
+  })
   @Post('/register')
   @HttpCode(HttpStatus.CREATED)
   async registerUser(@Body() { username, email, password }: CreateUserCommand) {
