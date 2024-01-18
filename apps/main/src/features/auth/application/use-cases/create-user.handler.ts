@@ -52,9 +52,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     private readonly prisma: PrismaService
   ) {}
 
-  async execute({ username, email, password }: CreateUserCommand): Promise<User | null> {
-    await this.validateUser({ username, email, password })
-    return this.create({ username, email, password })
+  async execute(dto: CreateUserCommand): Promise<User | null> {
+    const isUserExistAndNotConfirmed = await this.isUserExistAndNotConfirmed(dto)
+    if (isUserExistAndNotConfirmed) {
+      return this.resendConfirmationCode(dto)
+    }
+    await this.validateUserAndThrowError(dto)
+    return this.create(dto)
   }
 
   async create({ username, email, password }: CreateUserCommand) {
@@ -92,7 +96,54 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     return this.prisma.user.findUnique({ where: { id: createdUser.id } })
   }
 
-  async validateUser({ username, email }: CreateUserCommand) {
+  async resendConfirmationCode({ username, email }: CreateUserCommand) {
+    const emailConfirmationCode = randomUUID()
+    const updatedUser = await this.prisma.user.update({
+      where: {
+        email,
+        name: username,
+        emailConfirmed: null,
+      },
+      data: {
+        emailConfirmed: null,
+        emailConfirmation: {
+          update: {
+            code: emailConfirmationCode,
+            expiresIn: addDays(new Date(), 1),
+          },
+        },
+        updatedAt: new Date(),
+      },
+      include: {
+        emailConfirmation: true,
+      },
+    })
+
+    try {
+      await this.notificationService.sendEmailConfirmationCode({
+        email,
+        userName: updatedUser.name,
+        confirmationCode: emailConfirmationCode,
+      })
+    } catch (e) {
+      throw new Error('Email service is unavailable')
+    }
+
+    return this.prisma.user.findUnique({ where: { id: updatedUser.id } })
+  }
+
+  async isUserExistAndNotConfirmed({ username, email }: CreateUserCommand): Promise<boolean> {
+    const userWithEmailsExistsAndNotConfirmed = await this.prisma.user.findUnique({
+      where: {
+        email,
+        name: username,
+        emailConfirmed: null,
+      },
+    })
+    return userWithEmailsExistsAndNotConfirmed !== null
+  }
+
+  async validateUserAndThrowError({ username, email }: CreateUserCommand) {
     await this.validateEmail(email)
     await this.validateUsername(username)
   }

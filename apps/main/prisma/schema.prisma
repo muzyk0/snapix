@@ -20,7 +20,7 @@ model User {
   emailConfirmation   Confirmations? @relation(fields: [emailConfirmationId], references: [id])
   emailConfirmationId Int?           @unique
   createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt()
 
   @@unique([email, name, emailConfirmationId])
 }
@@ -31,7 +31,7 @@ model Confirmations {
   isConfirmed Boolean  @default(false)
   expiresIn   DateTime
   createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
   user        User?
   userId      Int?
 }
@@ -51,4 +51,6 @@ model AuditLog {
   message   String
   timestamp DateTime @default(now())
   extraData Json
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
 }
