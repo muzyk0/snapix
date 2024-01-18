@@ -1,8 +1,5 @@
 import { IsDateString, IsEnum, IsJSON, IsString } from 'class-validator'
-
-export enum AuditCode {
-  ERROR = 0,
-}
+import { AuditCode } from '@app/core/audit-log/dto/audit-log.entity'
 
 export class CreateAuditLogDto {
   @IsEnum(AuditCode)

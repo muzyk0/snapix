@@ -26,4 +26,10 @@ export class AuditLogEntity implements AuditLog {
   @IsOptional()
   @IsJSON()
   extraData!: JsonValue
+
+  @IsOptional()
+  createdAt!: Date
+
+  @IsOptional()
+  updatedAt!: Date
 }
