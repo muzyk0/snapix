@@ -17,7 +17,8 @@ module.exports = {
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/comma-dangle': 'off',
         '@typescript-eslint/indent': 'off',
-        '@typescript-eslint/return-await': 'off'
+        '@typescript-eslint/return-await': 'off',
+        // 'no-extra-boolean-cast': 'off',
       },
     },
   ],

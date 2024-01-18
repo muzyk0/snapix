@@ -2,16 +2,19 @@ import {
   type ArgumentsHost,
   Catch,
   type ExceptionFilter,
-  HttpException,
+  type HttpException,
   Injectable,
 } from '@nestjs/common'
-import { type Request, type Response } from 'express'
+import { ValidationException } from '../setup-app'
 import { AuditLogServiceAbstract } from '@app/core/audit-log/audit-log-service.abstract'
+import { type Request, type Response } from 'express'
+import { type ValidationError } from 'class-validator'
 import { AuditCode } from '@app/core/audit-log/dto/audit-log.entity'
+import { ErrorMapper } from './utils/error-mapper'
 
-@Catch(HttpException)
+@Catch(ValidationException)
 @Injectable()
-export class HttpExceptionFilter implements ExceptionFilter {
+export class ValidationExceptionFilter implements ExceptionFilter {
   constructor(private readonly auditLogService: AuditLogServiceAbstract) {}
 
   async catch(exception: HttpException, host: ArgumentsHost) {
@@ -20,13 +23,23 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>()
     const status = exception.getStatus()
 
+    const validatorErrors = (
+      exception.getResponse() as {
+        message: ValidationError[]
+      }
+    ).message
+
+    const validationErrors =
+      ErrorMapper.mapValidationErrorsToValidationExceptionFilter(validatorErrors)
+
     // todo: Refactor this duplicate code
     await this.auditLogService.create({
-      code: AuditCode.ERROR,
+      code: AuditCode.VALIDATION_ERROR,
       message: exception.message,
       timestamp: new Date().toISOString(),
 
       extraData: JSON.stringify({
+        validationError: validationErrors,
         statusCode: status,
         path: request.url,
         method: request.method,
@@ -40,10 +53,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // send the custom JSON response to the client
     response.status(status).json({
-      statusCode: status,
       message: exception.message,
-      timestamp: new Date().toISOString(),
-      path: request.url,
+      errors: validationErrors,
     })
   }
 }

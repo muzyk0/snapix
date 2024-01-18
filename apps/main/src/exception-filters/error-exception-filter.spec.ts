@@ -2,7 +2,7 @@ import { Test, type TestingModule } from '@nestjs/testing'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { AuditLogServiceAbstract } from '@app/core/audit-log/audit-log-service.abstract'
 import { AuditCode } from '@app/core/audit-log/dto/audit-log.entity'
-import { HttpExceptionFilter } from './http-exception-filter.'
+import { ErrorExceptionFilter } from './error-exception.filter'
 
 // mock the audit log service
 const mockAuditLogService = {
@@ -36,14 +36,14 @@ const mockArgumentsHost = {
   })),
 }
 
-describe('HttpExceptionFilter', () => {
-  let filter: HttpExceptionFilter
+describe('ErrorExceptionFilter', () => {
+  let filter: ErrorExceptionFilter
 
   beforeEach(async () => {
     // create a testing module with the filter and the mock service
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        HttpExceptionFilter,
+        ErrorExceptionFilter,
         {
           provide: AuditLogServiceAbstract,
           useValue: mockAuditLogService,
@@ -52,12 +52,12 @@ describe('HttpExceptionFilter', () => {
     }).compile()
 
     // get the filter instance
-    filter = module.get<HttpExceptionFilter>(HttpExceptionFilter)
+    filter = module.get<ErrorExceptionFilter>(ErrorExceptionFilter)
   })
 
   it('should catch and log the error', async () => {
     // create a mock exception
-    const mockException = new HttpException('Mock error', HttpStatus.BAD_REQUEST)
+    const mockException = new HttpException('Mock error', HttpStatus.INTERNAL_SERVER_ERROR)
 
     // call the filter's catch method with the mock exception and arguments host
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
@@ -65,7 +65,7 @@ describe('HttpExceptionFilter', () => {
 
     // check if the audit log service's create method was called with the expected arguments
     expect(mockAuditLogService.create).toBeCalledWith({
-      code: AuditCode.ERROR,
+      code: AuditCode.SERVER_ERROR,
       message: mockException.message,
       timestamp: expect.any(String),
       extraData: JSON.stringify({

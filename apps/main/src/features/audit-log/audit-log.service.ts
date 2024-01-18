@@ -9,7 +9,7 @@ export class AuditLogService implements AuditLogServiceAbstract {
   constructor(private readonly prisma: PrismaService) {}
 
   async create(data: CreateAuditLogDto): Promise<AuditLogEntity> {
-    return await this.prisma.auditLog.create({
+    return this.prisma.auditLog.create({
       data,
     })
   }

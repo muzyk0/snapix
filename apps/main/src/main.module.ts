@@ -6,10 +6,13 @@ import { AppConfigModule } from '@app/config'
 import { UsersModule } from './features/users/users.module'
 import { PrismaModule } from '@app/prisma'
 import { APP_FILTER } from '@nestjs/core'
-import { ErrorExceptionFilter } from './error-exception-filter/error-exception.filter'
-import { HttpExceptionFilter } from './error-exception-filter/http-exception-filter.'
 import { AuditLogModule } from './features/audit-log/audit-log.module'
 import { HealthModule } from '@app/core/health/health.module'
+import { AuthModule } from './features/auth/auth.module'
+import { NotificationModule } from './features/notification/notification.module'
+import { ErrorExceptionFilter } from './exception-filters/error-exception.filter'
+import { HttpExceptionFilter } from './exception-filters/http-exception-filter.'
+import { ValidationExceptionFilter } from './exception-filters/validation-exception.filter'
 
 @Module({
   imports: [
@@ -21,6 +24,8 @@ import { HealthModule } from '@app/core/health/health.module'
     PrismaModule,
     AuditLogModule,
     HealthModule,
+    AuthModule,
+    NotificationModule,
   ],
   controllers: [MainController],
   providers: [
@@ -33,10 +38,10 @@ import { HealthModule } from '@app/core/health/health.module'
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
     },
-    // {
-    //   provide: AuditLogServiceAbstract,
-    //   useClass: AuditLogService,
-    // },
+    {
+      provide: APP_FILTER,
+      useClass: ValidationExceptionFilter,
+    },
   ],
 })
 export class MainModule {}

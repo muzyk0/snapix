@@ -22,33 +22,31 @@ jobs:
       - name: Test
         run: yarn test
 
-#  tests-e2e:
-#    name: E2E Tests
-#    defaults:
-#      run:
-#        working-directory: ./
-#    runs-on: ubuntu-latest
-#    needs: tests-unit
-#    steps:
-#      - name: Checkout
-#        uses: actions/checkout@v3
-#
-#      - name: Install dependencies
-#        run: pnpm install
-#
-#      - name: Test
-#        env:
-#          POSTGRESQL_URI: ${{ secrets.POSTGRESQL_URI }}
-#          TYPEORM_SSL: ${{ secrets.TYPEORM_SSL }}
-#          ACCESS_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
-#          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-#          REFRESH_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
-#          REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
-#          EMAIL_FROM: ${{ secrets.EMAIL_FROM }}
-#          EMAIL_FROM_PASSWORD: ${{ secrets.EMAIL_FROM_PASSWORD }}
-#          ENABLE_CLEAR_DB_ENDPOINT: ${{ secrets.ENABLE_CLEAR_DB_ENDPOINT }}
-#          IP_RESTRICTION_LIMIT: ${{ secrets.IP_RESTRICTION_LIMIT }}
-#        run: pnpm test:e2e
+  tests-e2e:
+    name: E2E Tests
+    defaults:
+      run:
+        working-directory: ./
+    runs-on: ubuntu-latest
+    needs: tests-unit
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Generate Prisma
+        run: yarn main:prisma:generate
+
+      - name: Test
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          ACCESS_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
+          ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
+          REFRESH_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
+          REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+        run: yarn test:e2e
 
   tsc:
     name: Typescript Check
