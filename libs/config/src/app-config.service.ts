@@ -4,6 +4,7 @@ import { ConfigService } from '@nestjs/config'
 @Injectable()
 export class AppConfigService {
   constructor(private readonly configService: ConfigService) {}
+
   get isDev(): boolean {
     return this.configService.get('NODE_ENV') === 'development'
   }
@@ -18,5 +19,9 @@ export class AppConfigService {
 
   get globalPrefix(): string | null {
     return this.configService.get('GLOBAL_PREFIX') ?? null
+  }
+
+  get rmqUrls(): string[] {
+    return this.configService.get('RMQ_URLS').split(', ') ?? []
   }
 }
