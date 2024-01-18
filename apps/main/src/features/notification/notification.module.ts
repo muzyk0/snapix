@@ -1,19 +1,24 @@
 import { Module } from '@nestjs/common'
 import { NotificationService } from './services/notification.service'
 import { ClientsModule, Transport } from '@nestjs/microservices'
+import { AppConfigModule, AppConfigService } from '@app/config'
 
 @Module({
   imports: [
-    ClientsModule.register([
+    AppConfigModule,
+    ClientsModule.registerAsync([
       {
         name: 'NOTIFIER_SERVICE',
-        transport: Transport.RMQ,
-        options: {
-          // urls: 'amqps://abalwmzb:lEVoc-xMIEoTavHa2VwzFqnqfUjyYq8y@gull.rmq.cloudamqp.com/abalwmzb',
-          urls: [
-            'amqps://abalwmzb:lEVoc-xMIEoTavHa2VwzFqnqfUjyYq8y@gull.rmq.cloudamqp.com/abalwmzb',
-          ],
+        imports: [AppConfigModule],
+        useFactory: (configService: AppConfigService) => {
+          return {
+            transport: Transport.RMQ,
+            options: {
+              urls: configService.rmqUrls,
+            },
+          }
         },
+        inject: [AppConfigService],
       },
     ]),
   ],
