@@ -26,7 +26,11 @@
     "start:notifier": "node dist/apps/notifier/main",
     "build:notifier": "nest build notifier"
   },
+  "resolutions": {
+    "string-width": "4.2.3"
+  },
   "dependencies": {
+    "@nestjs-modules/mailer": "^1.10.3",
     "@nestjs/axios": "^3.0.1",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
@@ -48,8 +52,10 @@
     "class-validator": "^0.14.0",
     "cookie-parser": "^1.4.6",
     "date-fns": "^3.2.0",
+    "handlebars": "^4.7.8",
     "lodash": "^4.17.21",
     "mqtt": "^5.3.4",
+    "nodemailer": "^6.9.8",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",

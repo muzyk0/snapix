@@ -1,17 +1,18 @@
 import { Module } from '@nestjs/common'
-import { NotifierController } from './notifier.controller'
 import { NotifierService } from './notifier.service'
 import { AppConfigModule } from '@app/config'
 import { ConfigModule, ConfigService } from '@nestjs/config'
+import { EmailModule } from './email/email.module'
 
 @Module({
   imports: [
+    AppConfigModule,
+
     ConfigModule.forRoot({
       isGlobal: true,
     }),
-    AppConfigModule,
+    EmailModule,
   ],
-  controllers: [NotifierController],
   providers: [ConfigService, NotifierService],
 })
 export class NotifierModule {}

@@ -1,13 +1,14 @@
 import { NestFactory } from '@nestjs/core'
-import { Logger } from '@nestjs/common'
+import { type INestApplication, Logger } from '@nestjs/common'
 import { type MicroserviceOptions, Transport } from '@nestjs/microservices'
 import { NotifierModule } from './notifier.module'
 import { AppConfigService } from '@app/config'
+import { type Express } from 'express'
 
 async function bootstrap() {
   const logger = new Logger('NestBootstrap Notifier')
 
-  const app = await NestFactory.create(NotifierModule)
+  const app = await NestFactory.create<INestApplication<Express>>(NotifierModule)
 
   const appConfigService = app.get<AppConfigService>(AppConfigService)
 
@@ -17,13 +18,6 @@ async function bootstrap() {
       urls: appConfigService.rmqUrls,
     },
   })
-
-  // const app = await NestFactory.createMicroservice<MicroserviceOptions>(NotifierModule, {
-  //   transport: Transport.RMQ,
-  //   options: {
-  //     urls: configService.get<string>('RMQ_URLS')!.split(', '),
-  //   },
-  // })
 
   await app.startAllMicroservices()
   logger.log('Microservice Notifier is running')
