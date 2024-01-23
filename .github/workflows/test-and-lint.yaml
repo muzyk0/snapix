@@ -42,10 +42,12 @@ jobs:
       - name: Test
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DATABASE_URL_DEV: ${{ secrets.DATABASE_URL_DEV }}
           ACCESS_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
           ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
           REFRESH_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
           REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+          EMAIL_CONFIRM_REGISTER_LINK: ${{ secrets.EMAIL_CONFIRM_REGISTER_LINK }}
         run: yarn test:e2e
 
   tsc:
