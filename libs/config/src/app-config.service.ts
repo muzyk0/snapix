@@ -9,6 +9,10 @@ export class AppConfigService {
     return this.configService.get('NODE_ENV') === 'development'
   }
 
+  get datasourceUrl(): string | undefined {
+    return this.configService.get('DATABASE_URL')
+  }
+
   get port(): number {
     return this.configService.get('PORT', { infer: true }) ?? 3000
   }
