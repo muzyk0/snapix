@@ -28,7 +28,7 @@ jobs:
       run:
         working-directory: ./
     runs-on: ubuntu-latest
-    needs: tests-unit
+#    needs: tests-unit
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -42,10 +42,11 @@ jobs:
       - name: Test
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
-          ACCESS_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}
+          ACCESS_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_SECRET_EXPIRES_IN }}
           ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
-          REFRESH_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_EXPIRES_IN }}
+          REFRESH_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_SECRET_EXPIRES_IN }}
           REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+          RMQ_URLS: ${{ secrets.RMQ_URLS }}
         run: yarn test:e2e
 
   tsc:

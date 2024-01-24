@@ -12,6 +12,9 @@ pipeline {
         DEPLOYMENT_NAME = "snapix-back-main-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
+        ACCESS_TOKEN_SECRET = "${env.ACCESS_TOKEN_SECRET}"
+        DATABASE_URL = "${env.DATABASE_URL}"
+        RMQ_URLS = "${env.RMQ_URLS}"
     }
 
     stages {
@@ -31,6 +34,7 @@ pipeline {
         stage('e2e tests') {
             steps {
                 script {
+                    sh "yarn main:prisma:generate"
                     sh "yarn test:e2e"
                 }
             }
