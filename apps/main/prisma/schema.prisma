@@ -57,13 +57,12 @@ model AuditLog {
 }
 
 model Session {
-  id                  String   @id @default(cuid()) // В Prisma UUID может быть представлен как String с атрибутом @default(auto())
-  ip                  String
-  lastActiveDate      DateTime
-  deviceId            String
-  userId              Int
-  RFTokenIAT          DateTime
-  RFTokenObsoleteDate DateTime
+  id             String   @id @default(cuid())
+  ip             String
+  lastActiveDate DateTime
+  deviceId       String
+  userId         Int
+  RFTokenIAT     DateTime
 
   // Связь с User
   user      User     @relation(fields: [userId], references: [id])
