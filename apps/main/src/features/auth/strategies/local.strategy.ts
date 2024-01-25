@@ -20,7 +20,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       new ValidateUserCommand(login, password)
     )
     if (user === null) {
-      throw new UnauthorizedException()
+      throw new UnauthorizedException('The email or password are incorrect. Try again please')
     }
     return user
   }
