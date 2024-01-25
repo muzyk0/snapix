@@ -13,8 +13,8 @@ pipeline {
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
         ACCESS_TOKEN_SECRET = "${env.ACCESS_TOKEN_SECRET}"
-        DATABASE_URL = "${env.DATABASE_URL}"
-        SHADOW_DATABASE_URL = "${env.DATABASE_URL_DEV}"
+        DATABASE_URL = "postgresql://incubator_staz_2024:O1tJNcBvXsg4@ep-cool-unit-02628288.eu-central-1.aws.neon.tech/snapix?sslmode=require"
+        SHADOW_DATABASE_URL = "postgresql://muzyk0:wEHaoK5SqWD8@ep-dawn-firefly-962824.us-east-2.aws.neon.tech/snapix-test?sslmode=require"
         RMQ_URLS = "${env.RMQ_URLS}"
     }
 
