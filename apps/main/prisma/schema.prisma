@@ -21,6 +21,7 @@ model User {
   emailConfirmationId Int?           @unique
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt()
+  session             Session[]
 
   @@unique([email, name, emailConfirmationId])
 }
@@ -51,6 +52,21 @@ model AuditLog {
   message   String
   timestamp DateTime @default(now())
   extraData Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Session {
+  id                  String   @id @default(cuid()) // В Prisma UUID может быть представлен как String с атрибутом @default(auto())
+  ip                  String
+  lastActiveDate      DateTime
+  deviceId            String
+  userId              Int
+  RFTokenIAT          DateTime
+  RFTokenObsoleteDate DateTime
+
+  // Связь с User
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
