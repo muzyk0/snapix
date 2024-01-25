@@ -14,6 +14,7 @@ pipeline {
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
         ACCESS_TOKEN_SECRET = "${env.ACCESS_TOKEN_SECRET}"
         DATABASE_URL = "${env.DATABASE_URL}"
+        SHADOW_DATABASE_URL = "${env.DATABASE_URL_DEV}"
         RMQ_URLS = "${env.RMQ_URLS}"
     }
 

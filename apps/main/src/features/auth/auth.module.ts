@@ -7,12 +7,13 @@ import { CryptService } from './application/services/crypt.service'
 import { AuthController } from './controllers/auth.controller'
 import { NotificationModule } from '../notification/notification.module'
 import { CommandHandlers } from './application/use-cases'
+import { RegisterController } from './controllers/register.controller'
 
 const Providers: Array<Provider<any>> = [CryptService, JwtService]
 
 @Module({
   imports: [CqrsModule, JwtModule.register({}), NotificationModule],
-  controllers: [AuthController],
+  controllers: [AuthController, RegisterController],
   providers: [...Providers, ...Strategies, ...CommandHandlers],
   exports: [...Strategies],
 })
