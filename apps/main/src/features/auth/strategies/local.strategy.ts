@@ -19,7 +19,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     const user = await this.commandBus.execute<ValidateUserCommand, User | null>(
       new ValidateUserCommand(login, password)
     )
-    if (user !== null) {
+    if (user === null) {
       throw new UnauthorizedException()
     }
     return user
