@@ -21,6 +21,7 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "main:prisma:generate": "prisma generate --schema ./apps/main/prisma/schema.prisma",
+    "add-migrations": "node ./apps/main/prisma/tools/add-migration.js",
     "start:main": "node dist/apps/main/main",
     "build:main": "nest build main",
     "start:notifier": "node dist/apps/notifier/main",
