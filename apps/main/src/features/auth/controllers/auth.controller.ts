@@ -1,4 +1,14 @@
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  HttpCode,
+  HttpStatus,
+  Post,
+  Res,
+  UseGuards,
+  Request,
+  HttpException,
+} from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import {
   ApiBadRequestResponse,
@@ -8,28 +18,34 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
-import { JwtService } from '@nestjs/jwt'
 import { CreateUserCommand } from '../application/use-cases'
 import { type User } from '@prisma/client'
 import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
+import { LoginUserCommand } from '../application/use-cases/login-user.handler'
+import { Response } from 'express'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(
-    // todo: remove
-    private readonly jwtService: JwtService,
-    private readonly commandBus: CommandBus
-  ) {}
+  constructor(private readonly commandBus: CommandBus) {}
 
   @ApiOkResponse({})
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login() {
-    return {
-      accessToken: this.jwtService.sign({}, { secret: '123456', expiresIn: '1d' }),
+  async login(@Res({ passthrough: true }) response: Response, @Request() req: any) {
+    const loginResult = await this.commandBus.execute(new LoginUserCommand(req.user as User))
+
+    if (loginResult.error === true) {
+      throw new HttpException(loginResult.message, loginResult.status)
     }
+
+    response.cookie('refreshToken', loginResult.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    })
+
+    return { accessToken: loginResult.accessToken }
   }
 
   @ApiBody({
