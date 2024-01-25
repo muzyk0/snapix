@@ -7,8 +7,9 @@ import { CryptService } from './application/services/crypt.service'
 import { AuthController } from './controllers/auth.controller'
 import { NotificationModule } from '../notification/notification.module'
 import { CommandHandlers } from './application/use-cases'
+import { SessionsRepo } from './infrastructure/sessions.repository'
 
-const Providers: Array<Provider<any>> = [CryptService, JwtService]
+const Providers: Array<Provider<any>> = [CryptService, JwtService, SessionsRepo]
 
 @Module({
   imports: [CqrsModule, JwtModule.register({}), NotificationModule],

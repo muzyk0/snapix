@@ -8,6 +8,8 @@ import {
   UseGuards,
   Request,
   HttpException,
+  Ip,
+  Headers,
 } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import {
@@ -23,6 +25,7 @@ import { type User } from '@prisma/client'
 import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
 import { Response } from 'express'
+import { LoginHeaders } from '../types/login-headers'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -33,8 +36,15 @@ export class AuthController {
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
-  async login(@Res({ passthrough: true }) response: Response, @Request() req: any) {
-    const loginResult = await this.commandBus.execute(new LoginUserCommand(req.user as User))
+  async login(
+    @Headers() loginHeaders: LoginHeaders,
+    @Ip() IP: string,
+    @Res({ passthrough: true }) response: Response,
+    @Request() req: any
+  ) {
+    const loginResult = await this.commandBus.execute(
+      new LoginUserCommand(req.user as User, IP, loginHeaders)
+    )
 
     if (loginResult.error === true) {
       throw new HttpException(loginResult.message, loginResult.status)

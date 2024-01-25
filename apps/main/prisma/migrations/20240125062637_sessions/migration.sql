@@ -6,7 +6,6 @@ CREATE TABLE "Session" (
     "deviceId" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
     "RFTokenIAT" TIMESTAMP(3) NOT NULL,
-    "RFTokenObsoleteDate" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
