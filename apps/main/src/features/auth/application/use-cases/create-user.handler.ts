@@ -64,7 +64,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   async create({ username, email, password }: CreateUserCommand) {
     const passwordHash = await this.cryptService.hashPassword(password)
 
-    const emailConfirmationcode = randomUUID()
+    const emailConfirmationToken = randomUUID()
     const createdUser = await this.prisma.user.create({
       data: {
         name: username,
@@ -73,7 +73,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         emailConfirmed: null,
         emailConfirmation: {
           create: {
-            code: emailConfirmationcode,
+            token: emailConfirmationToken,
             expiresIn: addDays(new Date(), 1),
           },
         },
@@ -87,7 +87,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       await this.notificationService.sendEmailConfirmationCode({
         email,
         userName: createdUser.name,
-        confirmationCode: emailConfirmationcode,
+        confirmationCode: emailConfirmationToken,
       })
     } catch (e) {
       throw new Error('Email service is unavailable')
@@ -108,7 +108,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         emailConfirmed: null,
         emailConfirmation: {
           update: {
-            code: emailConfirmationCode,
+            token: emailConfirmationCode,
             expiresIn: addDays(new Date(), 1),
           },
         },
