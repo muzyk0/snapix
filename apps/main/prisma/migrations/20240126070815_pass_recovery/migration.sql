@@ -23,6 +23,9 @@ CREATE TABLE "PassRecovery" (
 );
 
 -- CreateIndex
+CREATE UNIQUE INDEX "PassRecovery_code_key" ON "PassRecovery"("code");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "PassRecovery_userId_key" ON "PassRecovery"("userId");
 
 -- CreateIndex

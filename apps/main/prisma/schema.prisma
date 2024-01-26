@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -42,7 +42,7 @@ model Confirmations {
 
 model PassRecovery {
   id                 String   @id @default(cuid())
-  code               String
+  code               String   @unique
   activated          Boolean  @default(false)
   codeExpirationDate DateTime @default(now())
   userId             Int      @unique

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, type Prisma } from '@prisma/client'
 import { Injectable } from '@nestjs/common'
 
 @Injectable()
@@ -31,5 +31,18 @@ export class RecoveryConfirmationRepository {
     }
 
     return true
+  }
+
+  async getInfoByPasswordRecoveryCode(code: string): Promise<any> {
+    try {
+      return await this.prisma.passRecovery.findUnique({
+        where: {
+          code,
+        },
+      })
+    } catch (e) {
+      console.log(e)
+      return false
+    }
   }
 }
