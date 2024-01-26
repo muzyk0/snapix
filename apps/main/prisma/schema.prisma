@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -58,12 +58,12 @@ model AuditLog {
 }
 
 model Session {
-  id             String   @id @default(cuid())
-  ip             String
-  lastActiveDate DateTime
-  deviceId       String
-  userId         Int
-  RFTokenIAT     DateTime
+  id                   String   @id @default(cuid())
+  ip                   String
+  lastActiveDate       DateTime
+  deviceId             String
+  userId               Int
+  refreshTokenIssuedAt DateTime
 
   // Связь с User
   user      User     @relation(fields: [userId], references: [id])

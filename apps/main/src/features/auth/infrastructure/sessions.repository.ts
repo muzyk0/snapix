@@ -18,7 +18,7 @@ export class SessionsRepo {
           lastActiveDate: new Date(),
           deviceId: sessionDTO.deviceId,
           userId: sessionDTO.userId,
-          RFTokenIAT: new Date(sessionDTO.refreshTokenIssuedAt),
+          refreshTokenIssuedAt: new Date(sessionDTO.refreshTokenIssuedAt),
         },
       })
     } catch (e) {

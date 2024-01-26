@@ -5,7 +5,7 @@ CREATE TABLE "Session" (
     "lastActiveDate" TIMESTAMP(3) NOT NULL,
     "deviceId" TEXT NOT NULL,
     "userId" INTEGER NOT NULL,
-    "RFTokenIAT" TIMESTAMP(3) NOT NULL,
+    "refreshTokenIssuedAt" TIMESTAMP(3) NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
