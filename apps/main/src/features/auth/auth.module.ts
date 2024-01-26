@@ -7,6 +7,7 @@ import { CryptService } from './application/services/crypt.service'
 import { AuthController } from './controllers/auth.controller'
 import { NotificationModule } from '../notification/notification.module'
 import { CommandHandlers } from './application/use-cases'
+import { RegisterController } from './controllers/register.controller'
 import { SessionsRepo } from './infrastructure/sessions.repository'
 import { RecoveryConfirmationRepository } from './infrastructure/recovery-confirmation.repository'
 import { UsersQueryRepository } from '../users/infrastructure/users.query.repository'
@@ -21,7 +22,7 @@ const Providers: Array<Provider<any>> = [
 
 @Module({
   imports: [CqrsModule, JwtModule.register({}), NotificationModule],
-  controllers: [AuthController],
+  controllers: [AuthController, RegisterController],
   providers: [...Providers, ...Strategies, ...CommandHandlers],
   exports: [...Strategies],
 })

@@ -1,0 +1,6 @@
+export enum CONFIRMATION_STATUS {
+  OK = 0,
+  CONFIRMED = 1,
+  EXPIRED = 2,
+  BAD_TOKEN = 3,
+}

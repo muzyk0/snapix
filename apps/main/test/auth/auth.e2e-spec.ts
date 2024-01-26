@@ -4,7 +4,7 @@ import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
 
-jest.setTimeout(120000)
+jest.setTimeout(1000 * 60)
 
 describe('AuthController (e2e)', () => {
   let app: INestApplication
