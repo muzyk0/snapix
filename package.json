@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "dev:main": "nest start main --debug --watch",
-    "dev:notifier": "nest start notifier --debug --watch",
+    "dev:notifier": "nest start notifier --debug --inspect=9230 --watch",
     "dev:storage": "nest start storage --debug --watch",
     "dev:payments": "nest start payment --debug --watch",
     "test:e2e": "jest --config apps/main/test/jest-e2e.json -i",

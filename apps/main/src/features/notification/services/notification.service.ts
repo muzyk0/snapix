@@ -8,4 +8,8 @@ export class NotificationService {
   async sendEmailConfirmationCode(data: any): Promise<void> {
     this.client.emit<number>({ cmd: 'email-notification' }, data)
   }
+
+  async sendPasswordRecoveryCode(data: any): Promise<void> {
+    this.client.emit<number>({ cmd: 'email-pass-recovery' }, data)
+  }
 }

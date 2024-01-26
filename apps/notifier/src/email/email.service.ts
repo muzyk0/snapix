@@ -4,6 +4,7 @@ import { type SendConfirmationEmailCodeDto } from './dto/send-confirmation-email
 import { SmtpConfigService } from '@app/config/email-config.service'
 import { MailerService } from '@nestjs-modules/mailer'
 import { Template } from './templates'
+import { type SendPassRecoveryEmailCodeDto } from './dto/send-password-recovery-email-code'
 
 @Injectable()
 export class EmailService extends EmailSenderService {
@@ -20,6 +21,14 @@ export class EmailService extends EmailSenderService {
     await this.sendEmail(email, 'Confirm your email', Template.CONFIRM_EMAIL, {
       name: userName,
       confirmationLink: `${this.smtpConfigService.confirmRegisterLink}${confirmationCode}`,
+      companyName: 'Snapix',
+    })
+  }
+
+  async sendPassRecoveryEmail({ recoveryCode, email, userName }: SendPassRecoveryEmailCodeDto) {
+    await this.sendEmail(email, 'Recover your password', Template.RECOVER_PASSWORD, {
+      name: userName,
+      recoveryLink: `${this.smtpConfigService.newPasswordLink}${recoveryCode}`,
       companyName: 'Snapix',
     })
   }

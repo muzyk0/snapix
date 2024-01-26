@@ -56,6 +56,7 @@ export class AuthController {
 
   @ApiOkResponse({})
   @Post('/password-recovery')
+  @Public()
   @HttpCode(HttpStatus.OK)
   async passwordRecovery(@Body() inputDTO: passRecoveryDTO) {
     const result = await this.commandBus.execute(new RecoveryPasswordCommand(inputDTO.email))

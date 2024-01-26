@@ -46,10 +46,15 @@ export class RecoveryPasswordHandler implements ICommandHandler<RecoveryPassword
         }
       }
 
-      // Тут идет отправка письма
-      ///
-      ///
-      ///
+      try {
+        await this.notificationService.sendPasswordRecoveryCode({
+          email: foundUser.email,
+          userName: foundUser.name,
+          recoveryCode: passwordRecoveryCode,
+        })
+      } catch (e) {
+        throw new Error('Email service is unavailable')
+      }
 
       return {
         error: false,
