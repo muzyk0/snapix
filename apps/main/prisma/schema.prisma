@@ -18,12 +18,14 @@ model User {
   password            String
   emailConfirmed      DateTime?
   emailConfirmation   Confirmations? @relation(fields: [emailConfirmationId], references: [id])
+  passRecovery        PassRecovery?  @relation(fields: [passRecoveryId], references: [id])
+  passRecoveryId      String?        @unique
   emailConfirmationId Int?           @unique
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt()
   session             Session[]
 
-  @@unique([email, name, emailConfirmationId])
+  @@unique([email, name, emailConfirmationId, passRecoveryId])
 }
 
 model Confirmations {
@@ -35,6 +37,15 @@ model Confirmations {
   updatedAt   DateTime @updatedAt()
   user        User?
   userId      Int?
+}
+
+model PassRecovery {
+  id                 String   @id @default(cuid())
+  code               String
+  activated          Boolean  @default(false)
+  codeExpirationDate DateTime @default(now())
+  userId             Int      @unique
+  User               User?
 }
 
 model Post {

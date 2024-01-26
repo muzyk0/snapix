@@ -26,6 +26,8 @@ import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagge
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
 import { Response } from 'express'
 import { LoginHeaders } from '../types/login-headers'
+import { passRecoveryDTO } from '../types/pass-recovery-dto-type'
+import { RecoveryPasswordCommand } from '../application/use-cases/recovery-pass.handler'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -87,6 +89,21 @@ export class AuthController {
 
     return {
       message: `We have sent a link to confirm your email to ${email}`,
+    }
+  }
+
+  @ApiOkResponse({})
+  @Post('/password-recovery')
+  @HttpCode(HttpStatus.OK)
+  async passwordRecovery(@Body() inputDTO: passRecoveryDTO) {
+    const result = await this.commandBus.execute(new RecoveryPasswordCommand(inputDTO.email))
+
+    if (result.error === true) {
+      throw new HttpException(result.message, result.status)
+    }
+
+    return {
+      message: result.message,
     }
   }
 }

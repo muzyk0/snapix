@@ -8,4 +8,8 @@ export class UsersQueryRepository {
   async countRegisteredUsers() {
     return await this.prisma.user.count()
   }
+
+  async findUserByEmail(email: string) {
+    return await this.prisma.user.findUnique({ where: { email } })
+  }
 }
