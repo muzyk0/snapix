@@ -17,6 +17,7 @@ import { type User } from '@prisma/client'
 import { LoginHeaders } from '../types/login-headers'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
 import { Response } from 'express'
+import { Public } from '../guards/public.guard'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -24,6 +25,7 @@ export class AuthController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @ApiOkResponse({})
+  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
