@@ -8,6 +8,7 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
 model User {
@@ -27,7 +28,7 @@ model User {
 
 model Confirmations {
   id          Int      @id @default(autoincrement())
-  code        String?
+  token       String   @unique
   isConfirmed Boolean  @default(false)
   expiresIn   DateTime
   createdAt   DateTime @default(now())
@@ -51,6 +52,6 @@ model AuditLog {
   message   String
   timestamp DateTime @default(now())
   extraData Json
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt()
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
