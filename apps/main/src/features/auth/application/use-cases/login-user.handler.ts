@@ -1,12 +1,12 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { JwtService } from '@nestjs/jwt'
 import { type User } from '@prisma/client'
-import { ConfigService } from '@nestjs/config'
 import { HttpStatus } from '@nestjs/common'
 import { type JwtAtPayload } from '../../types/jwt-at-payload'
 import { type LoginHeaders } from '../../types/login-headers'
-import { type createSessionDTO } from '../../types/create-session-dto-type'
+import { type CreateSessionDTO } from '../../types/create-session-dto-type'
 import { SessionsRepo } from '../../infrastructure/sessions.repository'
+import { AppConfigService } from '@app/config'
 
 export class LoginUserCommand {
   constructor(
@@ -18,24 +18,11 @@ export class LoginUserCommand {
 
 @CommandHandler(LoginUserCommand)
 export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
-  private readonly ACCESS_TOKEN_SECRET: string
-  private readonly ACCESS_TOKEN_SECRET_EXPIRES_IN: string
-  private readonly REFRESH_TOKEN_SECRET: string
-  private readonly REFRESH_TOKEN_SECRET_EXPIRES_IN: string
   constructor(
     private readonly jwtService: JwtService,
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-expect-error
-    private readonly configService: ConfigService,
+    private readonly appConfigService: AppConfigService,
     private readonly sessionRepo: SessionsRepo
-  ) {
-    this.ACCESS_TOKEN_SECRET = configService.getOrThrow('ACCESS_TOKEN_SECRET')
-    this.ACCESS_TOKEN_SECRET_EXPIRES_IN = configService.getOrThrow('ACCESS_TOKEN_SECRET_EXPIRES_IN')
-    this.REFRESH_TOKEN_SECRET = configService.getOrThrow('REFRESH_TOKEN_SECRET')
-    this.REFRESH_TOKEN_SECRET_EXPIRES_IN = configService.getOrThrow(
-      'REFRESH_TOKEN_SECRET_EXPIRES_IN'
-    )
-  }
+  ) {}
 
   async execute(command: LoginUserCommand): Promise<any> {
     try {
@@ -43,20 +30,20 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
 
       const jwtPayload: JwtAtPayload = {
         user: {
-          id: user.id.toString(),
+          id: user.id,
           name: user.name,
           email: user.email,
         },
       }
 
       const accessToken = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.ACCESS_TOKEN_SECRET,
-        expiresIn: this.ACCESS_TOKEN_SECRET_EXPIRES_IN,
+        secret: this.appConfigService.accessTokenSecret,
+        expiresIn: this.appConfigService.accessTokenSecretExpiresIn,
       })
 
       const refreshToken = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.REFRESH_TOKEN_SECRET,
-        expiresIn: this.REFRESH_TOKEN_SECRET_EXPIRES_IN,
+        secret: this.appConfigService.refreshTokenSecret,
+        expiresIn: this.appConfigService.refreshTokenSecretExpiresIn,
       })
 
       await this.createSession(command, refreshToken)
@@ -76,10 +63,10 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     const loginIp = IP ?? loginHeaders['x-forwarded-for'] ?? 'IP undefined'
 
     const refreshTokenIssuedAt = this.jwtService.verify(refreshToken, {
-      secret: this.REFRESH_TOKEN_SECRET,
+      secret: this.appConfigService.refreshTokenSecret,
     })
 
-    const sessionDTO: createSessionDTO = {
+    const sessionDTO: CreateSessionDTO = {
       loginIp,
       refreshTokenIssuedAt: refreshTokenIssuedAt.iat * 1000,
       userId: user.id,

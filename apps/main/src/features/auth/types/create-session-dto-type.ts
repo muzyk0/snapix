@@ -1,4 +1,4 @@
-export interface createSessionDTO {
+export interface CreateSessionDTO {
   loginIp: string
   refreshTokenIssuedAt: number
   userId: number

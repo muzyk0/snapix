@@ -1,6 +1,6 @@
 export interface JwtAtPayload {
   user: {
-    id: string
+    id: number
     name: string | null
     email: string
   }

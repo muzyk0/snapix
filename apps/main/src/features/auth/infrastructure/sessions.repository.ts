@@ -1,16 +1,12 @@
-import { PrismaClient } from '@prisma/client'
-import { type createSessionDTO } from '../types/create-session-dto-type'
+import { type CreateSessionDTO } from '../types/create-session-dto-type'
 import { Injectable } from '@nestjs/common'
+import { PrismaService } from '@app/prisma'
 
 @Injectable()
 export class SessionsRepo {
-  private readonly prisma: PrismaClient
+  constructor(private readonly prisma: PrismaService) {}
 
-  constructor() {
-    this.prisma = new PrismaClient()
-  }
-
-  async createSessionInfo(sessionDTO: createSessionDTO): Promise<boolean> {
+  async createSessionInfo(sessionDTO: CreateSessionDTO): Promise<boolean> {
     try {
       await this.prisma.session.create({
         data: {
