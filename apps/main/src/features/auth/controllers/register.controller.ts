@@ -5,6 +5,7 @@ import {
   ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
+  ApiOkResponse,
   ApiTags,
 } from '@nestjs/swagger'
 import { CreateUserCommand } from '../application/use-cases'
@@ -19,7 +20,7 @@ import {
 import { ResendConfirmationCodeCommand } from '../application/use-cases/resend-confirmation-code.handler'
 
 @ApiTags('auth')
-@Controller('auth/register')
+@Controller('/auth/register')
 export class RegisterController {
   constructor(
     // todo: remove
@@ -62,6 +63,10 @@ export class RegisterController {
   @ApiBody({
     type: () => ConfirmRegisterCommand,
   })
+  @ApiOkResponse({
+    status: HttpStatus.ACCEPTED,
+    description: 'Registration successful',
+  })
   @ApiNotFoundResponse({
     status: HttpStatus.NOT_FOUND,
     description: 'Invalid token',
@@ -74,7 +79,7 @@ export class RegisterController {
   })
   @Public()
   @Post('/confirm')
-  @HttpCode(HttpStatus.OK)
+  @HttpCode(HttpStatus.ACCEPTED)
   async confirmAccount(@Body() { token }: ConfirmRegisterCommand): Promise<ConfirmRegisterDto> {
     return this.commandBus.execute<ConfirmRegisterCommand, ConfirmRegisterDto>(
       new ConfirmRegisterCommand(token)

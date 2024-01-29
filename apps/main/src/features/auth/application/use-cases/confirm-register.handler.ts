@@ -1,6 +1,6 @@
-import { BadRequestException, NotFoundException } from '@nestjs/common'
+import { BadRequestException } from '@nestjs/common'
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { isAfter } from 'date-fns'
+import { isBefore } from 'date-fns'
 import { PrismaService } from '@app/prisma'
 import { type User } from '@prisma/client'
 import { type UserWithConfirmation } from '../../../users/types'
@@ -27,19 +27,36 @@ export class ConfirmRegisterHandler implements ICommandHandler<ConfirmRegisterCo
   constructor(private readonly prisma: PrismaService) {}
 
   async execute({ token }: ConfirmRegisterCommand): Promise<ConfirmRegisterDto> {
+    const where = {
+      emailConfirmation: {
+        token,
+      },
+    }
+    const include = {
+      emailConfirmation: true,
+    }
     const user = await this.prisma.user.findFirst({
-      where: {
-        emailConfirmation: {
-          token,
-        },
-      },
-      include: {
-        emailConfirmation: true,
-      },
+      where,
+      include,
     })
 
-    if (!this.checkAvailableConfirmAccount(user as UserWithConfirmation)) {
-      throw new BadRequestException([{ message: "Code isn't correct", field: 'code' }])
+    this.checkAvailableConfirmAccount(user as UserWithConfirmation)
+
+    if (user !== null) {
+      await this.prisma.user.update({
+        where: {
+          id: user.id,
+        },
+        data: {
+          emailConfirmed: new Date(),
+          emailConfirmation: {
+            update: {
+              isConfirmed: true,
+            },
+          },
+        },
+        include,
+      })
     }
 
     return {
@@ -48,28 +65,32 @@ export class ConfirmRegisterHandler implements ICommandHandler<ConfirmRegisterCo
     }
   }
 
-  private checkAvailableConfirmAccount(user: UserWithConfirmation) {
+  private checkAvailableConfirmAccount(user: UserWithConfirmation): void {
     if (user === null) {
-      throw new NotFoundException({
-        message: 'Not found',
-        status: CONFIRMATION_STATUS.BAD_TOKEN,
+      throw new BadRequestException({
+        token: {
+          message: CONFIRMATION_STATUS.BAD_TOKEN,
+          property: 'token',
+        },
       })
     }
     if (this.isConfirmed(user)) {
-      throw new NotFoundException({
-        message: 'Not found',
-        status: CONFIRMATION_STATUS.CONFIRMED,
+      throw new BadRequestException({
+        token: {
+          message: CONFIRMATION_STATUS.CONFIRMED,
+          property: 'token',
+        },
       })
     }
 
     if (this.isExpired(user)) {
-      throw new NotFoundException({
-        message: 'Not found',
-        status: CONFIRMATION_STATUS.EXPIRED,
+      throw new BadRequestException({
+        token: {
+          message: CONFIRMATION_STATUS.EXPIRED,
+          property: 'token',
+        },
       })
     }
-
-    return true
   }
 
   private isConfirmed(user: User) {
@@ -77,7 +98,7 @@ export class ConfirmRegisterHandler implements ICommandHandler<ConfirmRegisterCo
   }
 
   private isExpired(user: UserWithConfirmation) {
-    if (user.emailConfirmation !== null && isAfter(new Date(), user.emailConfirmation.expiresIn)) {
+    if (user.emailConfirmation !== null && isBefore(new Date(), user.emailConfirmation.expiresIn)) {
       return false
     }
     return true

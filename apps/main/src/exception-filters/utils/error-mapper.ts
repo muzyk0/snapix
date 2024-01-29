@@ -3,7 +3,7 @@ import { isNil } from 'lodash'
 import { type ValidationErrorType } from '../types/validation-error.type'
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class ErrorMapper {
+export abstract class ErrorMapper {
   static mapValidationErrorsToValidationExceptionFilter(
     validationErrors: ValidationError[]
   ): ValidationErrorType {
