@@ -17,7 +17,8 @@ import {
   type ConfirmRegisterDto,
   ConfirmRegisterSwaggerDto,
 } from '../application/dto/confirm-register.dto'
-import { ResendConfirmationCodeCommand } from '../application/use-cases/resend-confirmation-code.handler'
+import { ResendConfirmationTokenCommand } from '../application/use-cases/resend-confirmation-token.handler'
+import { Email } from '../application/dto/email.dto'
 
 @ApiTags('auth')
 @Controller('/auth/register')
@@ -86,10 +87,22 @@ export class RegisterController {
     )
   }
 
+  @ApiBody({
+    type: () => Email,
+  })
+  @ApiOkResponse({
+    status: HttpStatus.ACCEPTED,
+    description: 'Resend confirmation token and send email',
+  })
+  @ApiBadRequestResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+    type: ValidationExceptionSwaggerDto,
+  })
   @Public()
   @Post('/resend-confirmation-token')
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async resendConfirmationCode(@Body() { email }: ResendConfirmationCodeCommand) {
-    return this.commandBus.execute(new ResendConfirmationCodeCommand(email))
+  @HttpCode(HttpStatus.ACCEPTED)
+  async resendConfirmationCode(@Body() { email }: Email) {
+    return this.commandBus.execute(new ResendConfirmationTokenCommand(email))
   }
 }

@@ -98,7 +98,7 @@ export class ConfirmRegisterHandler implements ICommandHandler<ConfirmRegisterCo
   }
 
   private isExpired(user: UserWithConfirmation) {
-    if (user.emailConfirmation !== null && isBefore(new Date(), user.emailConfirmation.expiresIn)) {
+    if (user.emailConfirmation !== null && isBefore(new Date(), user.emailConfirmation.expiresAt)) {
       return false
     }
     return true

@@ -25,6 +25,7 @@ export class CreateUserCommand {
   })
   @IsEmail()
   @IsNotEmpty()
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,20}$/)
   email!: string
 
   @ApiProperty({
@@ -74,7 +75,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         emailConfirmation: {
           create: {
             token: emailConfirmationToken,
-            expiresIn: addDays(new Date(), 1),
+            expiresAt: addDays(new Date(), 1),
           },
         },
       },
@@ -109,7 +110,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         emailConfirmation: {
           update: {
             token: emailConfirmationCode,
-            expiresIn: addDays(new Date(), 1),
+            expiresAt: addDays(new Date(), 1),
           },
         },
         updatedAt: new Date(),
