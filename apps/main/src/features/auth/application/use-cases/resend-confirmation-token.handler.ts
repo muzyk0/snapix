@@ -1,24 +1,24 @@
 import { BadRequestException } from '@nestjs/common'
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { addDays } from 'date-fns'
-import { EmailService } from '../../../../../../notifier/src/email/email.service'
 import { PrismaService } from '@app/prisma'
 import { randomUUID } from 'crypto'
+import { NotificationService } from '../../../notification/services/notification.service'
 
-export class ResendConfirmationCodeCommand {
+export class ResendConfirmationTokenCommand {
   constructor(public readonly email: string) {}
 }
 
-@CommandHandler(ResendConfirmationCodeCommand)
-export class ResendConfirmationCodeHandler
-  implements ICommandHandler<ResendConfirmationCodeCommand>
+@CommandHandler(ResendConfirmationTokenCommand)
+export class ResendConfirmationTokenHandler
+  implements ICommandHandler<ResendConfirmationTokenCommand>
 {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly emailService: EmailService
+    private readonly notificationService: NotificationService
   ) {}
 
-  async execute({ email }: ResendConfirmationCodeCommand): Promise<boolean> {
+  async execute({ email }: ResendConfirmationTokenCommand): Promise<boolean> {
     const user = await this.prisma.user.findUnique({
       where: {
         email,
@@ -26,11 +26,21 @@ export class ResendConfirmationCodeHandler
     })
 
     if (user === null) {
-      throw new BadRequestException([{ message: "Email isn't exist", field: 'email' }])
+      throw new BadRequestException({
+        email: {
+          message: "User with this email doesn't exist",
+          property: 'email',
+        },
+      })
     }
 
     if (user.emailConfirmed !== null) {
-      throw new BadRequestException([{ message: 'Email already confirm', field: 'email' }])
+      throw new BadRequestException({
+        email: {
+          message: 'User with this email already confirmed',
+          property: 'email',
+        },
+      })
     }
 
     const emailConfirmationToken = randomUUID()
@@ -43,7 +53,7 @@ export class ResendConfirmationCodeHandler
         emailConfirmation: {
           update: {
             token: emailConfirmationToken,
-            expiresIn: addDays(new Date(), 1),
+            expiresAt: addDays(new Date(), 1),
           },
         },
       },
@@ -52,7 +62,7 @@ export class ResendConfirmationCodeHandler
       },
     })
 
-    await this.emailService.sendConfirmEmail({
+    await this.notificationService.sendEmailConfirmationCode({
       email,
       userName: updatedUser.name,
       confirmationCode: emailConfirmationToken,
