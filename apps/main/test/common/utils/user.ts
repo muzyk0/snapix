@@ -106,7 +106,7 @@ export class FakeUserBuilder {
 
     const responseToken: { accessToken: string } = await request(this.app.getHttpServer())
       .post('/auth/login')
-      .set('User-Agent', 'for test')
+      .set('UserService-Agent', 'for test')
       .send({
         email: this.expressionMap.credentials.email,
         password: this.expressionMap.credentials.password,
