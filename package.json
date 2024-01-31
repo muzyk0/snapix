@@ -16,6 +16,7 @@
     "format:fix": "prettier --write \"{src,apps,libs,test}/**/*.ts\"",
     "lint:check": "yarn eslint:check && yarn format:check",
     "test:e2e": "jest --config apps/main/test/jest-e2e.json -i",
+    "test:e2e": "jest --config apps/main/test/jest-e2e.json --watch -i",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",

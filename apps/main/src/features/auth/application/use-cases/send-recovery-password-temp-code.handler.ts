@@ -5,6 +5,7 @@ import { BadRequestException } from '@nestjs/common'
 import { randomUUID } from 'crypto'
 import { addDays } from 'date-fns'
 import { RecoveryStatusEnum } from '../../types/recovery-status.enum'
+import { UserService } from '../../../users/services/user.service'
 
 export class SendRecoveryPasswordTempCodeCommand {
   constructor(public readonly email: string) {}
@@ -16,7 +17,8 @@ export class SendRecoveryPasswordTempCodeHandler
 {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly emailService: NotificationService
+    private readonly emailService: NotificationService,
+    private readonly userService: UserService
   ) {}
 
   async execute({ email }: SendRecoveryPasswordTempCodeCommand): Promise<void> {
@@ -29,10 +31,16 @@ export class SendRecoveryPasswordTempCodeHandler
     if (user === null) {
       throw new BadRequestException({
         email: {
-          message: "User with this email doesn't exist",
+          message: "UserService with this email doesn't exist",
           property: 'email',
         },
       })
+    }
+
+    if (user.emailConfirmed === null) {
+      await this.userService.sendConfirmationToken(email)
+
+      return
     }
 
     const passwordRecovery = await this.prisma.passwordRecovery.create({

@@ -3,6 +3,7 @@ import request from 'supertest'
 import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
+import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
 jest.setTimeout(1000 * 60)
 
@@ -23,8 +24,7 @@ describe('AuthController (e2e) - register', () => {
   })
 
   beforeEach(async () => {
-    await prisma.user.deleteMany()
-    await prisma.confirmations.deleteMany()
+    await clearDbBeforeTest(prisma)
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
@@ -64,7 +64,7 @@ describe('AuthController (e2e) - register', () => {
       .send({ username: username2, email, password })
       .expect(400)
 
-    expect(response.body.message).toBe('User with this email is already registered')
+    expect(response.body.message).toBe('UserService with this email is already registered')
   })
 
   it('should not register a user with an existing username', async () => {
@@ -83,7 +83,7 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email: email2, password })
       .expect(400)
 
-    expect(response.body.message).toBe('User with this username is already registered')
+    expect(response.body.message).toBe('UserService with this username is already registered')
   })
 
   it('should resend confirmation token if do not confirm email and sign up now', async () => {

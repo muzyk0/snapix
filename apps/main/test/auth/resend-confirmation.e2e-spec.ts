@@ -4,6 +4,7 @@ import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
 import { CONFIRMATION_STATUS } from '../../src/features/auth/types/confirm-status.enum'
+import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
 jest.setTimeout(1000 * 60)
 
@@ -24,8 +25,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
   })
 
   beforeEach(async () => {
-    await prisma.user.deleteMany()
-    await prisma.confirmations.deleteMany()
+    await clearDbBeforeTest(prisma)
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
@@ -97,7 +97,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
       message: 'Bad Request Exception',
       errors: {
         email: {
-          message: "User with this email doesn't exist",
+          message: "UserService with this email doesn't exist",
           property: 'email',
         },
       },
@@ -146,7 +146,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
       message: 'Bad Request Exception',
       errors: {
         email: {
-          message: 'User with this email already confirmed',
+          message: 'UserService with this email already confirmed',
           property: 'email',
         },
       },

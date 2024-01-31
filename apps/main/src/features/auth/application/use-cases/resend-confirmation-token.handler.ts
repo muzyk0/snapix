@@ -1,9 +1,7 @@
 import { BadRequestException } from '@nestjs/common'
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { addDays } from 'date-fns'
 import { PrismaService } from '@app/prisma'
-import { randomUUID } from 'crypto'
-import { NotificationService } from '../../../notification/services/notification.service'
+import { UserService } from '../../../users/services/user.service'
 
 export class ResendConfirmationTokenCommand {
   constructor(public readonly email: string) {}
@@ -15,7 +13,7 @@ export class ResendConfirmationTokenHandler
 {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly notificationService: NotificationService
+    private readonly userService: UserService
   ) {}
 
   async execute({ email }: ResendConfirmationTokenCommand): Promise<boolean> {
@@ -28,7 +26,7 @@ export class ResendConfirmationTokenHandler
     if (user === null) {
       throw new BadRequestException({
         email: {
-          message: "User with this email doesn't exist",
+          message: "UserService with this email doesn't exist",
           property: 'email',
         },
       })
@@ -37,36 +35,13 @@ export class ResendConfirmationTokenHandler
     if (user.emailConfirmed !== null) {
       throw new BadRequestException({
         email: {
-          message: 'User with this email already confirmed',
+          message: 'UserService with this email already confirmed',
           property: 'email',
         },
       })
     }
 
-    const emailConfirmationToken = randomUUID()
-
-    const updatedUser = await this.prisma.user.update({
-      where: {
-        email,
-      },
-      data: {
-        emailConfirmation: {
-          update: {
-            token: emailConfirmationToken,
-            expiresAt: addDays(new Date(), 1),
-          },
-        },
-      },
-      include: {
-        emailConfirmation: true,
-      },
-    })
-
-    await this.notificationService.sendEmailConfirmationCode({
-      email,
-      userName: updatedUser.name,
-      confirmationCode: emailConfirmationToken,
-    })
+    await this.userService.sendConfirmationToken(email)
     return true
   }
 }

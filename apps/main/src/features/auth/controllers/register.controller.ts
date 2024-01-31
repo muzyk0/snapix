@@ -33,7 +33,7 @@ export class RegisterController {
   })
   @ApiCreatedResponse({
     status: HttpStatus.CREATED,
-    description: 'User has been registered',
+    description: 'UserService has been registered',
     schema: {
       type: 'object',
       properties: {

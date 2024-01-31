@@ -22,6 +22,7 @@ import { AppConfigModule, AppConfigService } from '@app/config'
       },
     ]),
   ],
+  controllers: [],
   providers: [NotificationService],
   exports: [NotificationService],
 })

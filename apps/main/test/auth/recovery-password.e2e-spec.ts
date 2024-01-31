@@ -3,6 +3,7 @@ import request from 'supertest'
 import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
+import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
 jest.setTimeout(1000 * 60)
 
@@ -23,9 +24,7 @@ describe('AuthController (e2e) - recovery password', () => {
   })
 
   beforeEach(async () => {
-    await prisma.passwordRecovery.deleteMany()
-    await prisma.user.deleteMany()
-    await prisma.confirmations.deleteMany()
+    await clearDbBeforeTest(prisma)
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
@@ -83,7 +82,7 @@ describe('AuthController (e2e) - recovery password', () => {
       message: 'Bad Request Exception',
       errors: {
         email: {
-          message: "User with this email doesn't exist",
+          message: "UserService with this email doesn't exist",
           property: 'email',
         },
       },
@@ -97,5 +96,47 @@ describe('AuthController (e2e) - recovery password', () => {
       mockNotificationService.sendRecoveryPasswordTempCode.mock.calls[0]?.[0]?.recoveryCode
 
     expect(mockCalledRecoveryCode).toBeUndefined()
+  })
+
+  it('should send confirmation token if user does not confirmed and send recovery token after confirm account', async () => {
+    const username = 'testuser3'
+    const email = 'testuser3-1@example.com'
+    const password = 'password0aA!='
+
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({ username, email, password })
+      .expect(201)
+
+    expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(1)
+
+    const mockCalledConfirmationToken1 =
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+
+    expect(mockCalledConfirmationToken1).not.toBeUndefined()
+
+    await request(app.getHttpServer())
+      .post('/auth/password-recovery')
+      .send({ email })
+      .expect(202)
+      .then(res => res.body)
+
+    expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(2)
+    expect(mockNotificationService.sendRecoveryPasswordTempCode).toHaveBeenCalledTimes(0)
+
+    const mockCalledConfirmationToken2 =
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[1][0]?.confirmationCode
+
+    await request(app.getHttpServer())
+      .post('/auth/register/confirm')
+      .send({ token: mockCalledConfirmationToken1 })
+      .expect(400)
+
+    await request(app.getHttpServer())
+      .post('/auth/register/confirm')
+      .send({ token: mockCalledConfirmationToken2 })
+      .expect(202)
+
+    await request(app.getHttpServer()).post('/auth/password-recovery').send({ email }).expect(202)
   })
 })
