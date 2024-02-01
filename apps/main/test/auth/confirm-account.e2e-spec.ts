@@ -5,6 +5,7 @@ import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
 import { CONFIRMATION_STATUS } from '../../src/features/auth/types/confirm-status.enum'
 import { addDays } from 'date-fns'
+import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
 jest.setTimeout(1000 * 60)
 
@@ -25,8 +26,7 @@ describe('AuthController (e2e) - register', () => {
   })
 
   beforeEach(async () => {
-    await prisma.user.deleteMany()
-    await prisma.confirmations.deleteMany()
+    await clearDbBeforeTest(prisma)
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
