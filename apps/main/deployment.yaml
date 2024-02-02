@@ -62,6 +62,11 @@ spec:
                  secretKeyRef:
                    name: snapix-back-main-production-config-secret
                    key: PORT
+             - name: RMQ_URLS
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-main-production-config-secret
+                   key: RMQ_URLS
              - name: DATABASE_URL
                valueFrom:
                  secretKeyRef:

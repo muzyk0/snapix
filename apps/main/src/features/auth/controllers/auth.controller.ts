@@ -63,7 +63,7 @@ export class AuthController {
     type: ValidationExceptionSwaggerDto,
   })
   @Public()
-  @Post('/password-recovery')
+  @Post('/forgot-password')
   @HttpCode(HttpStatus.ACCEPTED)
   async recoveryPassword(@Body() { email }: Email) {
     return this.commandBus.execute(new SendRecoveryPasswordTempCodeCommand(email))
