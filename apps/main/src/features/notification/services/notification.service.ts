@@ -6,8 +6,8 @@ export class NotificationService {
   constructor(@Inject('NOTIFIER_SERVICE') private readonly client: ClientProxy) {}
 
   async sendEmailConfirmationCode(param: {
-    confirmationCode: any
-    userName: any
+    confirmationCode: string
+    userName: string
     email: string
   }): Promise<void> {
     this.client.emit<number>({ cmd: 'email-notification' }, param)

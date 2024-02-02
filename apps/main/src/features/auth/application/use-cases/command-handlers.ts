@@ -3,6 +3,7 @@ import { ValidateUserHandler } from './validate-user.handler'
 import { ConfirmRegisterHandler } from './confirm-register.handler'
 import { ResendConfirmationTokenHandler } from './resend-confirmation-token.handler'
 import { SendRecoveryPasswordTempCodeHandler } from './send-recovery-password-temp-code.handler'
+import { ConfirmForgotPasswordHandler } from './confirm-forgot-password.handler'
 import { LoginUserHandler } from './login-user.handler'
 
 export const CommandHandlers = [
@@ -11,5 +12,6 @@ export const CommandHandlers = [
   ConfirmRegisterHandler,
   ResendConfirmationTokenHandler,
   SendRecoveryPasswordTempCodeHandler,
+  ConfirmForgotPasswordHandler,
   LoginUserHandler,
 ]

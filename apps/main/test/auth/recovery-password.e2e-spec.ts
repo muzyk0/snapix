@@ -66,7 +66,19 @@ describe('AuthController (e2e) - recovery password', () => {
 
     expect(mockCalledRecoveryCode).not.toBeUndefined()
 
-    // todo: change user password
+    await request(app.getHttpServer())
+      .post('/auth/new-password')
+      .send({ token: mockCalledRecoveryCode, password: `${password}_new` })
+      .expect(204)
+      .then(res => res.body)
+
+    await request(app.getHttpServer())
+      .post('/auth/new-password')
+      .send({ token: mockCalledRecoveryCode, password: `${password}_new` })
+      .expect(400)
+      .then(res => res.body)
+
+    // todo: login
   })
 
   it('should get error if email does not exist', async () => {
@@ -138,5 +150,27 @@ describe('AuthController (e2e) - recovery password', () => {
       .expect(202)
 
     await request(app.getHttpServer()).post('/auth/forgot-password').send({ email }).expect(202)
+  })
+
+  it('should receive error if token is not valid for set new password', async () => {
+    const password = 'password0aA!='
+
+    const response = await request(app.getHttpServer())
+      .post('/auth/new-password')
+      .send({ token: 'a07cf4da-7a1f-4fb5-9768-db9cdaedd7b3', password: `${password}_new` })
+      .expect(400)
+      .then(res => res.body)
+
+    expect(response).toStrictEqual({
+      message: 'Bad Request Exception',
+      errors: {
+        token: {
+          message: 'Invalid token',
+          property: 'token',
+        },
+      },
+      timestamp: expect.any(String),
+      path: expect.any(String),
+    })
   })
 })

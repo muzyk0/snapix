@@ -43,19 +43,21 @@ export class SendRecoveryPasswordTempCodeHandler
       return
     }
 
+    await this.prisma.passwordRecovery.updateMany({
+      where: {
+        userId: user.id,
+      },
+      data: {
+        status: RecoveryStatusEnum.DEACTIVATED,
+      },
+    })
+
     const passwordRecovery = await this.prisma.passwordRecovery.create({
       data: {
         userId: user.id,
         token: randomUUID(),
         expiresAt: addDays(new Date(), 1),
         status: RecoveryStatusEnum.PENDING,
-      },
-    })
-
-    await this.prisma.passwordRecovery.updateMany({
-      data: {
-        userId: user.id,
-        status: RecoveryStatusEnum.DEACTIVATED,
       },
     })
 
