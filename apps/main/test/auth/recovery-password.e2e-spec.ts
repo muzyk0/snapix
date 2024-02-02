@@ -53,7 +53,7 @@ describe('AuthController (e2e) - recovery password', () => {
       .then(res => res.body)
 
     await request(app.getHttpServer())
-      .post('/auth/password-recovery')
+      .post('/auth/forgot-password')
       .send({ email })
       .expect(202)
       .then(res => res.body)
@@ -73,7 +73,7 @@ describe('AuthController (e2e) - recovery password', () => {
     const email = 'testuser3-1@example.com'
 
     const response = await request(app.getHttpServer())
-      .post('/auth/password-recovery')
+      .post('/auth/forgot-password')
       .send({ email })
       .expect(400)
       .then(res => res.body)
@@ -116,7 +116,7 @@ describe('AuthController (e2e) - recovery password', () => {
     expect(mockCalledConfirmationToken1).not.toBeUndefined()
 
     await request(app.getHttpServer())
-      .post('/auth/password-recovery')
+      .post('/auth/forgot-password')
       .send({ email })
       .expect(202)
       .then(res => res.body)
@@ -137,6 +137,6 @@ describe('AuthController (e2e) - recovery password', () => {
       .send({ token: mockCalledConfirmationToken2 })
       .expect(202)
 
-    await request(app.getHttpServer()).post('/auth/password-recovery').send({ email }).expect(202)
+    await request(app.getHttpServer()).post('/auth/forgot-password').send({ email }).expect(202)
   })
 })
