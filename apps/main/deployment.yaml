@@ -16,54 +16,65 @@ spec:
         project: PROJECT
     spec:
       containers:
-         - name: PROJECT
-           image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
-           ports:
-             - containerPort: PORT_CONTAINER
+        - name: PROJECT
+          image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
+          ports:
+            - containerPort: PORT_CONTAINER
+          livenessProbe:
+            httpGet:
+              path: /api/v1/health
+              port: PORT_CONTAINER
+            initialDelaySeconds: 30
+            periodSeconds: 30
 
-           env:
-             - name: DATABASE_URL_DEV
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: DATABASE_URL_DEV
-             - name: ACCESS_TOKEN_SECRET
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: ACCESS_TOKEN_SECRET
-             - name: ACCESS_TOKEN_SECRET_EXPIRES_IN
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: ACCESS_TOKEN_SECRET_EXPIRES_IN
-             - name: REFRESH_TOKEN_SECRET
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: REFRESH_TOKEN_SECRET
-             - name: REFRESH_TOKEN_SECRET_EXPIRES_IN
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: REFRESH_TOKEN_SECRET_EXPIRES_IN
-             - name: EMAIL_CONFIRM_REGISTER_LINK
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: EMAIL_CONFIRM_REGISTER_LINK
-             - name: GLOBAL_PREFIX
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: GLOBAL_PREFIX
-             - name: PORT
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: PORT
-             - name: DATABASE_URL
-               valueFrom:
-                 secretKeyRef:
-                   name: snapix-back-main-production-config-secret
-                   key: DATABASE_URL
+          env:
+            - name: DATABASE_URL_DEV
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: DATABASE_URL_DEV
+            - name: ACCESS_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: ACCESS_TOKEN_SECRET
+            - name: ACCESS_TOKEN_SECRET_EXPIRES_IN
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: ACCESS_TOKEN_SECRET_EXPIRES_IN
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: REFRESH_TOKEN_SECRET
+            - name: REFRESH_TOKEN_SECRET_EXPIRES_IN
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: REFRESH_TOKEN_SECRET_EXPIRES_IN
+            - name: EMAIL_CONFIRM_REGISTER_LINK
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: EMAIL_CONFIRM_REGISTER_LINK
+            - name: GLOBAL_PREFIX
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: GLOBAL_PREFIX
+            - name: PORT
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: PORT
+            - name: RMQ_URLS
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: RMQ_URLS
+            - name: DATABASE_URL
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: DATABASE_URL

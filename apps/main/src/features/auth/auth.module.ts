@@ -8,11 +8,12 @@ import { AuthController } from './controllers/auth.controller'
 import { NotificationModule } from '../notification/notification.module'
 import { CommandHandlers } from './application/use-cases'
 import { RegisterController } from './controllers/register.controller'
+import { UsersModule } from '../users/users.module'
 
 const Providers: Array<Provider<any>> = [CryptService, JwtService]
 
 @Module({
-  imports: [CqrsModule, JwtModule.register({}), NotificationModule],
+  imports: [CqrsModule, JwtModule.register({}), NotificationModule, UsersModule],
   controllers: [AuthController, RegisterController],
   providers: [...Providers, ...Strategies, ...CommandHandlers],
   exports: [...Strategies],
