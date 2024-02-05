@@ -61,7 +61,7 @@ describe('ErrorExceptionFilter', () => {
 
     // call the filter's catch method with the mock exception and arguments host
     // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-    await filter.catch(mockException, mockArgumentsHost as any)
+    await filter.catch(mockException, mockArgumentsHost as never)
 
     // check if the audit log service's create method was called with the expected arguments
     expect(mockAuditLogService.create).toBeCalledWith({

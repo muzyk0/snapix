@@ -1,4 +1,4 @@
-import { type CreateSessionDTO } from '../types/create-session-dto-type'
+import { type CreateSessionType } from '../types/create-session.type'
 import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@app/prisma'
 
@@ -6,15 +6,15 @@ import { PrismaService } from '@app/prisma'
 export class SessionsRepo {
   constructor(private readonly prisma: PrismaService) {}
 
-  async createSessionInfo(sessionDTO: CreateSessionDTO): Promise<boolean> {
+  async createSessionInfo(sessionDTO: CreateSessionType): Promise<boolean> {
     try {
       await this.prisma.session.create({
         data: {
-          ip: sessionDTO.loginIp,
-          lastActiveDate: new Date(),
+          ip: sessionDTO.userIp,
+          lastActiveDate: sessionDTO.refreshTokenIssuedAt,
           deviceId: sessionDTO.deviceId,
           userId: sessionDTO.userId,
-          refreshTokenIssuedAt: new Date(sessionDTO.refreshTokenIssuedAt),
+          refreshTokenIssuedAt: sessionDTO.refreshTokenIssuedAt,
         },
       })
     } catch (e) {

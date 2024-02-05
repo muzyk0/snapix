@@ -3,7 +3,7 @@ import { CommandBus } from '@nestjs/cqrs'
 import { PassportStrategy } from '@nestjs/passport'
 import { Strategy } from 'passport-local'
 
-import { ValidateUserCommand } from '../application/use-cases/validate-user.handler'
+import { ValidateUserCommand } from '../application/use-cases'
 import { type User } from '@prisma/client'
 
 @Injectable()
@@ -15,7 +15,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     })
   }
 
-  async validate(login: string, password: string): Promise<any> {
+  async validate(login: string, password: string): Promise<unknown> {
     const user = await this.commandBus.execute<ValidateUserCommand, User | null>(
       new ValidateUserCommand(login, password)
     )

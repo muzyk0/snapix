@@ -2,11 +2,10 @@ import {
   Controller,
   Headers,
   HttpCode,
-  HttpException,
   HttpStatus,
   Ip,
   Post,
-  Request,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common'
@@ -14,10 +13,10 @@ import { CommandBus } from '@nestjs/cqrs'
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { type User } from '@prisma/client'
-import { LoginHeaders } from '../types/login-headers'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
-import { Response } from 'express'
+import { Request, Response } from 'express'
 import { Public } from '../guards/public.guard'
+import { type TokensType } from '../types/tokens.type'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -30,18 +29,14 @@ export class AuthController {
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(
-    @Headers() loginHeaders: LoginHeaders,
-    @Ip() IP: string,
+    @Headers('x-forwarded-for') xForwardedFor: string,
+    @Ip() ip: string,
     @Res({ passthrough: true }) response: Response,
-    @Request() req: any
+    @Req() req: Request
   ) {
-    const loginResult = await this.commandBus.execute(
-      new LoginUserCommand(req.user as User, IP, loginHeaders)
+    const loginResult = await this.commandBus.execute<LoginUserCommand, TokensType>(
+      new LoginUserCommand(req.user as User, ip ?? xForwardedFor)
     )
-
-    if (loginResult.error === true) {
-      throw new HttpException(loginResult.message, loginResult.status)
-    }
 
     response.cookie('refreshToken', loginResult.refreshToken, {
       httpOnly: true,

@@ -33,7 +33,7 @@ class ErrorMeta {
     },
     type: () => ErrorProperty,
   })
-  children!: any
+  children!: unknown
 }
 
 class ErrorDto {

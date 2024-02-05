@@ -1,18 +1,17 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { JwtService } from '@nestjs/jwt'
 import { type User } from '@prisma/client'
-import { HttpStatus } from '@nestjs/common'
-import { type JwtAtPayload } from '../../types/jwt-at-payload'
-import { type LoginHeaders } from '../../types/login-headers'
-import { type CreateSessionDTO } from '../../types/create-session-dto-type'
+import { InternalServerErrorException } from '@nestjs/common'
+import { type DecodedJwtRTPayload, type JwtAtPayload } from '../../types/jwt-at-payload'
+import { type CreateSessionType } from '../../types/create-session.type'
 import { SessionsRepo } from '../../infrastructure/sessions.repository'
 import { AppConfigService } from '@app/config'
+import { type TokensType } from '../../types/tokens.type'
 
 export class LoginUserCommand {
   constructor(
     public readonly user: User,
-    public readonly IP: string,
-    public readonly loginHeaders: LoginHeaders
+    public readonly ip: string
   ) {}
 }
 
@@ -24,7 +23,7 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     private readonly sessionRepo: SessionsRepo
   ) {}
 
-  async execute(command: LoginUserCommand): Promise<any> {
+  async execute(command: LoginUserCommand): Promise<TokensType> {
     try {
       const { user } = command
 
@@ -48,33 +47,33 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
 
       await this.createSession(command, refreshToken)
 
-      return { accessToken, refreshToken, error: false }
+      return { accessToken, refreshToken }
     } catch (e) {
-      return {
-        error: true,
-        message: 'Во время логина произошла ошибка. Попробуйте еще раз',
-        status: HttpStatus.INTERNAL_SERVER_ERROR,
-      }
+      throw new InternalServerErrorException(
+        'The email or password are incorrect. Try again please'
+      )
     }
   }
 
-  async createSession({ user, IP, loginHeaders }: LoginUserCommand, refreshToken: string) {
+  async createSession({ user, ip }: LoginUserCommand, refreshToken: string) {
     const deviceId = (+new Date()).toString()
-    const loginIp = IP ?? loginHeaders['x-forwarded-for'] ?? 'IP undefined'
 
-    const refreshTokenIssuedAt = this.jwtService.verify(refreshToken, {
+    const decodedRefreshToken: DecodedJwtRTPayload = this.jwtService.verify(refreshToken, {
       secret: this.appConfigService.refreshTokenSecret,
     })
 
-    const sessionDTO: CreateSessionDTO = {
-      loginIp,
-      refreshTokenIssuedAt: refreshTokenIssuedAt.iat * 1000,
+    const sessionDTO: CreateSessionType = {
+      userIp: ip,
+      refreshTokenIssuedAt: decodedRefreshToken.iat,
+      refreshTokenExpireAt: decodedRefreshToken.exp,
       userId: user.id,
       deviceId,
     }
 
     const resultCreation: boolean = await this.sessionRepo.createSessionInfo(sessionDTO)
 
-    if (!resultCreation) throw new Error()
+    if (!resultCreation) {
+      throw new Error()
+    }
   }
 }
