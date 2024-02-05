@@ -28,4 +28,20 @@ export class AppConfigService {
   get rmqUrls(): string[] {
     return this.configService.get('RMQ_URLS').split(', ') ?? []
   }
+
+  get accessTokenSecret(): string {
+    return this.configService.getOrThrow('ACCESS_TOKEN_SECRET')
+  }
+
+  get accessTokenSecretExpiresIn(): string {
+    return this.configService.get('ACCESS_TOKEN_SECRET_EXPIRES_IN') ?? '1d'
+  }
+
+  get refreshTokenSecret(): string {
+    return this.configService.getOrThrow('REFRESH_TOKEN_SECRET')
+  }
+
+  get refreshTokenSecretExpiresIn(): string {
+    return this.configService.get('REFRESH_TOKEN_SECRET_EXPIRES_IN') ?? '1d'
+  }
 }

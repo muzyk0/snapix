@@ -6,8 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
   shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
 }
 
@@ -22,6 +22,7 @@ model User {
   emailConfirmationId Int?           @unique
   createdAt           DateTime       @default(now())
   updatedAt           DateTime       @updatedAt()
+  session             Session[]
 
   @@unique([email, name, emailConfirmationId])
 }
@@ -52,6 +53,20 @@ model AuditLog {
   message   String
   timestamp DateTime @default(now())
   extraData Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Session {
+  id                   String   @id @default(cuid())
+  ip                   String
+  lastActiveDate       DateTime
+  deviceId             String
+  userId               Int
+  refreshTokenIssuedAt DateTime
+
+  // Связь с User
+  user      User     @relation(fields: [userId], references: [id])
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }

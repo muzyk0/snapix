@@ -1,7 +1,12 @@
 export interface JwtAtPayload {
   user: {
-    id: string
-    login: string
+    id: number
+    name: string
     email: string
   }
+}
+
+export interface DecodedJwtRTPayload extends JwtAtPayload {
+  iat: Date
+  exp: Date
 }
