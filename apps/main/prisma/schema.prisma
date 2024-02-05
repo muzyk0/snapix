@@ -12,16 +12,17 @@ datasource db {
 }
 
 model User {
-  id                  Int            @id @default(autoincrement())
-  email               String         @unique
-  name                String         @unique
+  id                  Int                @id @default(autoincrement())
+  email               String             @unique
+  name                String             @unique
   posts               Post[]
   password            String
   emailConfirmed      DateTime?
-  emailConfirmation   Confirmations? @relation(fields: [emailConfirmationId], references: [id])
-  emailConfirmationId Int?           @unique
-  createdAt           DateTime       @default(now())
-  updatedAt           DateTime       @updatedAt()
+  emailConfirmation   Confirmations?     @relation(fields: [emailConfirmationId], references: [id])
+  emailConfirmationId Int?               @unique
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt()
+  passwordRecovery    PasswordRecovery[]
   session             Session[]
 
   @@unique([email, name, emailConfirmationId])
@@ -31,11 +32,23 @@ model Confirmations {
   id          Int      @id @default(autoincrement())
   token       String   @unique
   isConfirmed Boolean  @default(false)
-  expiresIn   DateTime
+  expiresAt   DateTime
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt()
   user        User?
   userId      Int?
+}
+
+// password recovery table
+model PasswordRecovery {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  token     String   @unique /// password recovery token
+  expiresAt DateTime /// password recovery token expires
+  status    Int      @default(0) /// 0 - pending, 1 - confirmed, 2 - expired, 3 - deactivated
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model Post {

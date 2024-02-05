@@ -5,7 +5,19 @@ import { ClientProxy } from '@nestjs/microservices'
 export class NotificationService {
   constructor(@Inject('NOTIFIER_SERVICE') private readonly client: ClientProxy) {}
 
-  async sendEmailConfirmationCode(data: unknown): Promise<void> {
-    this.client.emit<number>({ cmd: 'email-notification' }, data)
+  async sendEmailConfirmationCode(param: {
+    confirmationCode: string
+    userName: string
+    email: string
+  }): Promise<void> {
+    this.client.emit<number>({ cmd: 'email-notification' }, param)
+  }
+
+  async sendRecoveryPasswordTempCode(param: {
+    recoveryCode: string
+    userName: string
+    email: string
+  }) {
+    this.client.emit<number>({ cmd: 'email-notification' }, param)
   }
 }

@@ -8,6 +8,7 @@ import { type User } from '@prisma/client'
 import { NotificationService } from '../../../notification/services/notification.service'
 import { BadRequestException } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
+import { UserService } from '../../../users/services/user.service'
 
 export class CreateUserCommand {
   @ApiProperty({
@@ -25,6 +26,7 @@ export class CreateUserCommand {
   })
   @IsEmail()
   @IsNotEmpty()
+  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,20}$/)
   email!: string
 
   @ApiProperty({
@@ -49,7 +51,8 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
   constructor(
     private readonly notificationService: NotificationService,
     private readonly cryptService: CryptService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly userService: UserService
   ) {}
 
   async execute(dto: CreateUserCommand): Promise<User | null> {
@@ -74,7 +77,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
         emailConfirmation: {
           create: {
             token: emailConfirmationToken,
-            expiresIn: addDays(new Date(), 1),
+            expiresAt: addDays(new Date(), 1),
           },
         },
       },
@@ -83,53 +86,19 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       },
     })
 
-    try {
-      await this.notificationService.sendEmailConfirmationCode({
-        email,
-        userName: createdUser.name,
-        confirmationCode: emailConfirmationToken,
-      })
-    } catch (e) {
-      throw new Error('Email service is unavailable')
-    }
+    await this.notificationService.sendEmailConfirmationCode({
+      email,
+      userName: createdUser.name,
+      confirmationCode: emailConfirmationToken,
+    })
 
     return this.prisma.user.findUnique({ where: { id: createdUser.id } })
   }
 
-  async resendConfirmationCode({ username, email }: CreateUserCommand) {
-    const emailConfirmationCode = randomUUID()
-    const updatedUser = await this.prisma.user.update({
-      where: {
-        email,
-        name: username,
-        emailConfirmed: null,
-      },
-      data: {
-        emailConfirmed: null,
-        emailConfirmation: {
-          update: {
-            token: emailConfirmationCode,
-            expiresIn: addDays(new Date(), 1),
-          },
-        },
-        updatedAt: new Date(),
-      },
-      include: {
-        emailConfirmation: true,
-      },
-    })
+  async resendConfirmationCode({ email }: CreateUserCommand) {
+    await this.userService.sendConfirmationToken(email)
 
-    try {
-      await this.notificationService.sendEmailConfirmationCode({
-        email,
-        userName: updatedUser.name,
-        confirmationCode: emailConfirmationCode,
-      })
-    } catch (e) {
-      throw new Error('Email service is unavailable')
-    }
-
-    return this.prisma.user.findUnique({ where: { id: updatedUser.id } })
+    return this.prisma.user.findUnique({ where: { email } })
   }
 
   async isUserExistAndNotConfirmed({ username, email }: CreateUserCommand): Promise<boolean> {
@@ -157,7 +126,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
     if (userWithEmailsExists !== null) {
       throw new BadRequestException({
-        message: 'User with this email is already registered',
+        message: 'UserService with this email is already registered',
       })
     }
   }
@@ -171,7 +140,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
     if (userWithEmailsExists !== null) {
       throw new BadRequestException({
-        message: 'User with this username is already registered',
+        message: 'UserService with this username is already registered',
       })
     }
   }

@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Headers,
   HttpCode,
@@ -10,13 +11,24 @@ import {
   UseGuards,
 } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import {
+  ApiBadRequestResponse,
+  ApiBody,
+  ApiOkResponse,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { type User } from '@prisma/client'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
 import { Request, Response } from 'express'
 import { Public } from '../guards/public.guard'
 import { type TokensType } from '../types/tokens.type'
+import { Email } from '../application/dto/email.dto'
+import { SendRecoveryPasswordTempCodeCommand } from '../application/use-cases/send-recovery-password-temp-code.handler'
+import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
+import { NewPasswordDto } from '../application/dto/new-password.dto'
+import { ConfirmForgotPasswordCommand } from '../application/use-cases/confirm-forgot-password.handler'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -44,5 +56,40 @@ export class AuthController {
     })
 
     return { accessToken: loginResult.accessToken }
+  }
+
+  @ApiBody({
+    type: () => Email,
+  })
+  @ApiOkResponse({
+    status: HttpStatus.ACCEPTED,
+    description: 'New password has been sent to your email',
+  })
+  @ApiBadRequestResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+    type: ValidationExceptionSwaggerDto,
+  })
+  @Public()
+  @Post('/forgot-password')
+  @HttpCode(HttpStatus.ACCEPTED)
+  async recoveryPassword(@Body() { email }: Email) {
+    return this.commandBus.execute(new SendRecoveryPasswordTempCodeCommand(email))
+  }
+
+  @ApiBody({
+    type: () => NewPasswordDto,
+  })
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Set new password with recovery token',
+  })
+  @Public()
+  @Post('/new-password')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async confirmRecoveryPassword(@Body() { password, token }: NewPasswordDto) {
+    return this.commandBus.execute<ConfirmForgotPasswordCommand>(
+      new ConfirmForgotPasswordCommand(token, password)
+    )
   }
 }

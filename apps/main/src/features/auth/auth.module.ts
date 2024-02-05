@@ -8,13 +8,14 @@ import { AuthController } from './controllers/auth.controller'
 import { NotificationModule } from '../notification/notification.module'
 import { CommandHandlers } from './application/use-cases'
 import { RegisterController } from './controllers/register.controller'
+import { UsersModule } from '../users/users.module'
 import { SessionsRepo } from './infrastructure/sessions.repository'
 import { AppConfigModule } from '@app/config'
 
 const Providers: Array<Provider<unknown>> = [CryptService, JwtService, SessionsRepo]
 
 @Module({
-  imports: [CqrsModule, JwtModule.register({}), NotificationModule, AppConfigModule],
+  imports: [CqrsModule, JwtModule.register({}), NotificationModule, UsersModule, AppConfigModule],
   controllers: [AuthController, RegisterController],
   providers: [...Providers, ...Strategies, ...CommandHandlers],
   exports: [...Strategies],
