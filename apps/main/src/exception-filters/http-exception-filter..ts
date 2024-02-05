@@ -40,8 +40,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     // send the custom JSON response to the client
     response.status(status).json({
-      statusCode: status,
       message: exception.message,
+      errors: exception.getResponse(),
       timestamp: new Date().toISOString(),
       path: request.url,
     })

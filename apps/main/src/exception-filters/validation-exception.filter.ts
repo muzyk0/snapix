@@ -1,10 +1,4 @@
-import {
-  type ArgumentsHost,
-  Catch,
-  type ExceptionFilter,
-  type HttpException,
-  Injectable,
-} from '@nestjs/common'
+import { type ArgumentsHost, Catch, type ExceptionFilter, Injectable } from '@nestjs/common'
 import { ValidationException } from '../setup-app'
 import { AuditLogServiceAbstract } from '@app/core/audit-log/audit-log-service.abstract'
 import { type Request, type Response } from 'express'
@@ -17,7 +11,7 @@ import { ErrorMapper } from './utils/error-mapper'
 export class ValidationExceptionFilter implements ExceptionFilter {
   constructor(private readonly auditLogService: AuditLogServiceAbstract) {}
 
-  async catch(exception: HttpException, host: ArgumentsHost) {
+  async catch(exception: ValidationException, host: ArgumentsHost) {
     const ctx = host.switchToHttp()
     const response = ctx.getResponse<Response>()
     const request = ctx.getRequest<Request>()

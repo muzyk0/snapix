@@ -83,8 +83,8 @@ describe('HttpExceptionFilter', () => {
     // check if the response's status and json methods were called with the expected arguments
     expect(mockStatus).toBeCalledWith(mockException.getStatus())
     expect(mockJson).toBeCalledWith({
-      statusCode: mockException.getStatus(),
       message: mockException.message,
+      errors: expect.any(String),
       timestamp: expect.any(String),
       path: mockGetRequest().url,
     })

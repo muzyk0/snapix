@@ -33,7 +33,6 @@ export class ErrorExceptionFilter implements ExceptionFilter {
 
     // send the custom JSON response to the client
     response.status(status).json({
-      statusCode: status,
       message: exception.message,
       timestamp: new Date().toISOString(),
       path: request.url,
