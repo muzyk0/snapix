@@ -13,11 +13,7 @@ export const buildSwaggerDocument = (
 ) => {
   const config = new DocumentBuilder()
 
-  config
-    .setTitle('Snapix project')
-    .setDescription(
-      "Sorry I'm working on new modules and don't have time to write swagger documentation. But in time it will be completely written"
-    )
+  config.setTitle('Snapix project')
   if (swaggerVersion !== null) {
     config.setVersion(swaggerVersion)
   }

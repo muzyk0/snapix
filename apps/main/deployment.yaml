@@ -63,11 +63,6 @@ spec:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
                   key: GLOBAL_PREFIX
-            - name: PORT
-              valueFrom:
-                secretKeyRef:
-                  name: snapix-back-main-production-config-secret
-                  key: PORT
             - name: RMQ_URLS
               valueFrom:
                 secretKeyRef:
