@@ -38,7 +38,8 @@ export class AppConfigService {
   }
 
   get refreshTokenSecret(): string {
-    return this.configService.getOrThrow('REFRESH_TOKEN_SECRET')
+    // fixme: After add env to k8s remove it
+    return this.configService.get('REFRESH_TOKEN_SECRET') ?? '2783h789rdhj289dhj9fhsdyiuhf78oy12df'
   }
 
   get refreshTokenSecretExpiresIn(): string {

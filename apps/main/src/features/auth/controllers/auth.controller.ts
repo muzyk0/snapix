@@ -6,7 +6,6 @@ import {
   HttpStatus,
   Ip,
   Post,
-  Req,
   Res,
   UseGuards,
 } from '@nestjs/common'
@@ -19,9 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
-import { type User } from '@prisma/client'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
-import { Request, Response } from 'express'
+import { Response } from 'express'
 import { Public } from '../guards/public.guard'
 import { type TokensType } from '../types/tokens.type'
 import { Email } from '../application/dto/email.dto'
@@ -29,6 +27,11 @@ import { SendRecoveryPasswordTempCodeCommand } from '../application/use-cases/se
 import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
 import { NewPasswordDto } from '../application/dto/new-password.dto'
 import { ConfirmForgotPasswordCommand } from '../application/use-cases/confirm-forgot-password.handler'
+import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard'
+import { JwtPayloadWithRt } from '../types/jwt.type'
+import { GetJwtContextDecorator } from '../decorators/get-Jwt-context.decorator'
+import { RefreshTokenCommand } from '../application/use-cases/refresh-token.handler'
+import { LoginDto } from '../application/dto/login.dto'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -44,10 +47,10 @@ export class AuthController {
     @Headers('x-forwarded-for') xForwardedFor: string,
     @Ip() ip: string,
     @Res({ passthrough: true }) response: Response,
-    @Req() req: Request
+    @Body() body: LoginDto
   ) {
     const loginResult = await this.commandBus.execute<LoginUserCommand, TokensType>(
-      new LoginUserCommand(req.user as User, ip ?? xForwardedFor)
+      new LoginUserCommand(body.email, ip ?? xForwardedFor)
     )
 
     response.cookie('refreshToken', loginResult.refreshToken, {
@@ -56,6 +59,26 @@ export class AuthController {
     })
 
     return { accessToken: loginResult.accessToken }
+  }
+
+  @Post('/refresh-token')
+  @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  async refreshToken(
+    @Res({ passthrough: true }) res: Response,
+    @GetJwtContextDecorator() ctx: JwtPayloadWithRt,
+    @Ip() ip: string,
+    @Headers('x-forwarded-for') xForwardedFor: string
+  ) {
+    const tokens: TokensType = await this.commandBus.execute(
+      new RefreshTokenCommand(ctx, ip ?? xForwardedFor)
+    )
+
+    res.cookie('refreshToken', tokens.refreshToken, {
+      httpOnly: true,
+      secure: true,
+    })
+    return { accessToken: tokens.accessToken }
   }
 
   @ApiBody({

@@ -3,6 +3,8 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { PrismaService } from '@app/prisma'
 import { RecoveryStatusEnum } from '../../types/recovery-status.enum'
 import { CryptService } from '../services/crypt.service'
+import { isAfter } from 'date-fns'
+import { isNil } from 'lodash'
 
 export class ConfirmForgotPasswordCommand {
   constructor(
@@ -44,6 +46,33 @@ export class ConfirmForgotPasswordHandler implements ICommandHandler<ConfirmForg
       })
     }
 
+    const lastPasswordChange = await this.prisma.passwordHistory.findFirst({
+      where: {
+        userId: recovery.userId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    })
+
+    // todo: Write e2e tests for this
+    // todo: history of password changes?
+    // todo: When user several times change password in a row, it should not be allowed?
+    if (
+      !isNil(lastPasswordChange) &&
+      !isNil(lastPasswordChange.createdAt) &&
+      isAfter(lastPasswordChange.createdAt, new Date())
+    ) {
+      throw new BadRequestException({
+        password: {
+          message: 'Password has been changed recently, please try again later',
+          property: 'password',
+        },
+      })
+    }
+
+    const passwordHash = await this.cryptService.hashPassword(password)
+
     await this.prisma.passwordRecovery.update({
       where: {
         id: recovery.id,
@@ -52,7 +81,12 @@ export class ConfirmForgotPasswordHandler implements ICommandHandler<ConfirmForg
         status: RecoveryStatusEnum.CONFIRMED,
         user: {
           update: {
-            password: await this.cryptService.hashPassword(password),
+            password: passwordHash,
+            passwordHistory: {
+              create: {
+                password: passwordHash,
+              },
+            },
           },
         },
       },

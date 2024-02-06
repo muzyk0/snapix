@@ -1,5 +1,5 @@
 export interface CreateSessionType {
-  userIp: string
+  userIp?: string
   refreshTokenIssuedAt: Date
   refreshTokenExpireAt: Date
   userId: number

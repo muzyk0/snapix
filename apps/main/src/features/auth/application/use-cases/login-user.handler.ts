@@ -1,17 +1,19 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { JwtService } from '@nestjs/jwt'
-import { type User } from '@prisma/client'
 import { InternalServerErrorException } from '@nestjs/common'
-import { type DecodedJwtRTPayload, type JwtAtPayload } from '../../types/jwt-at-payload'
+import { type DecodedJwtRtPayload, type JwtAtPayload } from '../../types/jwt.type'
 import { type CreateSessionType } from '../../types/create-session.type'
 import { SessionsRepo } from '../../infrastructure/sessions.repository'
-import { AppConfigService } from '@app/config'
 import { type TokensType } from '../../types/tokens.type'
+import { JwtService } from '../services/jwt.service'
+import { randomUUID } from 'crypto'
+import { isNil } from 'lodash'
+import { PrismaService } from '@app/prisma'
 
 export class LoginUserCommand {
   constructor(
-    public readonly user: User,
-    public readonly ip: string
+    public readonly email: string,
+    public readonly password: string,
+    public readonly ip?: string
   ) {}
 }
 
@@ -19,13 +21,17 @@ export class LoginUserCommand {
 export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly appConfigService: AppConfigService,
-    private readonly sessionRepo: SessionsRepo
+    private readonly sessionRepo: SessionsRepo,
+    private readonly prisma: PrismaService
   ) {}
 
   async execute(command: LoginUserCommand): Promise<TokensType> {
     try {
-      const { user } = command
+      const user = await this.prisma.user.findUniqueOrThrow({
+        where: {
+          email: command.email,
+        },
+      })
 
       const jwtPayload: JwtAtPayload = {
         user: {
@@ -35,38 +41,49 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
         },
       }
 
-      const accessToken = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.appConfigService.accessTokenSecret,
-        expiresIn: this.appConfigService.accessTokenSecretExpiresIn,
+      const deviceId = randomUUID()
+
+      const { accessToken, refreshToken } = await this.jwtService.createJwtTokens(jwtPayload, {
+        ...jwtPayload,
+        deviceId,
       })
 
-      const refreshToken = await this.jwtService.signAsync(jwtPayload, {
-        secret: this.appConfigService.refreshTokenSecret,
-        expiresIn: this.appConfigService.refreshTokenSecretExpiresIn,
+      await this.createSession({
+        userId: user.id,
+        ip: command.ip,
+        refreshToken,
+        deviceId,
       })
-
-      await this.createSession(command, refreshToken)
 
       return { accessToken, refreshToken }
     } catch (e) {
-      throw new InternalServerErrorException(
-        'The email or password are incorrect. Try again please'
-      )
+      throw new InternalServerErrorException('Some error occurred. Please try again later.')
     }
   }
 
-  async createSession({ user, ip }: LoginUserCommand, refreshToken: string) {
-    const deviceId = (+new Date()).toString()
+  async createSession({
+    ip,
+    userId,
+    refreshToken,
+    deviceId,
+  }: {
+    userId: number
+    ip?: string
+    refreshToken: string
+    deviceId: string
+  }) {
+    const decodedRefreshToken: DecodedJwtRtPayload | null =
+      await this.jwtService.decodeJwtToken(refreshToken)
 
-    const decodedRefreshToken: DecodedJwtRTPayload = this.jwtService.verify(refreshToken, {
-      secret: this.appConfigService.refreshTokenSecret,
-    })
+    if (isNil(decodedRefreshToken)) {
+      throw new Error()
+    }
 
     const sessionDTO: CreateSessionType = {
       userIp: ip,
       refreshTokenIssuedAt: decodedRefreshToken.iat,
       refreshTokenExpireAt: decodedRefreshToken.exp,
-      userId: user.id,
+      userId,
       deviceId,
     }
 
