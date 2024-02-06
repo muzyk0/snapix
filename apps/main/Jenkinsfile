@@ -25,10 +25,37 @@ pipeline {
                 checkout scm
             }
         }
-        stage('Unit tests') {
+        stage('Install dependency') {
             steps {
                 script {
                     sh "yarn install"
+                }
+            }
+        }
+        stage('Generate Prisma') {
+            steps {
+                script {
+                    sh "yarn install"
+                }
+            }
+        }
+        stage('Typescript Check') {
+            steps {
+                script {
+                    sh "yarn tsc"
+                }
+            }
+        }
+        stage('Lint Check') {
+            steps {
+                script {
+                    sh "yarn lint:check"
+                }
+            }
+        }
+        stage('Unit tests') {
+            steps {
+                script {
                     sh "yarn test"
                 }
             }
@@ -36,7 +63,6 @@ pipeline {
         stage('e2e tests') {
             steps {
                 script {
-                    sh "yarn main:prisma:generate"
                     sh "yarn test:e2e"
                 }
             }
