@@ -22,10 +22,22 @@ model User {
   emailConfirmationId Int?               @unique
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt()
+  // updatedPasswordAt   DateTime?
   passwordRecovery    PasswordRecovery[]
   session             Session[]
+  revokedToken        RevokedToken[]
+  passwordHistory     PasswordHistory[]
 
   @@unique([email, name, emailConfirmationId])
+}
+
+model PasswordHistory {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model Confirmations {
@@ -72,7 +84,7 @@ model AuditLog {
 
 model Session {
   id                   String   @id @default(cuid())
-  ip                   String
+  ip                   String?
   lastActiveDate       DateTime
   deviceId             String
   userId               Int
@@ -80,6 +92,17 @@ model Session {
 
   // Связь с User
   user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+
+  @@unique([userId, deviceId])
+}
+
+model RevokedToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }

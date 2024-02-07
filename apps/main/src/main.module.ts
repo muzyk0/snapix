@@ -7,13 +7,12 @@ import { UsersModule } from './features/users/users.module'
 import { PrismaModule } from '@app/prisma'
 import { APP_FILTER, APP_GUARD } from '@nestjs/core'
 import { AuditLogModule } from './features/audit-log/audit-log.module'
-import { HealthModule } from '@app/core/health/health.module'
-import { AuthModule } from './features/auth/auth.module'
+import { AuthModule, JwtAuthGuard } from './features/auth'
 import { NotificationModule } from './features/notification/notification.module'
 import { ErrorExceptionFilter } from './exception-filters/error-exception.filter'
 import { HttpExceptionFilter } from './exception-filters/http-exception-filter.'
 import { ValidationExceptionFilter } from './exception-filters/validation-exception.filter'
-import { JwtAuthGuard } from './features/auth/guards/jwt-auth.guard'
+import { HealthModule } from './features/health/health.module'
 
 @Module({
   imports: [

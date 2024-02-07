@@ -8,6 +8,7 @@ import {
 } from '@nestjs/terminus'
 import { PrismaService } from '@app/prisma'
 import { ApiTags } from '@nestjs/swagger'
+import { Public } from '../auth'
 
 @ApiTags('HealthCheck')
 @Controller('health')
@@ -20,6 +21,7 @@ export class HealthController {
     private readonly memory: MemoryHealthIndicator
   ) {}
 
+  @Public()
   @Get()
   @HealthCheck()
   async check() {
