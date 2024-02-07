@@ -45,7 +45,7 @@ jobs:
           ACCESS_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.ACCESS_TOKEN_SECRET_EXPIRES_IN }}
           ACCESS_TOKEN_SECRET: ${{ secrets.ACCESS_TOKEN_SECRET }}
           REFRESH_TOKEN_SECRET_EXPIRES_IN: ${{ secrets.REFRESH_TOKEN_SECRET_EXPIRES_IN }}
-          REFRESH_TOKEN_SECRET: ${{ secrets.REFRESH_TOKEN_SECRET }}
+          REFRESH_TOKEN_SECRET: 'sdofj293npfhjmdsuifnsdlfh'
           RMQ_URLS: ${{ secrets.RMQ_URLS }}
         run: yarn test:e2e
 

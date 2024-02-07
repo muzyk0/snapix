@@ -35,7 +35,7 @@ pipeline {
         stage('Generate Prisma') {
             steps {
                 script {
-                    sh "yarn install"
+                    sh "yarn main:prisma:generate"
                 }
             }
         }
