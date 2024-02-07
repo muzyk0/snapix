@@ -6,6 +6,7 @@ import { SendRecoveryPasswordTempCodeHandler } from './send-recovery-password-te
 import { ConfirmForgotPasswordHandler } from './confirm-forgot-password.handler'
 import { LoginUserHandler } from './login-user.handler'
 import { RefreshTokenHandler } from './refresh-token.handler'
+import { LogoutHandler } from './logout.handler'
 
 export const CommandHandlers = [
   CreateUserHandler,
@@ -15,5 +16,6 @@ export const CommandHandlers = [
   SendRecoveryPasswordTempCodeHandler,
   ConfirmForgotPasswordHandler,
   LoginUserHandler,
+  LogoutHandler,
   RefreshTokenHandler,
 ]

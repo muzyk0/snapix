@@ -86,7 +86,7 @@ model Session {
   id                   String   @id @default(cuid())
   ip                   String?
   lastActiveDate       DateTime
-  deviceId             String
+  deviceId             String @unique()
   userId               Int
   refreshTokenIssuedAt DateTime
 
