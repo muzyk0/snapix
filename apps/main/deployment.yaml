@@ -43,11 +43,6 @@ spec:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
                   key: ACCESS_TOKEN_SECRET_EXPIRES_IN
-            - name: REFRESH_TOKEN_SECRET
-              valueFrom:
-                secretKeyRef:
-                  name: snapix-back-main-production-config-secret
-                  key: REFRESH_TOKEN_SECRET
             - name: REFRESH_TOKEN_SECRET_EXPIRES_IN
               valueFrom:
                 secretKeyRef:
@@ -68,6 +63,11 @@ spec:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
                   key: RMQ_URLS
+            - name: REFRESH_TOKEN_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: REFRESH_TOKEN_SECRET
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
