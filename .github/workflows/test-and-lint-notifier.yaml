@@ -1,0 +1,55 @@
+name: Test & Lint Notifier
+
+on: [push]
+
+jobs:
+  tests-unit:
+    name: Unit Tests
+    defaults:
+      run:
+        working-directory: ./
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Test
+        run: yarn test:notifier
+
+  tsc:
+    name: Typescript Check
+    defaults:
+      run:
+        working-directory: ./
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Generate Prisma
+        run: yarn main:prisma:generate
+
+      - name: TSC
+        run: tsc
+
+  lint:
+    name: Lint
+    defaults:
+      run:
+        working-directory: ./
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: yarn install
+
+      - name: Lint
+        run: yarn lint:check
