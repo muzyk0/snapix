@@ -1,4 +1,4 @@
-name: Test & Lint
+name: Test & Lint Main Gateway
 
 on: [push]
 
@@ -20,7 +20,7 @@ jobs:
         run: yarn main:prisma:generate
 
       - name: Test
-        run: yarn test
+        run: yarn test:main
 
   tests-e2e:
     name: E2E Tests

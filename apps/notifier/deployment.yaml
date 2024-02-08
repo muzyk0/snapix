@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: DEPLOYMENT_NAME
+  namespace: NAMESPACE
+  labels:
+    app: PROJECT
+spec:
+  selector:
+    matchLabels:
+      project: PROJECT
+  template:
+    metadata:
+      namespace: NAMESPACE
+      labels:
+        project: PROJECT
+    spec:
+      containers:
+         - name: PROJECT
+           image: REGISTRY_HOSTNAME/PROJECT:TAG_VERSION
+           ports:
+             - containerPort: PORT_CONTAINER
+
+           env:
+             - name: EMAIL_FROM
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-notifier-production-config-secret
+                   key: EMAIL_FROM
+             - name: EMAIL_FROM_PASSWORD
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-notifier-production-config-secret
+                   key: EMAIL_FROM_PASSWORD
+             - name: EMAIL_CONFIRM_REGISTER_LINK
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-notifier-production-config-secret
+                   key: EMAIL_CONFIRM_REGISTER_LINK
+             - name: RMQ_URLS
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-notifier-production-config-secret
+                   key: RMQ_URLS
