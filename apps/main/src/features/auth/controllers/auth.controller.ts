@@ -32,6 +32,7 @@ import { JwtPayloadWithRt } from '../types/jwt.type'
 import { GetJwtContextDecorator } from '../decorators/get-Jwt-context.decorator'
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.handler'
 import { LoginDto } from '../application/dto/login.dto'
+import { LogoutCommand } from '../application/use-cases/logout.handler'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -61,6 +62,21 @@ export class AuthController {
     return { accessToken: loginResult.accessToken }
   }
 
+  @Post('/logout')
+  @UseGuards(JwtRefreshAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async logout(
+    @Res({
+      passthrough: true,
+    })
+    res: Response,
+    @GetJwtContextDecorator() ctx: JwtPayloadWithRt
+  ) {
+    await this.commandBus.execute(new LogoutCommand(ctx))
+
+    res.clearCookie('refreshToken')
+  }
+
   @Post('/refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -68,7 +84,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: Response,
     @GetJwtContextDecorator() ctx: JwtPayloadWithRt,
     @Ip() ip: string,
-    @Headers('x-forwarded-for') xForwardedFor: string
+    @Headers('x-forwarded-for') xForwardedFor?: string
   ) {
     const tokens: TokensType = await this.commandBus.execute(
       new RefreshTokenCommand(ctx, ip ?? xForwardedFor)
