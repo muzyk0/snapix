@@ -1,0 +1,13 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@app/config(|/.*)$": "<rootDir>/../../libs/config/src/$1",
+    "^@app/prisma(|/.*)$": "<rootDir>/../../libs/prisma/src/$1",
+    "^@app/core(|/.*)$": "<rootDir>/../../libs/core/src/$1"
+  }
+}
