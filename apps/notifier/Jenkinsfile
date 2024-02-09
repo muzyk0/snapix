@@ -3,20 +3,15 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3244
+        PORT = 3246
         NAMESPACE = "9art-ru"
         REGISTRY_HOSTNAME = "burshilya2023"
-        PROJECT = "snapix-back-main"
-        SERVICE="main"
+        PROJECT = "snapix-back-notifier"
+        SERVICE="notifier"
         REGISTRY = "registry.hub.docker.com"
-        DEPLOYMENT_NAME = "snapix-back-main-deployment"
+        DEPLOYMENT_NAME = "snapix-back-notifier-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
-        ACCESS_TOKEN_SECRET = "${env.ACCESS_TOKEN_SECRET}"
-        REFRESH_TOKEN_SECRET = "ki9082uijn809dfumdosufh9wefwedf"
-        DATABASE_URL = "postgresql://incubator_staz_2024:O1tJNcBvXsg4@ep-cool-unit-02628288.eu-central-1.aws.neon.tech/snapix?sslmode=require"
-        SHADOW_DATABASE_URL = "postgresql://muzyk0:wEHaoK5SqWD8@ep-dawn-firefly-962824.us-east-2.aws.neon.tech/snapix-test?sslmode=require"
-        RMQ_URLS = "${env.RMQ_URLS}"
     }
 
     stages {
@@ -29,13 +24,6 @@ pipeline {
             steps {
                 script {
                     sh "yarn install"
-                }
-            }
-        }
-        stage('Generate Prisma') {
-            steps {
-                script {
-                    sh "yarn main:prisma:generate"
                 }
             }
         }
@@ -56,14 +44,7 @@ pipeline {
         stage('Unit tests') {
             steps {
                 script {
-                    sh "yarn test:main"
-                }
-            }
-        }
-        stage('e2e tests') {
-            steps {
-                script {
-                    sh "yarn test:main:e2e"
+                    sh "yarn test:notifier"
                 }
             }
         }
