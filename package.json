@@ -19,6 +19,7 @@
     "test:main:e2e:watch": "jest --config apps/main/test/jest-e2e.json --watch -i",
     "test:main": "jest --config apps/main/jest.json",
     "test:notifier": "jest --config apps/notifier/jest.json --passWithNoTests",
+    "test:storage": "jest --config apps/storage/jest.json --passWithNoTests",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -26,7 +27,9 @@
     "start:main": "node dist/apps/main/main",
     "build:main": "nest build main",
     "start:notifier": "node dist/apps/notifier/main",
-    "build:notifier": "nest build notifier"
+    "build:notifier": "nest build notifier",
+    "start:storage": "node dist/apps/storage/main",
+    "build:storage": "nest build storage"
   },
   "resolutions": {
     "string-width": "4.2.3"
