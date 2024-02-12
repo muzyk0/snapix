@@ -4,7 +4,6 @@ import { PrismaService } from '@app/prisma'
 import { randomUUID } from 'crypto'
 import { addDays } from 'date-fns'
 import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator'
-import { type User } from '@prisma/client'
 import { NotificationService } from '../../../notification/services/notification.service'
 import { BadRequestException } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
@@ -55,7 +54,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     private readonly userService: UserService
   ) {}
 
-  async execute(dto: CreateUserCommand): Promise<User | null> {
+  async execute(dto: CreateUserCommand): Promise<string> {
     const isUserExistAndNotConfirmed = await this.isUserExistAndNotConfirmed(dto)
     if (isUserExistAndNotConfirmed) {
       return this.resendConfirmationCode(dto)
@@ -64,7 +63,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     return this.create(dto)
   }
 
-  async create({ username, email, password }: CreateUserCommand) {
+  async create({ username, email, password }: CreateUserCommand): Promise<string> {
     const passwordHash = await this.cryptService.hashPassword(password)
 
     const emailConfirmationToken = randomUUID()
@@ -92,13 +91,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       confirmationCode: emailConfirmationToken,
     })
 
-    return this.prisma.user.findUnique({ where: { id: createdUser.id } })
+    return `You are registered. We have sent a link to confirm your email address to ${email}`
   }
 
-  async resendConfirmationCode({ email }: CreateUserCommand) {
+  async resendConfirmationCode({ email }: CreateUserCommand): Promise<string> {
     await this.userService.sendConfirmationToken(email)
 
-    return this.prisma.user.findUnique({ where: { email } })
+    return `You have registered before. We have sent a link to confirm your email address to ${email}`
   }
 
   async isUserExistAndNotConfirmed({ username, email }: CreateUserCommand): Promise<boolean> {

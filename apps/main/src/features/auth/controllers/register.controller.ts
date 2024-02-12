@@ -9,7 +9,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { CreateUserCommand } from '../application/use-cases'
-import { type User } from '@prisma/client'
 import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
 import { Public } from '../guards/public.guard'
 import { ConfirmRegisterCommand } from '../application/use-cases/confirm-register.handler'
@@ -52,12 +51,12 @@ export class RegisterController {
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   async registerUser(@Body() { username, email, password }: CreateUserCommand) {
-    await this.commandBus.execute<CreateUserCommand, User | null>(
+    const message = await this.commandBus.execute<CreateUserCommand, string>(
       new CreateUserCommand(username, email, password)
     )
 
     return {
-      message: `We have sent a link to confirm your email to ${email}`,
+      message,
     }
   }
 

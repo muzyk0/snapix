@@ -16,7 +16,7 @@ model User {
   email               String             @unique
   name                String             @unique
   posts               Post[]
-  password            String
+  password            String?
   emailConfirmed      DateTime?
   emailConfirmation   Confirmations?     @relation(fields: [emailConfirmationId], references: [id])
   emailConfirmationId Int?               @unique
@@ -35,7 +35,7 @@ model PasswordHistory {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  password String
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
@@ -86,7 +86,8 @@ model Session {
   id                   String   @id @default(cuid())
   ip                   String?
   lastActiveDate       DateTime
-  deviceId             String @unique()
+  deviceId             String   @unique()
+  deviceName           String?
   userId               Int
   refreshTokenIssuedAt DateTime
 

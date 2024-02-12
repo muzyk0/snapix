@@ -4,4 +4,5 @@ export interface CreateSessionType {
   refreshTokenExpireAt: Date
   userId: number
   deviceId: string
+  deviceName?: string
 }
