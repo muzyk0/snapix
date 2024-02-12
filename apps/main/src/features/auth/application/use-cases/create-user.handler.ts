@@ -8,6 +8,7 @@ import { NotificationService } from '../../../notification/services/notification
 import { BadRequestException } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
 import { UserService } from '../../../users/services/user.service'
+import { type I18nPath } from '../../../../generated/i18n.generated'
 
 export class CreateUserCommand {
   @ApiProperty({
@@ -54,7 +55,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     private readonly userService: UserService
   ) {}
 
-  async execute(dto: CreateUserCommand): Promise<string> {
+  async execute(dto: CreateUserCommand): Promise<I18nPath> {
     const isUserExistAndNotConfirmed = await this.isUserExistAndNotConfirmed(dto)
     if (isUserExistAndNotConfirmed) {
       return this.resendConfirmationCode(dto)
@@ -63,7 +64,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     return this.create(dto)
   }
 
-  async create({ username, email, password }: CreateUserCommand): Promise<string> {
+  async create({ username, email, password }: CreateUserCommand): Promise<I18nPath> {
     const passwordHash = await this.cryptService.hashPassword(password)
 
     const emailConfirmationToken = randomUUID()
@@ -91,13 +92,12 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
       confirmationCode: emailConfirmationToken,
     })
 
-    return `You are registered. We have sent a link to confirm your email address to ${email}`
+    return 'register.account.new'
   }
 
-  async resendConfirmationCode({ email }: CreateUserCommand): Promise<string> {
+  async resendConfirmationCode({ email }: CreateUserCommand): Promise<I18nPath> {
     await this.userService.sendConfirmationToken(email)
-
-    return `You have registered before. We have sent a link to confirm your email address to ${email}`
+    return 'register.account.new-without-confirm-email'
   }
 
   async isUserExistAndNotConfirmed({ username, email }: CreateUserCommand): Promise<boolean> {
@@ -125,7 +125,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
     if (userWithEmailsExists !== null) {
       throw new BadRequestException({
-        message: 'UserService with this email is already registered',
+        message: 'User with this email is already registered',
       })
     }
   }
@@ -139,7 +139,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
 
     if (userWithEmailsExists !== null) {
       throw new BadRequestException({
-        message: 'UserService with this username is already registered',
+        message: 'User with this username is already registered',
       })
     }
   }
