@@ -19,8 +19,7 @@ import {
 import { ResendConfirmationTokenCommand } from '../application/use-cases/resend-confirmation-token.handler'
 import { Email } from '../application/dto/email.dto'
 import { I18n, I18nContext } from 'nestjs-i18n'
-import { type I18nPath, type I18nTranslations } from '../../../generated/i18n.generated'
-// import { type I18nTranslations } from '../../../generated/i18n.generated'
+import { type I18nPath, type I18nTranslations } from '../../../../generated/i18n.generated'
 
 @ApiTags('auth')
 @Controller('/auth/register')

@@ -32,7 +32,8 @@ import * as path from 'path'
         logging: true,
         typesOutputPath: path
           .join(__dirname, './src/generated/i18n.generated.ts')
-          .replace(/dist[\\|/]/, ''),
+          .replace(/dist[\\|/]/, '')
+          .replace(/src[\\|/]src[\\|/]/, ''),
       }),
       resolvers: [AcceptLanguageResolver, new HeaderResolver(['x-lang'])],
       inject: [],

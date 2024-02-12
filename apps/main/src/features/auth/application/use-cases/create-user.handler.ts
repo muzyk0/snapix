@@ -8,7 +8,7 @@ import { NotificationService } from '../../../notification/services/notification
 import { BadRequestException } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
 import { UserService } from '../../../users/services/user.service'
-import { type I18nPath } from '../../../../generated/i18n.generated'
+import { type I18nPath } from '../../../../../generated/i18n.generated'
 
 export class CreateUserCommand {
   @ApiProperty({

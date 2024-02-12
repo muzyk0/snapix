@@ -7,9 +7,9 @@ import { CONFIRMATION_STATUS } from '../../src/features/auth/types/confirm-statu
 import { addDays } from 'date-fns'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
-jest.setTimeout(1000 * 60)
+jest.setTimeout(1000 * 10)
 
-describe('AuthController (e2e) - register', () => {
+describe('AuthController (e2e) - confirm account', () => {
   let app: INestApplication
   let prisma: PrismaService
 
@@ -41,7 +41,9 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email, password })
       .expect(201)
 
-    expect(response1.body.message).toBe(`We have sent a link to confirm your email to ${email}`)
+    expect(response1.body.message).toBe(
+      `You are registered. We have sent a link to confirm your email address to ${email}`
+    )
 
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
@@ -112,7 +114,9 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email, password })
       .expect(201)
 
-    expect(response1.body.message).toBe(`We have sent a link to confirm your email to ${email}`)
+    expect(response1.body.message).toBe(
+      `You are registered. We have sent a link to confirm your email address to ${email}`
+    )
 
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,

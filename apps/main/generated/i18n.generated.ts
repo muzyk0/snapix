@@ -4,11 +4,10 @@ import { Path } from "nestjs-i18n";
 export type I18nTranslations = {
     "register": {
         "account": {
-            "register-ne w": string;
+            "register-new": string;
             "register-before": string;
             "new": string;
             "new-without-confirm-email": string;
-            "register-new": string;
         };
         "email": {
             "confirm": string;
