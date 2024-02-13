@@ -33,9 +33,10 @@ import * as path from 'path'
         typesOutputPath: path
           .join(__dirname, './src/generated/i18n.generated.ts')
           .replace(/dist[\\|/]/, '')
-          .replace(/src[\\|/]src[\\|/]/, ''),
+          .replace(/src[\\|/]src[\\|/]/, '')
+          .replace(/src[\\|/]/, ''),
       }),
-      resolvers: [AcceptLanguageResolver, new HeaderResolver(['x-lang'])],
+      resolvers: [new HeaderResolver(['x-lang']), AcceptLanguageResolver],
       inject: [],
     }),
     AppConfigModule,
