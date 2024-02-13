@@ -21,7 +21,7 @@ export class ValidateUserHandler implements ICommandHandler<ValidateUserCommand>
   async execute({ email, password }: ValidateUserCommand): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { email } })
 
-    if (user === null) {
+    if (!user?.password) {
       return null
     }
 

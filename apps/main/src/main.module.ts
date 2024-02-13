@@ -13,11 +13,31 @@ import { ErrorExceptionFilter } from './exception-filters/error-exception.filter
 import { HttpExceptionFilter } from './exception-filters/http-exception-filter.'
 import { ValidationExceptionFilter } from './exception-filters/validation-exception.filter'
 import { HealthModule } from './features/health/health.module'
+import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n'
+import * as path from 'path'
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+    }),
+
+    I18nModule.forRootAsync({
+      useFactory: () => ({
+        fallbackLanguage: 'en',
+        loaderOptions: {
+          path: path.join(__dirname, '/i18n/'),
+          watch: true,
+        },
+        logging: true,
+        typesOutputPath: path
+          .join(__dirname, './src/generated/i18n.generated.ts')
+          .replace(/dist[\\|/]/, '')
+          .replace(/src[\\|/]src[\\|/]/, '')
+          .replace(/src[\\|/]/, ''),
+      }),
+      resolvers: [new HeaderResolver(['x-lang']), AcceptLanguageResolver],
+      inject: [],
     }),
     AppConfigModule,
     UsersModule,

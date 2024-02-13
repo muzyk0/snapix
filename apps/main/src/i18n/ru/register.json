@@ -1,0 +1,11 @@
+{
+  "account": {
+    "register-new": "Вы зарегистрировались.",
+    "register-before": "Вы ужё зарегистрировались раньше.",
+    "new": "$t(register.account.register-new) $t(register.email.confirm, {{\"email\": \"{email}\" }})",
+    "new-without-confirm-email": "$t(register.account.register-before) $t(register.email.confirm, {{\"email\": \"{email}\" }})"
+  },
+  "email": {
+    "confirm": "Мы отправили ссылку для подтверждения вашего адреса электронной почты на {email}"
+  }
+}

@@ -18,6 +18,7 @@ module.exports = {
         '**/public/**',
         '**/*.d.ts',
         '**/deployment/**',
+        '**/generated/*.generated.ts',
       ],
       options: { requirePragma: false },
     },

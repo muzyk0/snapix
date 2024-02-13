@@ -19,7 +19,8 @@ module.exports = {
         '@typescript-eslint/indent': 'off',
         '@typescript-eslint/return-await': 'off',
         // 'no-extra-boolean-cast': 'off',
-        '@typescript-eslint/brace-style': 'off'
+        '@typescript-eslint/brace-style': 'off',
+        '@typescript-eslint/strict-boolean-expressions': 'warn'
       },
     },
   ],

@@ -9,7 +9,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 import { CreateUserCommand } from '../application/use-cases'
-import { type User } from '@prisma/client'
 import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
 import { Public } from '../guards/public.guard'
 import { ConfirmRegisterCommand } from '../application/use-cases/confirm-register.handler'
@@ -19,6 +18,8 @@ import {
 } from '../application/dto/confirm-register.dto'
 import { ResendConfirmationTokenCommand } from '../application/use-cases/resend-confirmation-token.handler'
 import { Email } from '../application/dto/email.dto'
+import { I18n, I18nContext } from 'nestjs-i18n'
+import { type I18nPath, type I18nTranslations } from '../../../../generated/i18n.generated'
 
 @ApiTags('auth')
 @Controller('/auth/register')
@@ -51,13 +52,18 @@ export class RegisterController {
   @Public()
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  async registerUser(@Body() { username, email, password }: CreateUserCommand) {
-    await this.commandBus.execute<CreateUserCommand, User | null>(
+  async registerUser(
+    @Body() { username, email, password }: CreateUserCommand,
+    @I18n() i18n: I18nContext<I18nTranslations>
+  ) {
+    const i18nCode = await this.commandBus.execute<CreateUserCommand, I18nPath>(
       new CreateUserCommand(username, email, password)
     )
 
     return {
-      message: `We have sent a link to confirm your email to ${email}`,
+      message: i18n.t(i18nCode, {
+        args: { email },
+      }),
     }
   }
 

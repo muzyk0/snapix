@@ -5,7 +5,7 @@ import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
-jest.setTimeout(1000 * 60)
+jest.setTimeout(1000 * 10)
 
 describe('AuthController (e2e) - register', () => {
   let app: INestApplication
@@ -39,7 +39,9 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email, password })
       .expect(201)
 
-    expect(response.body.message).toBe(`We have sent a link to confirm your email to ${email}`)
+    expect(response.body.message).toBe(
+      `You are registered. We have sent a link to confirm your email address to ${email}`
+    )
 
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
@@ -64,7 +66,7 @@ describe('AuthController (e2e) - register', () => {
       .send({ username: username2, email, password })
       .expect(400)
 
-    expect(response.body.message).toBe('UserService with this email is already registered')
+    expect(response.body.message).toBe('User with this email is already registered')
   })
 
   it('should not register a user with an existing username', async () => {
@@ -83,7 +85,7 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email: email2, password })
       .expect(400)
 
-    expect(response.body.message).toBe('UserService with this username is already registered')
+    expect(response.body.message).toBe('User with this username is already registered')
   })
 
   it('should resend confirmation token if do not confirm email and sign up now', async () => {
@@ -96,7 +98,9 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email, password })
       .expect(201)
 
-    expect(response1.body.message).toBe(`We have sent a link to confirm your email to ${email}`)
+    expect(response1.body.message).toBe(
+      `You are registered. We have sent a link to confirm your email address to ${email}`
+    )
 
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
@@ -114,7 +118,9 @@ describe('AuthController (e2e) - register', () => {
       .send({ username, email, password })
       .expect(201)
 
-    expect(response2.body.message).toBe(`We have sent a link to confirm your email to ${email}`)
+    expect(response2.body.message).toBe(
+      `You have registered before. We have sent a link to confirm your email address to ${email}`
+    )
 
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,

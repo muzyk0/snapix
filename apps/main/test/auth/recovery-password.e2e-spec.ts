@@ -5,7 +5,7 @@ import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
-jest.setTimeout(1000 * 60)
+jest.setTimeout(1000 * 20)
 
 describe('AuthController (e2e) - recovery password', () => {
   let app: INestApplication

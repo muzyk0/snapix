@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Ip,
   Post,
+  Req,
   Res,
   UseGuards,
 } from '@nestjs/common'
@@ -19,7 +20,7 @@ import {
 } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
-import { Response } from 'express'
+import { Response, Request } from 'express'
 import { Public } from '../guards/public.guard'
 import { type TokensType } from '../types/tokens.type'
 import { Email } from '../application/dto/email.dto'
@@ -48,11 +49,13 @@ export class AuthController {
     @Headers() headers: Record<string, string>,
     @Ip() ip: string,
     @Res({ passthrough: true }) response: Response,
+    @Req() req: Request,
     @Body() body: LoginDto
   ) {
     const xForwardedFor = headers['x-forwarded-for']
+    const userAgent = req.get('User-Agent')
     const loginResult = await this.commandBus.execute<LoginUserCommand, TokensType>(
-      new LoginUserCommand(body.email, ip ?? xForwardedFor)
+      new LoginUserCommand(body.email, userAgent, ip ?? xForwardedFor)
     )
 
     response.cookie('refreshToken', loginResult.refreshToken, {

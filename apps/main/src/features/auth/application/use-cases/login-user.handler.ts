@@ -12,7 +12,7 @@ import { PrismaService } from '@app/prisma'
 export class LoginUserCommand {
   constructor(
     public readonly email: string,
-    public readonly password: string,
+    public readonly userAgent?: string,
     public readonly ip?: string
   ) {}
 }
@@ -25,11 +25,11 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     private readonly prisma: PrismaService
   ) {}
 
-  async execute(command: LoginUserCommand): Promise<TokensType> {
+  async execute({ userAgent, ip, email }: LoginUserCommand): Promise<TokensType> {
     try {
       const user = await this.prisma.user.findUniqueOrThrow({
         where: {
-          email: command.email,
+          email,
         },
       })
 
@@ -50,9 +50,10 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
 
       await this.createSession({
         userId: user.id,
-        ip: command.ip,
+        ip,
         refreshToken,
         deviceId,
+        deviceName: userAgent,
       })
 
       return { accessToken, refreshToken }
@@ -66,11 +67,13 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
     userId,
     refreshToken,
     deviceId,
+    deviceName,
   }: {
     userId: number
     ip?: string
     refreshToken: string
     deviceId: string
+    deviceName?: string
   }) {
     const decodedRefreshToken: DecodedJwtRtPayload | null =
       await this.jwtService.decodeJwtToken(refreshToken)
@@ -85,6 +88,7 @@ export class LoginUserHandler implements ICommandHandler<LoginUserCommand> {
       refreshTokenExpireAt: decodedRefreshToken.exp,
       userId,
       deviceId,
+      deviceName,
     }
 
     const resultCreation: boolean = await this.sessionRepo.createSessionInfo(sessionDTO)
