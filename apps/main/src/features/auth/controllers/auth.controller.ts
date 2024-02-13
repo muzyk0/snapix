@@ -45,11 +45,12 @@ export class AuthController {
   @Post('/login')
   @HttpCode(HttpStatus.OK)
   async login(
-    @Headers('x-forwarded-for') xForwardedFor: string,
+    @Headers() headers: Record<string, string>,
     @Ip() ip: string,
     @Res({ passthrough: true }) response: Response,
     @Body() body: LoginDto
   ) {
+    const xForwardedFor = headers['x-forwarded-for']
     const loginResult = await this.commandBus.execute<LoginUserCommand, TokensType>(
       new LoginUserCommand(body.email, ip ?? xForwardedFor)
     )
