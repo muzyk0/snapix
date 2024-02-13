@@ -28,11 +28,11 @@ spec:
             periodSeconds: 30
 
           env:
-            - name: DATABASE_URL_DEV
+            - name: SHADOW_DATABASE_URL
               valueFrom:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
-                  key: DATABASE_URL_DEV
+                  key: SHADOW_DATABASE_URL
             - name: ACCESS_TOKEN_SECRET
               valueFrom:
                 secretKeyRef:

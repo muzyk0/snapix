@@ -18,7 +18,7 @@ model User {
   posts               Post[]
   password            String?
   emailConfirmed      DateTime?
-  emailConfirmation   Confirmations?     @relation(fields: [emailConfirmationId], references: [id])
+  emailConfirmation   EmailConfirmation?     @relation(fields: [emailConfirmationId], references: [id])
   emailConfirmationId Int?               @unique
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt()
@@ -40,7 +40,7 @@ model PasswordHistory {
   updatedAt DateTime @updatedAt()
 }
 
-model Confirmations {
+model EmailConfirmation {
   id          Int      @id @default(autoincrement())
   token       String   @unique
   isConfirmed Boolean  @default(false)

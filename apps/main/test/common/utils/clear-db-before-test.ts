@@ -6,6 +6,6 @@ export const clearDbBeforeTest = async (prisma: PrismaService) => {
   await prisma.session.deleteMany()
   await prisma.revokedToken.deleteMany()
   await prisma.post.deleteMany()
-  await prisma.confirmations.deleteMany()
+  await prisma.emailConfirmation.deleteMany()
   await prisma.user.deleteMany()
 }
