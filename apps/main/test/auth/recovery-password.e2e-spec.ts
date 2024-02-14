@@ -42,7 +42,7 @@ describe('AuthController (e2e) - recovery password', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(1)
 
     const mockCalledConfirmationToken =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     expect(mockCalledConfirmationToken).not.toBeUndefined()
 
@@ -62,7 +62,7 @@ describe('AuthController (e2e) - recovery password', () => {
     expect(mockNotificationService.sendRecoveryPasswordTempCode).toHaveBeenCalledTimes(1)
 
     const mockCalledRecoveryCode =
-      mockNotificationService.sendRecoveryPasswordTempCode.mock.calls[0][0]?.recoveryCode
+      mockNotificationService.sendRecoveryPasswordTempCode.mock.calls[0][0]?.token
 
     expect(mockCalledRecoveryCode).not.toBeUndefined()
 
@@ -105,7 +105,7 @@ describe('AuthController (e2e) - recovery password', () => {
     expect(mockNotificationService.sendRecoveryPasswordTempCode).toHaveBeenCalledTimes(0)
 
     const mockCalledRecoveryCode =
-      mockNotificationService.sendRecoveryPasswordTempCode.mock.calls[0]?.[0]?.recoveryCode
+      mockNotificationService.sendRecoveryPasswordTempCode.mock.calls[0]?.[0]?.token
 
     expect(mockCalledRecoveryCode).toBeUndefined()
   })
@@ -123,7 +123,7 @@ describe('AuthController (e2e) - recovery password', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(1)
 
     const mockCalledConfirmationToken1 =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     expect(mockCalledConfirmationToken1).not.toBeUndefined()
 
@@ -137,7 +137,7 @@ describe('AuthController (e2e) - recovery password', () => {
     expect(mockNotificationService.sendRecoveryPasswordTempCode).toHaveBeenCalledTimes(0)
 
     const mockCalledConfirmationToken2 =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[1][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[1][0]?.token
 
     await request(app.getHttpServer())
       .post('/auth/register/confirm')

@@ -46,7 +46,7 @@ describe('AuthController (e2e) - register', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
       userName: username,
-      confirmationCode: expect.any(String),
+      token: expect.any(String),
     })
   })
 
@@ -105,7 +105,7 @@ describe('AuthController (e2e) - register', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
       userName: username,
-      confirmationCode: expect.any(String),
+      token: expect.any(String),
     })
 
     const mockCalledConfirmationCode1 =
@@ -125,11 +125,11 @@ describe('AuthController (e2e) - register', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
       userName: username,
-      confirmationCode: expect.any(String),
+      token: expect.any(String),
     })
 
     const mockCalledConfirmationCode2 =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     expect(mockCalledConfirmationCode1).not.toBe(mockCalledConfirmationCode2)
   })

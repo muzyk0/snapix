@@ -48,11 +48,11 @@ describe('AuthController (e2e) - confirm account', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
       userName: username,
-      confirmationCode: expect.any(String),
+      token: expect.any(String),
     })
 
     const mockCalledConfirmationToken =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     const badToken = '97603996-b7d5-4a80-a4fb-2b4334131b1d'
 
@@ -121,11 +121,11 @@ describe('AuthController (e2e) - confirm account', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
       email,
       userName: username,
-      confirmationCode: expect.any(String),
+      token: expect.any(String),
     })
 
     const mockCalledConfirmationToken =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     jest.useFakeTimers().setSystemTime(addDays(new Date(), 2))
 
