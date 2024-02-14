@@ -37,7 +37,7 @@ export class UserService {
     await this.notificationService.sendEmailConfirmationCode({
       email,
       userName: updatedUser.name,
-      confirmationCode: emailConfirmationCode,
+      token: emailConfirmationCode,
     })
   }
 }

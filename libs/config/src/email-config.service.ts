@@ -15,4 +15,8 @@ export class SmtpConfigService {
   get confirmRegisterLink() {
     return this.configService.get('EMAIL_CONFIRM_REGISTER_LINK')
   }
+
+  get forgotPasswordLink() {
+    return this.configService.get('EMAIL_FORGOT-PASSWORD_LINK')
+  }
 }
