@@ -17,6 +17,6 @@ export class SmtpConfigService {
   }
 
   get forgotPasswordLink() {
-    return this.configService.get('EMAIL_FORGOT-PASSWORD_LINK')
+    return this.configService.get('EMAIL_FORGOT_PASSWORD_LINK')
   }
 }
