@@ -43,7 +43,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(1)
 
     const mockCalledConfirmationToken1 =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     expect(mockCalledConfirmationToken1).not.toBeUndefined()
 
@@ -56,7 +56,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(2)
 
     const mockCalledConfirmationToken2 =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[1][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[1][0]?.token
 
     expect(mockCalledConfirmationToken2).not.toBeUndefined()
 
@@ -108,7 +108,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(0)
 
     const mockCalledConfirmationToken =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0]?.[0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0]?.[0]?.token
 
     expect(mockCalledConfirmationToken).toBeUndefined()
   })
@@ -126,7 +126,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
     expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledTimes(1)
 
     const mockCalledConfirmationToken1 =
-      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.confirmationCode
+      mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     expect(mockCalledConfirmationToken1).not.toBeUndefined()
 

@@ -64,7 +64,7 @@ export class SendRecoveryPasswordTempCodeHandler
     await this.emailService.sendRecoveryPasswordTempCode({
       email,
       userName: user.name,
-      recoveryCode: passwordRecovery.token,
+      token: passwordRecovery.token,
     })
   }
 }

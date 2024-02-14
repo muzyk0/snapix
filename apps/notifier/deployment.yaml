@@ -37,6 +37,11 @@ spec:
                  secretKeyRef:
                    name: snapix-back-notifier-production-config-secret
                    key: EMAIL_CONFIRM_REGISTER_LINK
+             - name: EMAIL_FORGOT_PASSWORD_LINK
+               valueFrom:
+                 secretKeyRef:
+                   name: snapix-back-notifier-production-config-secret
+                   key: EMAIL_FORGOT_PASSWORD_LINK
              - name: RMQ_URLS
                valueFrom:
                  secretKeyRef:

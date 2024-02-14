@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator'
 
-export class SendConfirmationEmailCodeDto {
+export class SendEmailDto {
   @IsString()
   email!: string
 
@@ -8,5 +8,5 @@ export class SendConfirmationEmailCodeDto {
   userName!: string
 
   @IsString()
-  confirmationCode!: string
+  token!: string
 }

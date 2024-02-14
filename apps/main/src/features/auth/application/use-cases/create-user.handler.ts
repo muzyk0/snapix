@@ -89,7 +89,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     await this.notificationService.sendEmailConfirmationCode({
       email,
       userName: createdUser.name,
-      confirmationCode: emailConfirmationToken,
+      token: emailConfirmationToken,
     })
 
     return 'register.account.new'
