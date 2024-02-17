@@ -1,11 +1,12 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common'
-import { CommandBus } from '@nestjs/cqrs'
+import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import {
   ApiBadRequestResponse,
   ApiBody,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger'
 import { CreateUserCommand } from '../application/use-cases'
@@ -20,13 +21,14 @@ import { ResendConfirmationTokenCommand } from '../application/use-cases/resend-
 import { Email } from '../application/dto/email.dto'
 import { I18n, I18nContext } from 'nestjs-i18n'
 import { type I18nPath, type I18nTranslations } from '../../../../generated/i18n.generated'
+import { VerifyConfirmationTokenQuery } from '../application/use-cases/verify-confirmation-token.handler'
 
 @ApiTags('auth')
 @Controller('/auth/register')
 export class RegisterController {
   constructor(
-    // todo: remove
-    private readonly commandBus: CommandBus
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus
   ) {}
 
   @ApiBody({
@@ -65,6 +67,31 @@ export class RegisterController {
         args: { email },
       }),
     }
+  }
+
+  @ApiBody({
+    type: () => VerifyConfirmationTokenQuery,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Token has been verified',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Invalid token',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+    type: ValidationExceptionSwaggerDto,
+  })
+  @Public()
+  @Post('/verify-token')
+  @HttpCode(HttpStatus.OK)
+  async verifyToken(@Body() { token }: VerifyConfirmationTokenQuery): Promise<ConfirmRegisterDto> {
+    return this.queryBus.execute<VerifyConfirmationTokenQuery, ConfirmRegisterDto>(
+      new VerifyConfirmationTokenQuery(token)
+    )
   }
 
   @ApiBody({
