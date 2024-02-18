@@ -7,7 +7,7 @@ import { ConfirmForgotPasswordHandler } from './confirm-forgot-password.handler'
 import { LoginUserHandler } from './login-user.handler'
 import { RefreshTokenHandler } from './refresh-token.handler'
 import { LogoutHandler } from './logout.handler'
-import { VerifyConfirmationTokenHandler } from './verify-confirmation-token.handler'
+import { VerifyForgotPasswordTokenHandler } from './verify-forgot-password-token.handler'
 
 export const CommandHandlers = [
   CreateUserHandler,
@@ -19,5 +19,5 @@ export const CommandHandlers = [
   LoginUserHandler,
   LogoutHandler,
   RefreshTokenHandler,
-  VerifyConfirmationTokenHandler,
+  VerifyForgotPasswordTokenHandler,
 ]

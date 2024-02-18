@@ -10,7 +10,7 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common'
-import { CommandBus } from '@nestjs/cqrs'
+import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import {
   ApiBadRequestResponse,
   ApiBody,
@@ -20,7 +20,7 @@ import {
 } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { LoginUserCommand } from '../application/use-cases/login-user.handler'
-import { Response, Request } from 'express'
+import { Request, Response } from 'express'
 import { Public } from '../guards/public.guard'
 import { type TokensType } from '../types/tokens.type'
 import { Email } from '../application/dto/email.dto'
@@ -34,11 +34,16 @@ import { GetJwtContextDecorator } from '../decorators/get-Jwt-context.decorator'
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.handler'
 import { LoginDto } from '../application/dto/login.dto'
 import { LogoutCommand } from '../application/use-cases/logout.handler'
+import { VerifyForgotPasswordTokenQuery } from '../application/use-cases/verify-forgot-password-token.handler'
+import type { ConfirmRegisterDto } from '../application/dto/confirm-register.dto'
 
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly commandBus: CommandBus) {}
+  constructor(
+    private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus
+  ) {}
 
   @ApiOkResponse({})
   @Public()
@@ -118,6 +123,33 @@ export class AuthController {
   @HttpCode(HttpStatus.ACCEPTED)
   async recoveryPassword(@Body() { email }: Email) {
     return this.commandBus.execute(new SendRecoveryPasswordTempCodeCommand(email))
+  }
+
+  @ApiBody({
+    type: () => VerifyForgotPasswordTokenQuery,
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Token has been verified',
+  })
+  @ApiResponse({
+    status: HttpStatus.NOT_FOUND,
+    description: 'Invalid token',
+  })
+  @ApiResponse({
+    status: HttpStatus.BAD_REQUEST,
+    description: 'Validation failed',
+    type: ValidationExceptionSwaggerDto,
+  })
+  @Public()
+  @Post('/forgot-password/verify-token')
+  @HttpCode(HttpStatus.OK)
+  async verifyToken(
+    @Body() { token }: VerifyForgotPasswordTokenQuery
+  ): Promise<ConfirmRegisterDto> {
+    return this.queryBus.execute<VerifyForgotPasswordTokenQuery, ConfirmRegisterDto>(
+      new VerifyForgotPasswordTokenQuery(token)
+    )
   }
 
   @ApiBody({
