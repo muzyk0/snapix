@@ -94,7 +94,7 @@ describe('AuthController (e2e) - recovery password', () => {
       message: 'Bad Request Exception',
       errors: {
         email: {
-          message: "UserService with this email doesn't exist",
+          message: "User with this email doesn't exist",
           property: 'email',
         },
       },
