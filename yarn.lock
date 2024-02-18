@@ -1202,6 +1202,14 @@
   dependencies:
     undici-types "~5.26.4"
 
+"@types/passport-google-oauth@^1.0.45":
+  version "1.0.45"
+  resolved "https://registry.yarnpkg.com/@types/passport-google-oauth/-/passport-google-oauth-1.0.45.tgz#c986c787ec9706b4a596d2bae43342b50b54973d"
+  integrity sha512-O3Y3DDKnf9lR8+DSaUOCEGF6aFjVYdI8TLhQYtySZ3Sq75c5tGYJ0KJRDZw0GsyLD/Que0nqFkP/GnDVwZZL9w==
+  dependencies:
+    "@types/express" "*"
+    "@types/passport" "*"
+
 "@types/passport-jwt@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@types/passport-jwt/-/passport-jwt-4.0.0.tgz#96fd75557b83352efe9f5ca55d5e7ab9e7194d4d"

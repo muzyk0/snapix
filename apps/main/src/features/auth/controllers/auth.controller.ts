@@ -1,10 +1,12 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
   Ip,
+  Logger,
   Post,
   Req,
   Res,
@@ -34,6 +36,7 @@ import { GetJwtContextDecorator } from '../decorators/get-Jwt-context.decorator'
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.handler'
 import { LoginDto } from '../application/dto/login.dto'
 import { LogoutCommand } from '../application/use-cases/logout.handler'
+import { GoogleOAuthGuard } from '../guards/google-oauth.guard'
 import { VerifyForgotPasswordTokenQuery } from '../application/use-cases/verify-forgot-password-token.handler'
 import type { ConfirmRegisterDto } from '../application/dto/confirm-register.dto'
 
@@ -166,5 +169,18 @@ export class AuthController {
     return this.commandBus.execute<ConfirmForgotPasswordCommand>(
       new ConfirmForgotPasswordCommand(token, password)
     )
+  }
+
+  @Public()
+  @UseGuards(GoogleOAuthGuard)
+  @Get('/google')
+  async googleAuth() {}
+
+  @Public()
+  @Get('/google/callback')
+  @UseGuards(GoogleOAuthGuard)
+  googleAuthRedirect(@Req() _req: Request) {
+    // return this.appService.googleLogin(req);
+    Logger.log('Google auth')
   }
 }
