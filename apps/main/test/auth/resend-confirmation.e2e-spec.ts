@@ -97,7 +97,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
       message: 'Bad Request Exception',
       errors: {
         email: {
-          message: "UserService with this email doesn't exist",
+          message: "User with this email doesn't exist",
           property: 'email',
         },
       },
@@ -146,7 +146,7 @@ describe('AuthController (e2e) - resend confirmation token', () => {
       message: 'Bad Request Exception',
       errors: {
         email: {
-          message: 'UserService with this email already confirmed',
+          message: 'User with this email already confirmed',
           property: 'email',
         },
       },

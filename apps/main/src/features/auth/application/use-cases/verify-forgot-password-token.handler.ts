@@ -7,7 +7,7 @@ import { CONFIRMATION_STATUS } from '../../types/confirm-status.enum'
 import { IsUUID } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
-export class VerifyConfirmationTokenQuery {
+export class VerifyForgotPasswordTokenQuery {
   @ApiProperty({
     description: 'uuid token',
     format: 'uuid',
@@ -20,24 +20,26 @@ export class VerifyConfirmationTokenQuery {
   }
 }
 
-@QueryHandler(VerifyConfirmationTokenQuery)
-export class VerifyConfirmationTokenHandler implements IQueryHandler<VerifyConfirmationTokenQuery> {
+@QueryHandler(VerifyForgotPasswordTokenQuery)
+export class VerifyForgotPasswordTokenHandler
+  implements IQueryHandler<VerifyForgotPasswordTokenQuery>
+{
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute({ token }: VerifyConfirmationTokenQuery): Promise<ConfirmRegisterDto> {
-    const emailConfirmation = await this.prisma.emailConfirmation.findFirst({
+  async execute({ token }: VerifyForgotPasswordTokenQuery): Promise<ConfirmRegisterDto> {
+    const passwordRecovery = await this.prisma.passwordRecovery.findFirst({
       where: {
         token,
       },
     })
 
-    if (!emailConfirmation) {
+    if (!passwordRecovery) {
       throw new NotFoundException({
         message: 'Token not found',
       })
     }
 
-    if (emailConfirmation?.isConfirmed) {
+    if (passwordRecovery?.status !== CONFIRMATION_STATUS.OK) {
       throw new BadRequestException({
         token: {
           message: CONFIRMATION_STATUS.CONFIRMED,
@@ -46,7 +48,7 @@ export class VerifyConfirmationTokenHandler implements IQueryHandler<VerifyConfi
       })
     }
 
-    if (isAfter(new Date(), emailConfirmation.expiresAt)) {
+    if (isAfter(new Date(), passwordRecovery.expiresAt)) {
       throw new BadRequestException({
         token: {
           message: CONFIRMATION_STATUS.EXPIRED,

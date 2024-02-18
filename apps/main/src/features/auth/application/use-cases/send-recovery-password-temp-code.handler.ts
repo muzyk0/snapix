@@ -31,7 +31,7 @@ export class SendRecoveryPasswordTempCodeHandler
     if (user === null) {
       throw new BadRequestException({
         email: {
-          message: "UserService with this email doesn't exist",
+          message: "User with this email doesn't exist",
           property: 'email',
         },
       })
