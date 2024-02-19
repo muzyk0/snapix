@@ -5,7 +5,7 @@ import { type JwtAtPayload, type JwtPayloadWithRt } from '../types/jwt.type'
 
 type Payload = JwtAtPayload | JwtPayloadWithRt
 
-export const GetJwtContextDecorator = createParamDecorator(
+export const GetUserContextDecorator = createParamDecorator(
   (data: keyof Payload, context: ExecutionContext): Payload => {
     const request = context.switchToHttp().getRequest()
     const ctx = request.user

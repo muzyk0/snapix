@@ -1,42 +1,34 @@
 import {
   Body,
   Controller,
-  Get,
   Headers,
   HttpCode,
   HttpStatus,
   Ip,
-  Logger,
   Post,
   Req,
   Res,
   UseGuards,
 } from '@nestjs/common'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
-import {
-  ApiBadRequestResponse,
-  ApiBody,
-  ApiOkResponse,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger'
+import { ApiBody, ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
-import { LoginUserCommand } from '../application/use-cases/login-user.handler'
 import { Request, Response } from 'express'
 import { Public } from '../guards/public.guard'
 import { type TokensType } from '../types/tokens.type'
 import { Email } from '../application/dto/email.dto'
 import { SendRecoveryPasswordTempCodeCommand } from '../application/use-cases/send-recovery-password-temp-code.handler'
-import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
 import { NewPasswordDto } from '../application/dto/new-password.dto'
 import { ConfirmForgotPasswordCommand } from '../application/use-cases/confirm-forgot-password.handler'
 import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard'
 import { JwtPayloadWithRt } from '../types/jwt.type'
-import { GetJwtContextDecorator } from '../decorators/get-Jwt-context.decorator'
+import { GetUserContextDecorator } from '../decorators/get-user-context.decorator'
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.handler'
-import { LoginDto } from '../application/dto/login.dto'
 import { LogoutCommand } from '../application/use-cases/logout.handler'
-import { GoogleOAuthGuard } from '../guards/google-oauth.guard'
+import { CreateSessionCommand } from '../application/use-cases/create-session.handler'
+import { type User } from '@prisma/client'
+import { ValidateUserCommand } from '../application/use-cases'
+import { ApiValidationException } from '../../../exception-filters/swagger/decorators/api-validation-exception'
 import { VerifyForgotPasswordTokenQuery } from '../application/use-cases/verify-forgot-password-token.handler'
 import type { ConfirmRegisterDto } from '../application/dto/confirm-register.dto'
 
@@ -48,7 +40,20 @@ export class AuthController {
     private readonly queryBus: QueryBus
   ) {}
 
-  @ApiOkResponse({})
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns access token in body and refresh token in cookie',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiBody({ type: ValidateUserCommand })
+  @ApiValidationException()
   @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
@@ -58,22 +63,28 @@ export class AuthController {
     @Ip() ip: string,
     @Res({ passthrough: true }) response: Response,
     @Req() req: Request,
-    @Body() body: LoginDto
+    @GetUserContextDecorator() ctx: User
   ) {
     const xForwardedFor = headers['x-forwarded-for']
     const userAgent = req.get('User-Agent')
-    const loginResult = await this.commandBus.execute<LoginUserCommand, TokensType>(
-      new LoginUserCommand(body.email, userAgent, ip ?? xForwardedFor)
+
+    const session = await this.commandBus.execute<CreateSessionCommand, TokensType>(
+      new CreateSessionCommand(ctx.id, userAgent, ip ?? xForwardedFor)
     )
 
-    response.cookie('refreshToken', loginResult.refreshToken, {
+    response.cookie('refreshToken', session.refreshToken, {
       httpOnly: true,
       secure: true,
     })
 
-    return { accessToken: loginResult.accessToken }
+    return { accessToken: session.accessToken }
   }
 
+  @ApiResponse({
+    status: HttpStatus.NO_CONTENT,
+    description: 'Clears refresh token in cookie',
+  })
+  @ApiCookieAuth('refreshToken')
   @Post('/logout')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -82,22 +93,36 @@ export class AuthController {
       passthrough: true,
     })
     res: Response,
-    @GetJwtContextDecorator() ctx: JwtPayloadWithRt
+    @GetUserContextDecorator() ctx: JwtPayloadWithRt
   ) {
     await this.commandBus.execute(new LogoutCommand(ctx))
 
     res.clearCookie('refreshToken')
   }
 
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: 'Returns access token in body and refresh token in cookie',
+    schema: {
+      type: 'object',
+      properties: {
+        accessToken: {
+          type: 'string',
+        },
+      },
+    },
+  })
+  @ApiCookieAuth('refreshToken')
   @Post('/refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
   async refreshToken(
     @Res({ passthrough: true }) res: Response,
-    @GetJwtContextDecorator() ctx: JwtPayloadWithRt,
+    @GetUserContextDecorator() ctx: JwtPayloadWithRt,
     @Ip() ip: string,
-    @Headers('x-forwarded-for') xForwardedFor?: string
+    @Headers() headers: Record<string, string>
   ) {
+    const xForwardedFor = headers['x-forwarded-for']
     const tokens: TokensType = await this.commandBus.execute(
       new RefreshTokenCommand(ctx, ip ?? xForwardedFor)
     )
@@ -112,15 +137,11 @@ export class AuthController {
   @ApiBody({
     type: () => Email,
   })
-  @ApiOkResponse({
+  @ApiResponse({
     status: HttpStatus.ACCEPTED,
     description: 'New password has been sent to your email',
   })
-  @ApiBadRequestResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Validation failed',
-    type: ValidationExceptionSwaggerDto,
-  })
+  @ApiValidationException()
   @Public()
   @Post('/forgot-password')
   @HttpCode(HttpStatus.ACCEPTED)
@@ -139,11 +160,7 @@ export class AuthController {
     status: HttpStatus.NOT_FOUND,
     description: 'Invalid token',
   })
-  @ApiResponse({
-    status: HttpStatus.BAD_REQUEST,
-    description: 'Validation failed',
-    type: ValidationExceptionSwaggerDto,
-  })
+  @ApiValidationException()
   @Public()
   @Post('/forgot-password/verify-token')
   @HttpCode(HttpStatus.OK)
@@ -169,18 +186,5 @@ export class AuthController {
     return this.commandBus.execute<ConfirmForgotPasswordCommand>(
       new ConfirmForgotPasswordCommand(token, password)
     )
-  }
-
-  @Public()
-  @UseGuards(GoogleOAuthGuard)
-  @Get('/google')
-  async googleAuth() {}
-
-  @Public()
-  @Get('/google/callback')
-  @UseGuards(GoogleOAuthGuard)
-  googleAuthRedirect(@Req() _req: Request) {
-    // return this.appService.googleLogin(req);
-    Logger.log('Google auth')
   }
 }

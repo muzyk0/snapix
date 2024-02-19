@@ -8,6 +8,8 @@ import { LoginUserHandler } from './login-user.handler'
 import { RefreshTokenHandler } from './refresh-token.handler'
 import { LogoutHandler } from './logout.handler'
 import { VerifyForgotPasswordTokenHandler } from './verify-forgot-password-token.handler'
+import { CreateSessionHandler } from './create-session.handler'
+import { LoginByExternalAccountHandler } from './login-by-external-account.handler'
 
 export const CommandHandlers = [
   CreateUserHandler,
@@ -20,4 +22,6 @@ export const CommandHandlers = [
   LogoutHandler,
   RefreshTokenHandler,
   VerifyForgotPasswordTokenHandler,
+  CreateSessionHandler,
+  LoginByExternalAccountHandler,
 ]
