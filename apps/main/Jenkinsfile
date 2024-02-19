@@ -17,6 +17,8 @@ pipeline {
         DATABASE_URL = "postgresql://muzyk0:wEHaoK5SqWD8@ep-dawn-firefly-962824.us-east-2.aws.neon.tech/snapix-test?sslmode=require"
         SHADOW_DATABASE_URL = "postgresql://muzyk0:wEHaoK5SqWD8@ep-dawn-firefly-962824.us-east-2.aws.neon.tech/snapix-shadow?sslmode=require"
         RMQ_URLS = "${env.RMQ_URLS}"
+        GOOGLE_CLIENT_ID = "test"
+        GOOGLE_CLIENT_SECRET = "test"
     }
 
     stages {
