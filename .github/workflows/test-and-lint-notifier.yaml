@@ -1,6 +1,9 @@
 name: Notifier Test & Lint
 
-on: [push]
+on:
+  push:
+    paths:
+      - apps/notifier/**
 
 jobs:
   tests-unit:
