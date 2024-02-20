@@ -41,6 +41,7 @@ export class ValidateUserHandler implements ICommandHandler<ValidateUserCommand>
   async execute({ email, password }: ValidateUserCommand): Promise<User | null> {
     const user = await this.prisma.user.findUnique({ where: { email } })
 
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!user?.password) {
       return null
     }
