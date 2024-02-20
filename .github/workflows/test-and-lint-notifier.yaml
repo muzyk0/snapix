@@ -1,4 +1,4 @@
-name: Test & Lint Notifier
+name: Notifier Test & Lint
 
 on: [push]
 
