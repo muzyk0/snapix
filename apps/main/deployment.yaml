@@ -68,6 +68,21 @@ spec:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
                   key: REFRESH_TOKEN_SECRET
+            - name: GOOGLE_CLIENT_ID
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: GOOGLE_CLIENT_ID
+            - name: GOOGLE_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: GOOGLE_CLIENT_SECRET
+            - name: GOOGLE_CALLBACK_URL
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: GOOGLE_CALLBACK_URL
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
