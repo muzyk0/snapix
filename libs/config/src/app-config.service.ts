@@ -38,11 +38,22 @@ export class AppConfigService {
   }
 
   get refreshTokenSecret(): string {
-    // fixme: After add env to k8s remove it
     return this.configService.get('REFRESH_TOKEN_SECRET') ?? '2783h789rdhj289dhj9fhsdyiuhf78oy12df'
   }
 
   get refreshTokenSecretExpiresIn(): string {
     return this.configService.get('REFRESH_TOKEN_SECRET_EXPIRES_IN') ?? '1d'
+  }
+
+  get googleOAuthConfig(): {
+    clientID?: string
+    clientSecret?: string
+    callbackURL?: string
+  } {
+    return {
+      clientID: this.configService.get('GOOGLE_CLIENT_ID'),
+      clientSecret: this.configService.get('GOOGLE_CLIENT_SECRET'),
+      callbackURL: this.configService.get('GOOGLE_CALLBACK_URL'),
+    }
   }
 }

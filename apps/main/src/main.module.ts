@@ -20,6 +20,7 @@ import * as path from 'path'
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: ['.env', '.env.test'],
     }),
 
     I18nModule.forRootAsync({
