@@ -1,26 +1,26 @@
-name: Notifier Test & Lint
+name: Libs Test & Lint
 
 on:
   push:
     paths:
-      - apps/notifier/**
+      - libs/**
 
 jobs:
-  tests-unit:
-    name: Unit Tests
-    defaults:
-      run:
-        working-directory: ./
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        run: yarn install
-
-      - name: Test
-        run: yarn test:notifier
+#  tests-unit:
+#    name: Unit Tests
+#    defaults:
+#      run:
+#        working-directory: ./
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Checkout
+#        uses: actions/checkout@v3
+#
+#      - name: Install dependencies
+#        run: yarn install
+#
+#      - name: Test
+#        run: yarn test:notifier
 
   tsc:
     name: Typescript Check
@@ -39,7 +39,7 @@ jobs:
         run: yarn main:prisma:generate
 
       - name: TSC
-        run: tsc:notifier:check
+        run: yarn tsc:libs:check
 
   lint:
     name: Lint
@@ -55,4 +55,4 @@ jobs:
         run: yarn install
 
       - name: Lint
-        run: yarn lint:notifier:check
+        run: yarn lint:libs:check

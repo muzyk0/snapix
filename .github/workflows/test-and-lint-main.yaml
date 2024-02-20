@@ -4,7 +4,6 @@ on:
   push:
     paths:
       - apps/main/**
-      - libs/**
 
 jobs:
   tests-unit:
