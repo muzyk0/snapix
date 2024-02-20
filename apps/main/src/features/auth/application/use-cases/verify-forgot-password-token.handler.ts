@@ -33,6 +33,7 @@ export class VerifyForgotPasswordTokenHandler
       },
     })
 
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
     if (!passwordRecovery) {
       throw new NotFoundException({
         message: 'Token not found',

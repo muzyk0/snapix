@@ -9,6 +9,7 @@ import { LoginByExternalAccountCommand } from '../application/use-cases/login-by
 import { ExternalAccount } from '../types/externalAccount'
 import { CreateSessionCommand } from '../application/use-cases/create-session.handler'
 import type { TokensType } from '../types/tokens.type'
+import { type User } from '@prisma/client'
 
 @ApiTags('oauth')
 @Controller('oauth')
@@ -32,7 +33,7 @@ export class OAuthController {
   ) {
     const xForwardedFor = headers['x-forwarded-for']
     const userAgent = req.get('User-Agent')
-    const userId = await this.commandBus.execute<LoginByExternalAccountCommand, number>(
+    const { id: userId } = await this.commandBus.execute<LoginByExternalAccountCommand, User>(
       new LoginByExternalAccountCommand(ctx)
     )
 

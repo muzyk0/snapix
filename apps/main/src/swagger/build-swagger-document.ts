@@ -18,7 +18,28 @@ export const buildSwaggerDocument = (
     config.setVersion(swaggerVersion)
   }
 
-  config.addTag('auth').addBasicAuth()
+  config
+    .addTag('auth')
+    .addCookieAuth(
+      'refreshToken',
+      {
+        type: 'apiKey',
+        in: 'cookie',
+        name: 'refreshToken',
+        description: 'Refresh token for user',
+      },
+      'refreshToken'
+    )
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'JWT Authorization header using the Bearer scheme.',
+        in: 'header',
+      },
+      'accessToken'
+    )
 
   const document = SwaggerModule.createDocument(app, config.build())
   SwaggerModule.setup(

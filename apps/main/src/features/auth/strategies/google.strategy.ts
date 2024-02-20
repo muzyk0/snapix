@@ -3,6 +3,7 @@ import { PassportStrategy } from '@nestjs/passport'
 import { OAuth2Strategy, type Profile, type VerifyFunction } from 'passport-google-oauth'
 import { AppConfigService } from '@app/config'
 import { type ExternalAccount } from '../types/externalAccount'
+import { type Provider } from 'prisma/prisma-client'
 
 @Injectable()
 export class GoogleStrategy extends PassportStrategy(OAuth2Strategy, 'google') {
@@ -26,7 +27,7 @@ export class GoogleStrategy extends PassportStrategy(OAuth2Strategy, 'google') {
       displayName: profile.displayName,
       email: profile.emails?.[0].value,
       photo: profile.photos?.[0].value,
-      provider: profile.provider,
+      provider: profile.provider as Provider,
     }
     done(null, account)
   }

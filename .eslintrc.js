@@ -20,7 +20,8 @@ module.exports = {
         '@typescript-eslint/return-await': 'off',
         // 'no-extra-boolean-cast': 'off',
         '@typescript-eslint/brace-style': 'off',
-        '@typescript-eslint/strict-boolean-expressions': 'warn'
+        '@typescript-eslint/strict-boolean-expressions': 'warn',
+        '@typescript-eslint/semi': 'off'
       },
     },
   ],

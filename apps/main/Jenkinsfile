@@ -37,14 +37,14 @@ pipeline {
         stage('Typescript Check') {
             steps {
                 script {
-                    sh "yarn tsc"
+                    sh "yarn tsc:main:check"
                 }
             }
         }
         stage('Lint Check') {
             steps {
                 script {
-                    sh "yarn lint:check"
+                    sh "yarn lint:main:check"
                 }
             }
         }

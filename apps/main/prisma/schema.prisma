@@ -13,22 +13,40 @@ datasource db {
 
 model User {
   id                  Int                @id @default(autoincrement())
-  email               String             @unique
-  name                String             @unique
+  email               String             @unique()
+  name                String             @unique()
   posts               Post[]
   password            String?
   emailConfirmed      DateTime?
-  emailConfirmation   EmailConfirmation?     @relation(fields: [emailConfirmationId], references: [id])
-  emailConfirmationId Int?               @unique
+  emailConfirmation   EmailConfirmation? @relation(fields: [emailConfirmationId], references: [id])
+  emailConfirmationId Int?               @unique()
   createdAt           DateTime           @default(now())
   updatedAt           DateTime           @updatedAt()
-  // updatedPasswordAt   DateTime?
   passwordRecovery    PasswordRecovery[]
   session             Session[]
   revokedToken        RevokedToken[]
   passwordHistory     PasswordHistory[]
+  accounts            Account[]
 
   @@unique([email, name, emailConfirmationId])
+}
+
+enum Provider {
+  GOOGLE
+  GITHUB
+}
+
+model Account {
+  id         Int      @id @default(autoincrement())
+  user       User     @relation(fields: [userId], references: [id])
+  userId     Int
+  name       String
+  email      String?
+  photo      String?
+  provider   Provider
+  providerId String   @unique()
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt()
 }
 
 model PasswordHistory {
@@ -42,7 +60,7 @@ model PasswordHistory {
 
 model EmailConfirmation {
   id          Int      @id @default(autoincrement())
-  token       String   @unique
+  token       String   @unique()
   isConfirmed Boolean  @default(false)
   expiresAt   DateTime
   createdAt   DateTime @default(now())
@@ -56,7 +74,7 @@ model PasswordRecovery {
   id        Int      @id @default(autoincrement())
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
-  token     String   @unique /// password recovery token
+  token     String   @unique() /// password recovery token
   expiresAt DateTime /// password recovery token expires
   status    Int      @default(0) /// 0 - pending, 1 - confirmed, 2 - expired, 3 - deactivated
   createdAt DateTime @default(now())
@@ -101,7 +119,7 @@ model Session {
 
 model RevokedToken {
   id        Int      @id @default(autoincrement())
-  token     String   @unique
+  token     String   @unique()
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
   createdAt DateTime @default(now())
