@@ -12,13 +12,6 @@ pipeline {
         DEPLOYMENT_NAME = "snapix-back-main-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
-        ACCESS_TOKEN_SECRET = "${env.ACCESS_TOKEN_SECRET}"
-        REFRESH_TOKEN_SECRET = "ki9082uijn809dfumdosufh9wefwedf"
-        DATABASE_URL = "postgresql://muzyk0:wEHaoK5SqWD8@ep-dawn-firefly-962824.us-east-2.aws.neon.tech/snapix-test?sslmode=require"
-        SHADOW_DATABASE_URL = "postgresql://muzyk0:wEHaoK5SqWD8@ep-dawn-firefly-962824.us-east-2.aws.neon.tech/snapix-shadow?sslmode=require"
-        RMQ_URLS = "${env.RMQ_URLS}"
-        GOOGLE_CLIENT_ID = "test"
-        GOOGLE_CLIENT_SECRET = "test"
     }
 
     stages {
