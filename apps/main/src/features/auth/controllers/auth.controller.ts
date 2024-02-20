@@ -73,8 +73,8 @@ export class AuthController {
     )
 
     response.cookie('refreshToken', session.refreshToken, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     })
 
     return { accessToken: session.accessToken }
@@ -85,6 +85,7 @@ export class AuthController {
     description: 'Clears refresh token in cookie',
   })
   @ApiCookieAuth('refreshToken')
+  @Public()
   @Post('/logout')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)

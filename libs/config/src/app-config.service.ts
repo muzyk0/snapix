@@ -38,7 +38,6 @@ export class AppConfigService {
   }
 
   get refreshTokenSecret(): string {
-    // fixme: After add env to k8s remove it
     return this.configService.get('REFRESH_TOKEN_SECRET') ?? '2783h789rdhj289dhj9fhsdyiuhf78oy12df'
   }
 
