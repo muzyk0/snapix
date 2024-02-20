@@ -1,6 +1,10 @@
 name: Main Gateway Test & Lint
 
-on: [push]
+on:
+  push:
+    paths:
+      - apps/main/**
+      - libs/**
 
 jobs:
   tests-unit:
