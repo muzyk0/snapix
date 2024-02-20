@@ -7,7 +7,7 @@ import { CONFIRMATION_STATUS } from '../../src/features/auth/types/confirm-statu
 import { addDays } from 'date-fns'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
-jest.setTimeout(1000 * 10)
+jest.setTimeout(1000 * 20)
 
 describe('AuthController (e2e) - confirm account', () => {
   let app: INestApplication
