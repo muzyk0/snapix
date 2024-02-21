@@ -13,13 +13,23 @@ import { SessionsRepo } from './infrastructure/sessions.repository'
 import { AppConfigModule } from '@app/config'
 import { JwtService } from './application/services/jwt.service'
 import { OAuthController } from './controllers/oauth.controller'
+import { RevokedTokensRepository } from './infrastructure/revoked-tokens.repository'
+import { IRevokedTokensRepository } from './application/interfaces'
 
-const Providers: Array<Provider<unknown>> = [CryptService, SessionsRepo, JwtService]
+const Services: Array<Provider<unknown>> = [CryptService, JwtService]
+
+const Repositories = [
+  {
+    provide: IRevokedTokensRepository,
+    useClass: RevokedTokensRepository,
+  },
+  SessionsRepo,
+]
 
 @Module({
   imports: [CqrsModule, JwtModule.register({}), NotificationModule, UsersModule, AppConfigModule],
   controllers: [AuthController, OAuthController, RegisterController],
-  providers: [...Providers, ...Strategies, ...CommandHandlers],
+  providers: [...Services, ...Strategies, ...CommandHandlers, ...Repositories],
   exports: [...Strategies],
 })
 export class AuthModule {}

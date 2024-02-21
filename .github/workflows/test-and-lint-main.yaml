@@ -5,6 +5,7 @@ on:
     paths:
       - apps/main/**
 
+
 jobs:
   tests-unit:
     name: Unit Tests
