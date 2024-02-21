@@ -34,7 +34,7 @@ export class AppConfigService {
   }
 
   get accessTokenSecretExpiresIn(): string {
-    return this.configService.get('ACCESS_TOKEN_SECRET_EXPIRES_IN') ?? '1d'
+    return this.configService.get('ACCESS_TOKEN_SECRET_EXPIRES_IN') ?? '15m'
   }
 
   get refreshTokenSecret(): string {

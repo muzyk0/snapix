@@ -7,6 +7,8 @@ import { type TokensType } from '../../types/tokens.type'
 import { JwtService } from '../services/jwt.service'
 import { SessionsRepo } from '../../infrastructure/sessions.repository'
 import { isAfter } from 'date-fns'
+import { IRevokedTokensRepository } from '../interfaces'
+import { RevokedTokenEntity } from '../../domain/entities/rovokedToken.entity'
 
 export class RefreshTokenCommand {
   constructor(
@@ -20,27 +22,26 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand>
   constructor(
     private readonly jwtService: JwtService,
     private readonly prisma: PrismaService,
-    private readonly sessionsRepo: SessionsRepo
+    private readonly sessionsRepo: SessionsRepo,
+    private readonly revokedTokensRepository: IRevokedTokensRepository
   ) {}
 
   async execute({ ctx, ip }: RefreshTokenCommand): Promise<TokensType | null> {
-    const isRevokedBefore = await this.prisma.revokedToken.findUnique({
-      where: {
-        userId: ctx.user.id,
-        token: ctx.refreshToken,
-      },
+    const revokedToken = await this.revokedTokensRepository.find({
+      userId: ctx.user.id,
+      token: ctx.refreshToken,
     })
 
-    if (isNil(isRevokedBefore)) {
+    if (isNil(revokedToken)) {
       throw new UnauthorizedException()
     }
 
-    await this.prisma.revokedToken.create({
-      data: {
+    await this.revokedTokensRepository.save(
+      RevokedTokenEntity.createRevokedToken({
         token: ctx.refreshToken,
         userId: ctx.user.id,
-      },
-    })
+      })
+    )
 
     const lastPasswordChange = await this.prisma.passwordHistory.findFirst({
       where: {

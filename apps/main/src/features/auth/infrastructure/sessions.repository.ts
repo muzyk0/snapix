@@ -59,4 +59,12 @@ export class SessionsRepo {
 
     return true
   }
+
+  async deleteSession(deviceId: string): Promise<void> {
+    await this.prisma.session.delete({
+      where: {
+        deviceId,
+      },
+    })
+  }
 }

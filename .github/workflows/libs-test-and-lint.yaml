@@ -4,6 +4,8 @@ on:
   push:
     paths:
       - libs/**
+    branches-ignore:
+      - release/**
 
 jobs:
 #  tests-unit:
