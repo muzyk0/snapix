@@ -32,7 +32,7 @@ export class RefreshTokenHandler implements ICommandHandler<RefreshTokenCommand>
       token: ctx.refreshToken,
     })
 
-    if (isNil(revokedToken)) {
+    if (!isNil(revokedToken)) {
       throw new UnauthorizedException()
     }
 

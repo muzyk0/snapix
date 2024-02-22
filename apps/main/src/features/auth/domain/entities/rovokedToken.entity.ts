@@ -1,6 +1,6 @@
 import { AggregateRoot } from '@nestjs/cqrs'
 import type { RevokedToken, User } from '@prisma/client'
-import { RevokeTokenEvent } from '../events/revoke-token.event'
+// import { RevokeTokenEvent } from '../events/revoke-token.event'
 
 export interface RevokeTokenType {
   userId: User['id']
@@ -11,7 +11,7 @@ export class RevokedTokenEntity extends AggregateRoot implements Partial<Revoked
   userId!: number
   token!: string
 
-  protected constructor(userId: User['id'], token: string) {
+  constructor(userId: User['id'], token: string) {
     super()
 
     this.userId = userId
@@ -21,7 +21,8 @@ export class RevokedTokenEntity extends AggregateRoot implements Partial<Revoked
   static createRevokedToken({ userId, token }: RevokeTokenType): RevokedTokenEntity {
     const revokeToken = new RevokedTokenEntity(userId, token)
 
-    this.apply(new RevokeTokenEvent(userId, token))
+    // fixme
+    // this.apply(new RevokeTokenEvent(userId, token))
 
     return revokeToken
   }

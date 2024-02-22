@@ -114,6 +114,7 @@ export class AuthController {
     },
   })
   @ApiCookieAuth('refreshToken')
+  @Public()
   @Post('/refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -129,8 +130,8 @@ export class AuthController {
     )
 
     res.cookie('refreshToken', tokens.refreshToken, {
-      httpOnly: true,
-      secure: true,
+      httpOnly: false,
+      secure: false,
     })
     return { accessToken: tokens.accessToken }
   }
