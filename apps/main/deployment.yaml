@@ -83,6 +83,11 @@ spec:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
                   key: GOOGLE_CALLBACK_URL
+            - name: NEW_RELIC_LICENSE_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: NEW_RELIC_LICENSE_KEY
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
