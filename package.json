@@ -75,14 +75,17 @@
     "handlebars": "^4.7.8",
     "lodash": "^4.17.21",
     "mqtt": "^5.3.4",
+    "nest-winston": "^1.9.4",
     "nestjs-i18n": "^10.4.0",
+    "newrelic": "^11.10.4",
     "nodemailer": "^6.9.8",
     "passport": "^0.7.0",
     "passport-google-oauth": "^2.0.0",
     "passport-jwt": "^4.0.1",
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "winston": "^3.11.0"
   },
   "devDependencies": {
     "@it-incubator/prettier-config": "^0.1.2",
