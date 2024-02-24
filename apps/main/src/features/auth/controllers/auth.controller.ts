@@ -74,7 +74,8 @@ export class AuthController {
 
     response.cookie('refreshToken', session.refreshToken, {
       httpOnly: false,
-      secure: false,
+      secure: true,
+      sameSite: 'none',
     })
 
     return { accessToken: session.accessToken }
@@ -131,7 +132,8 @@ export class AuthController {
 
     res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: false,
-      secure: false,
+      secure: true,
+      sameSite: 'none',
     })
     return { accessToken: tokens.accessToken }
   }
