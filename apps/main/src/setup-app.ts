@@ -6,7 +6,9 @@ import cookieParser from 'cookie-parser'
 export class ValidationException extends BadRequestException {}
 
 export function setupApp(app: INestApplication, globalPrefix: string | null): INestApplication {
-  app.enableCors()
+  app.enableCors({
+    origin: '*',
+  })
   app.use(cookieParser())
 
   if (globalPrefix !== null) {
