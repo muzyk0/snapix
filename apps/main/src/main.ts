@@ -13,6 +13,8 @@ async function bootstrap() {
   const logger = new Logger('NestBootstrap')
   const app = await NestFactory.create<NestExpressApplication>(MainModule)
 
+  app.set('trust proxy')
+
   const appConfigService = app.get<AppConfigService>(AppConfigService)
 
   setupApp(app, appConfigService.globalPrefix)

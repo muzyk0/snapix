@@ -1,5 +1,5 @@
 import { type RevokedToken } from '@prisma/client'
-import { type RevokeTokenType } from '../../domain/entities/rovokedToken.entity'
+import { type RevokeTokenType } from '../../domain/entities/revokedToken.entity'
 
 export abstract class IRevokedTokensRepository {
   public abstract save: ({ userId, token }: RevokeTokenType) => Promise<void>

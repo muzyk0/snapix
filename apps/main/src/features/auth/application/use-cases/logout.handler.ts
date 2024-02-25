@@ -1,7 +1,7 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { type JwtPayloadWithRt } from '../../types/jwt.type'
 import { SessionsRepo } from '../../infrastructure/sessions.repository'
-import { RevokedTokenEntity } from '../../domain/entities/rovokedToken.entity'
+import { RevokedTokenEntity } from '../../domain/entities/revokedToken.entity'
 import { IRevokedTokensRepository } from '../interfaces'
 
 export class LogoutCommand {
