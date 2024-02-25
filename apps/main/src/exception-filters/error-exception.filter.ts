@@ -1,10 +1,11 @@
-import { type ArgumentsHost, Catch, type ExceptionFilter } from '@nestjs/common'
+import { type ArgumentsHost, Catch, type ExceptionFilter, Logger } from '@nestjs/common'
 import { type Request, type Response } from 'express'
 import { AuditLogServiceAbstract } from '@app/core/audit-log/audit-log-service.abstract'
 import { AuditCode } from '@app/core/audit-log/dto/audit-log.entity'
 
 @Catch(Error)
 export class ErrorExceptionFilter implements ExceptionFilter {
+  logger = new Logger(ErrorExceptionFilter.name)
   constructor(private readonly auditLogService: AuditLogServiceAbstract) {}
 
   async catch(exception: Error, host: ArgumentsHost) {
@@ -30,6 +31,8 @@ export class ErrorExceptionFilter implements ExceptionFilter {
         stack: exception.stack,
       }),
     })
+
+    this.logger.error(exception.message, exception.stack)
 
     // send the custom JSON response to the client
     response.status(status).json({

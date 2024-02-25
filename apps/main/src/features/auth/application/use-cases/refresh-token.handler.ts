@@ -8,7 +8,7 @@ import { JwtService } from '../services/jwt.service'
 import { SessionsRepo } from '../../infrastructure/sessions.repository'
 import { isAfter } from 'date-fns'
 import { IRevokedTokensRepository } from '../interfaces'
-import { RevokedTokenEntity } from '../../domain/entities/rovokedToken.entity'
+import { RevokedTokenEntity } from '../../domain/entities/revokedToken.entity'
 
 export class RefreshTokenCommand {
   constructor(

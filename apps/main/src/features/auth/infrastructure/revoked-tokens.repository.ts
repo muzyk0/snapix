@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { PrismaService } from '@app/prisma'
 import { type IRevokedTokensRepository } from '../application/interfaces'
 import { type RevokedToken } from '@prisma/client'
-import { type RevokeTokenType } from '../domain/entities/rovokedToken.entity'
+import { type RevokeTokenType } from '../domain/entities/revokedToken.entity'
 
 @Injectable()
 export class RevokedTokensRepository implements IRevokedTokensRepository {
