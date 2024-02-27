@@ -1,4 +1,4 @@
-import { Controller, Get, Headers, Ip, Req, Res, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Ip, Post, Req, Res, UseGuards } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { ApiTags } from '@nestjs/swagger'
 import { Request, Response } from 'express'
@@ -10,6 +10,8 @@ import { ExternalAccount } from '../types/externalAccount'
 import { CreateSessionCommand } from '../application/use-cases/create-session.handler'
 import type { TokensType } from '../types/tokens.type'
 import { type User } from '@prisma/client'
+import { ExchangeTokenCommand } from '../application/use-cases/exchange-token.handler'
+import { ExchangeTokenDto } from '../application/dto/exchange-token.dto'
 
 @ApiTags('oauth')
 @Controller('oauth')
@@ -25,27 +27,39 @@ export class OAuthController {
   @Get('/google/callback')
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(
-    @Headers() headers: Record<string, string>,
     @Req() req: Request,
     @Res() res: Response,
     @Ip() ip: string,
     @GetUserContextDecorator() ctx: ExternalAccount
   ) {
-    const xForwardedFor = headers['x-forwarded-for']
     const userAgent = req.get('User-Agent')
     const { id: userId } = await this.commandBus.execute<LoginByExternalAccountCommand, User>(
       new LoginByExternalAccountCommand(ctx)
     )
 
     const session = await this.commandBus.execute<CreateSessionCommand, TokensType>(
-      new CreateSessionCommand(userId, userAgent, ip ?? xForwardedFor)
+      new CreateSessionCommand(userId, userAgent, ip)
     )
 
-    res.cookie('refreshToken', session.refreshToken, {
+    res.redirect(`https://9art.ru/authSuccess?token=${session.refreshToken}`)
+  }
+
+  @Public()
+  @Post('/exchange-token')
+  async exchangeToken(
+    @Res({ passthrough: true }) res: Response,
+    @Ip() ip: string,
+    @Body() body: ExchangeTokenDto
+  ) {
+    const tokens: TokensType = await this.commandBus.execute<ExchangeTokenCommand, TokensType>(
+      new ExchangeTokenCommand(body.token, ip)
+    )
+
+    res.cookie('refreshToken', tokens.refreshToken, {
       httpOnly: true,
       secure: true,
     })
 
-    return { accessToken: session.accessToken }
+    return { accessToken: tokens.accessToken }
   }
 }
