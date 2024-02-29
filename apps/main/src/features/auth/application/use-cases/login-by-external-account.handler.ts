@@ -32,17 +32,37 @@ export class LoginByExternalAccountHandler
       return userWithExternalAccount
     }
 
-    const user = await this.prisma.user.create({
-      data: {
-        name: externalAccount.displayName,
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        email: externalAccount.email!,
+    const existingUserWithThisEmail = await this.prisma.user.findUnique({
+      where: {
+        email: externalAccount.email,
       },
     })
 
+    // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+    if (existingUserWithThisEmail) {
+      await this.createExternalAccount(existingUserWithThisEmail.id, externalAccount)
+
+      return existingUserWithThisEmail
+    }
+
+    const countUsers = await this.prisma.user.count()
+    const user = await this.prisma.user.create({
+      data: {
+        name: `${externalAccount.displayName}${countUsers}`,
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        email: externalAccount.email!, // todo: mayme null
+      },
+    })
+
+    await this.createExternalAccount(user.id, externalAccount)
+
+    return user
+  }
+
+  private async createExternalAccount(userId: User['id'], externalAccount: ExternalAccount) {
     await this.prisma.account.create({
       data: {
-        userId: user.id,
+        userId,
         name: externalAccount.displayName,
         email: externalAccount.email,
         providerId: externalAccount.id,
@@ -50,7 +70,5 @@ export class LoginByExternalAccountHandler
         provider: externalAccount.provider,
       },
     })
-
-    return user
   }
 }

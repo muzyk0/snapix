@@ -32,8 +32,8 @@ model User {
 }
 
 enum Provider {
-  GOOGLE
-  GITHUB
+  google
+  github
 }
 
 model Account {
