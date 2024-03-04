@@ -88,6 +88,16 @@ spec:
                 secretKeyRef:
                   name: snapix-back-main-production-config-secret
                   key: NEW_RELIC_LICENSE_KEY
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: AWS_ACCESS_KEY_ID
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: snapix-back-main-production-config-secret
+                  key: AWS_SECRET_ACCESS_KEY
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef:
