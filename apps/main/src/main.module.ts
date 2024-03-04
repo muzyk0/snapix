@@ -15,7 +15,7 @@ import { ValidationExceptionFilter } from './exception-filters/validation-except
 import { HealthModule } from './features/health/health.module'
 import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n'
 import * as path from 'path'
-import { ProfileModule } from './features/profile/profile.module';
+import { ProfileModule } from './features/profile/profile.module'
 
 @Module({
   imports: [
@@ -48,7 +48,7 @@ import { ProfileModule } from './features/profile/profile.module';
     HealthModule,
     AuthModule,
     NotificationModule,
-    ProfileModule
+    ProfileModule,
   ],
   controllers: [MainController],
   providers: [
