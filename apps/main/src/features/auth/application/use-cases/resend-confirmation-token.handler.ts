@@ -1,7 +1,7 @@
 import { BadRequestException } from '@nestjs/common'
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { PrismaService } from '@app/prisma'
-import { UserService } from '../../../users/services/user.service'
+import { IUserService } from '../../../users/services/user.service'
 
 export class ResendConfirmationTokenCommand {
   constructor(public readonly email: string) {}
@@ -13,7 +13,7 @@ export class ResendConfirmationTokenHandler
 {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly userService: UserService
+    private readonly userService: IUserService
   ) {}
 
   async execute({ email }: ResendConfirmationTokenCommand): Promise<boolean> {

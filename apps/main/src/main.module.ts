@@ -5,9 +5,9 @@ import { ConfigModule } from '@nestjs/config'
 import { AppConfigModule } from '@app/config'
 import { UsersModule } from './features/users/users.module'
 import { PrismaModule } from '@app/prisma'
-import { APP_FILTER, APP_GUARD } from '@nestjs/core'
+import { APP_FILTER } from '@nestjs/core'
 import { AuditLogModule } from './features/audit-log/audit-log.module'
-import { AuthModule, JwtAuthGuard } from './features/auth'
+import { AuthModule } from './features/auth'
 import { NotificationModule } from './features/notification/notification.module'
 import { ErrorExceptionFilter } from './exception-filters/error-exception.filter'
 import { HttpExceptionFilter } from './exception-filters/http-exception-filter.'
@@ -53,10 +53,6 @@ import { ProfileModule } from './features/profile/profile.module'
   controllers: [MainController],
   providers: [
     MainService,
-    {
-      provide: APP_GUARD,
-      useClass: JwtAuthGuard,
-    },
     {
       provide: APP_FILTER,
       useClass: ErrorExceptionFilter,

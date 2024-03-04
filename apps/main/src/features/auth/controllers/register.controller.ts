@@ -10,7 +10,6 @@ import {
 } from '@nestjs/swagger'
 import { CreateUserCommand } from '../application/use-cases'
 import { ValidationExceptionSwaggerDto } from '../../../exception-filters/swagger/validation-exceptiuon-swagger.dto'
-import { Public } from '../guards/public.guard'
 import { ConfirmRegisterCommand } from '../application/use-cases/confirm-register.handler'
 import {
   type ConfirmRegisterDto,
@@ -46,7 +45,6 @@ export class RegisterController {
     description: 'Validation failed',
     type: ValidationExceptionSwaggerDto,
   })
-  @Public()
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   async registerUser(
@@ -81,7 +79,6 @@ export class RegisterController {
     description: 'Validation failed',
     type: ValidationExceptionSwaggerDto,
   })
-  @Public()
   @Post('/confirm')
   @HttpCode(HttpStatus.ACCEPTED)
   async confirmAccount(@Body() { token }: ConfirmRegisterCommand): Promise<ConfirmRegisterDto> {
@@ -102,7 +99,6 @@ export class RegisterController {
     description: 'Validation failed',
     type: ValidationExceptionSwaggerDto,
   })
-  @Public()
   @Post('/resend-confirmation-token')
   @HttpCode(HttpStatus.ACCEPTED)
   async resendConfirmationCode(@Body() { email }: Email) {
