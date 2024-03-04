@@ -1,23 +1,15 @@
-import { type ExecutionContext, Injectable } from '@nestjs/common'
-import { Reflector } from '@nestjs/core'
-import { AuthGuard } from '@nestjs/passport'
-import { IS_PUBLIC_KEY } from './public.guard'
-import { type Observable } from 'rxjs'
+import { applyDecorators, Injectable, UseGuards } from '@nestjs/common'
+import { AuthGuard as PassportAuthGuard } from '@nestjs/passport'
+import { ApiUnauthorizedResponse } from '@nestjs/swagger'
 
 @Injectable()
-export class JwtAuthGuard extends AuthGuard('jwt-access') {
-  constructor(private readonly reflector: Reflector) {
-    super()
-  }
+export class JwtAuthGuard extends PassportAuthGuard('jwt-access') {}
 
-  canActivate(context: ExecutionContext): boolean | Promise<boolean> | Observable<boolean> {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(IS_PUBLIC_KEY, [
-      context.getHandler(),
-      context.getClass(),
-    ])
-    if (isPublic) {
-      return true
-    }
-    return super.canActivate(context)
-  }
-}
+export const AuthGuard = () =>
+  applyDecorators(
+    UseGuards(JwtAuthGuard),
+    ApiUnauthorizedResponse({
+      status: 401,
+      description: 'Unauthorized',
+    })
+  )

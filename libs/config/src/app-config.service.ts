@@ -56,4 +56,14 @@ export class AppConfigService {
       callbackURL: this.configService.get('GOOGLE_CALLBACK_URL'),
     }
   }
+
+  get s3Config(): {
+    accessKeyId: string
+    secretAccessKey: string
+  } {
+    return {
+      accessKeyId: this.configService.get('AWS_ACCESS_KEY_ID') ?? '',
+      secretAccessKey: this.configService.get('AWS_SECRET_ACCESS_KEY') ?? '',
+    }
+  }
 }
