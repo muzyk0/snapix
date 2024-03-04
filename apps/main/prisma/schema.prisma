@@ -27,6 +27,7 @@ model User {
   revokedToken        RevokedToken[]
   passwordHistory     PasswordHistory[]
   accounts            Account[]
+  profile             Profile[]
 
   @@unique([email, name, emailConfirmationId])
 }
@@ -123,5 +124,17 @@ model RevokedToken {
   user      User     @relation(fields: [userId], references: [id])
   userId    Int
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
+}
+
+model Profile {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  firstName String?
+  lastName  String?
+  birthDate DateTime?
+  city      String?
+  aboutMe   String?
   updatedAt DateTime @updatedAt()
 }
