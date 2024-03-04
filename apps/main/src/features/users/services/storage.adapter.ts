@@ -10,10 +10,7 @@ import { AppConfigService } from '@app/config'
 import { type User } from '@prisma/client'
 
 export abstract class IStorageAdapter {
-  abstract uploadAvatar(
-    userId: User['id'],
-    file: Express.Multer.File
-  ): Promise<PutObjectCommandOutput>
+  abstract uploadAvatar(userId: User['id'], file: Express.Multer.File): Promise<{ path: string }>
 
   abstract deleteAvatar(userId: User['id']): Promise<PutObjectCommandOutput>
 }
@@ -37,7 +34,7 @@ export class LocalStorageAdapter implements IStorageAdapter {
   public async uploadAvatar(
     userId: User['id'],
     file: Express.Multer.File
-  ): Promise<PutObjectCommandOutput> {
+  ): Promise<{ path: string }> {
     try {
       const deleteCommand = new DeleteObjectCommand({
         Bucket: 'snapix',
@@ -54,7 +51,10 @@ export class LocalStorageAdapter implements IStorageAdapter {
         Body: file.buffer,
         ContentType: 'image/png',
       })
-      return await this.client.send(command)
+      await this.client.send(command)
+      return {
+        path: `https://${command.input.Bucket}.storage.yandexcloud.net/${command.input.Key}`,
+      }
     } catch (e) {
       this.logger.error(e)
       throw e

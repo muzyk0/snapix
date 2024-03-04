@@ -21,7 +21,14 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
 
     console.log(result)
     return {
-      avatars: [],
+      avatars: [
+        {
+          url: result.path,
+          width: 300,
+          height: 300,
+          size: 300,
+        },
+      ],
     }
   }
 }
