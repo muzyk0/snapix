@@ -11,8 +11,6 @@ export class DeleteAvatarHandler implements IQueryHandler<DeleteAvatarCommand> {
   constructor(private readonly storage: IStorageAdapter) {}
 
   async execute({ userId }: DeleteAvatarCommand): Promise<void> {
-    const result = await this.storage.deleteAvatar(userId)
-
-    console.log(result)
+    await this.storage.deleteAvatar(userId)
   }
 }

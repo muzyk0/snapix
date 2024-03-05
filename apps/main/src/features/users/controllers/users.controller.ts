@@ -2,6 +2,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Post,
   UploadedFile,
@@ -17,6 +18,9 @@ import { UploadAvatarCommand } from '../application/use-cases/upload-avatar.hand
 import { GetUserContextDecorator } from '../../auth/decorators/get-user-context.decorator'
 import { JwtAtPayload } from '../../auth/types/jwt.type'
 import { DeleteAvatarCommand } from '../application/use-cases/delete-avatar.command'
+import type { UploadAvatarViewDto } from '../application/dto/upload-avatar-view.dto'
+import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
+import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
 
 @ApiTags('Users')
 @Controller('users')
@@ -37,6 +41,7 @@ export class UsersController {
     return await this.usersQueryRepository.countRegisteredUsers()
   }
 
+  @ApiUploadUserAvatar()
   @AuthGuard()
   @Post('/profile/avatar')
   @UseInterceptors(FileInterceptor('file'))
@@ -44,12 +49,16 @@ export class UsersController {
     @UploadedFile() file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
-    return this.commandBus.execute(new UploadAvatarCommand(ctx.user.id, file))
+    return this.commandBus.execute<UploadAvatarCommand, UploadAvatarViewDto>(
+      new UploadAvatarCommand(ctx.user.id, file)
+    )
   }
 
+  @ApiDeleteUserAvatar()
   @AuthGuard()
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/profile/avatar')
-  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload) {
-    return this.queryBus.execute(new DeleteAvatarCommand(ctx.user.id))
+  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload): Promise<void> {
+    return this.queryBus.execute<DeleteAvatarCommand>(new DeleteAvatarCommand(ctx.user.id))
   }
 }

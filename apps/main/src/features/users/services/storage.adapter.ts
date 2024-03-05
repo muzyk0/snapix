@@ -12,7 +12,7 @@ import { type User } from '@prisma/client'
 export abstract class IStorageAdapter {
   abstract uploadAvatar(userId: User['id'], file: Express.Multer.File): Promise<{ path: string }>
 
-  abstract deleteAvatar(userId: User['id']): Promise<PutObjectCommandOutput>
+  abstract deleteAvatar(userId: User['id']): Promise<void>
 }
 
 @Injectable()
@@ -41,9 +41,7 @@ export class LocalStorageAdapter implements IStorageAdapter {
         Key: `content/users/${userId}/avatars/${userId}_avatar.png`,
       })
 
-      const result = await this.client.send(deleteCommand)
-
-      console.log(result)
+      await this.client.send(deleteCommand)
 
       const command = new PutObjectCommand({
         Bucket: 'snapix',
@@ -61,16 +59,14 @@ export class LocalStorageAdapter implements IStorageAdapter {
     }
   }
 
-  public async deleteAvatar(userId: User['id']): Promise<DeleteObjectCommandOutput> {
+  public async deleteAvatar(userId: User['id']): Promise<void> {
     try {
       const getObjectCommand = new DeleteObjectCommand({
         Bucket: 'snapix',
         Key: `content/users/${userId}/avatars/${userId}_avatar.png`,
       })
 
-      const result = await this.client.send(getObjectCommand)
-
-      return result
+      await this.client.send(getObjectCommand)
     } catch (e) {
       this.logger.error(e)
       throw e

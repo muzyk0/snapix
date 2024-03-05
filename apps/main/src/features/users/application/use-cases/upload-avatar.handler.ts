@@ -1,5 +1,5 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { type UploadAvatarDtoView } from '../dto/upload-avatar.dto.view'
+import { type UploadAvatarViewDto } from '../dto/upload-avatar-view.dto'
 import { IStorageAdapter } from '../../services/storage.adapter'
 import { type User } from '@prisma/client'
 
@@ -14,12 +14,9 @@ export class UploadAvatarCommand {
 export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand> {
   constructor(private readonly storage: IStorageAdapter) {}
 
-  async execute({ userId, file }: UploadAvatarCommand): Promise<UploadAvatarDtoView> {
-    console.log(file)
-
+  async execute({ userId, file }: UploadAvatarCommand): Promise<UploadAvatarViewDto> {
     const result = await this.storage.uploadAvatar(userId, file)
 
-    console.log(result)
     return {
       avatars: [
         {
