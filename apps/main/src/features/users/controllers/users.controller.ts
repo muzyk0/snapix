@@ -9,7 +9,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { CommandBus, QueryBus } from '@nestjs/cqrs'
+import { CommandBus } from '@nestjs/cqrs'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { UsersQueryRepository } from '../infrastructure/users.query.repository'
@@ -27,7 +27,6 @@ import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
 export class UsersController {
   constructor(
     private readonly commandBus: CommandBus,
-    private readonly queryBus: QueryBus,
     private readonly usersQueryRepository: UsersQueryRepository
   ) {}
 
@@ -59,6 +58,6 @@ export class UsersController {
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/profile/avatar')
   async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload): Promise<void> {
-    return this.queryBus.execute<DeleteAvatarCommand>(new DeleteAvatarCommand(ctx.user.id))
+    return this.commandBus.execute<DeleteAvatarCommand>(new DeleteAvatarCommand(ctx.user.id))
   }
 }

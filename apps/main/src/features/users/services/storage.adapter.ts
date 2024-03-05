@@ -1,11 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common'
-import {
-  DeleteObjectCommand,
-  type DeleteObjectCommandOutput,
-  PutObjectCommand,
-  type PutObjectCommandOutput,
-  S3Client,
-} from '@aws-sdk/client-s3'
+import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { AppConfigService } from '@app/config'
 import { type User } from '@prisma/client'
 

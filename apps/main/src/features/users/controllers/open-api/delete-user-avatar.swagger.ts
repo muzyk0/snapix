@@ -4,7 +4,7 @@ import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 export function ApiDeleteUserAvatar() {
   return applyDecorators(
     ApiOperation({
-      summary: '',
+      summary: 'Delete user avatar',
     }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
