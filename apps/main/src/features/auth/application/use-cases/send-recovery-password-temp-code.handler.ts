@@ -5,7 +5,7 @@ import { BadRequestException } from '@nestjs/common'
 import { randomUUID } from 'crypto'
 import { addDays } from 'date-fns'
 import { RecoveryStatusEnum } from '../../types/recovery-status.enum'
-import { UserService } from '../../../users/services/user.service'
+import { IUserService } from '../../../users/services/user.service'
 
 export class SendRecoveryPasswordTempCodeCommand {
   constructor(public readonly email: string) {}
@@ -18,7 +18,7 @@ export class SendRecoveryPasswordTempCodeHandler
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: NotificationService,
-    private readonly userService: UserService
+    private readonly userService: IUserService
   ) {}
 
   async execute({ email }: SendRecoveryPasswordTempCodeCommand): Promise<void> {

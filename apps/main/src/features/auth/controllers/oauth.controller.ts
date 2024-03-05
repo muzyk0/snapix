@@ -2,7 +2,6 @@ import { Body, Controller, Get, Ip, Post, Req, Res, UseGuards } from '@nestjs/co
 import { CommandBus } from '@nestjs/cqrs'
 import { ApiTags } from '@nestjs/swagger'
 import { Request, Response } from 'express'
-import { Public } from '../guards/public.guard'
 import { GetUserContextDecorator } from '../decorators/get-user-context.decorator'
 import { GoogleOAuthGuard } from '../guards/google-oauth.guard'
 import { LoginByExternalAccountCommand } from '../application/use-cases/login-by-external-account.handler'
@@ -18,12 +17,10 @@ import { ExchangeTokenDto } from '../application/dto/exchange-token.dto'
 export class OAuthController {
   constructor(private readonly commandBus: CommandBus) {}
 
-  @Public()
   @UseGuards(GoogleOAuthGuard)
   @Get('/google')
   async googleAuth() {}
 
-  @Public()
   @Get('/google/callback')
   @UseGuards(GoogleOAuthGuard)
   async googleAuthRedirect(
@@ -44,7 +41,6 @@ export class OAuthController {
     res.redirect(`https://9art.ru/authSuccess?token=${session.refreshToken}`)
   }
 
-  @Public()
   @Post('/exchange-token')
   async exchangeToken(
     @Res({ passthrough: true }) res: Response,

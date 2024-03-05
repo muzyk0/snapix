@@ -4,8 +4,12 @@ import { randomUUID } from 'crypto'
 import { addDays } from 'date-fns'
 import { NotificationService } from '../../notification/services/notification.service'
 
+export abstract class IUserService {
+  abstract sendConfirmationToken(email: string): Promise<void>
+}
+
 @Injectable()
-export class UserService {
+export class UserService implements IUserService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService

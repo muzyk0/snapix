@@ -7,7 +7,7 @@ import { IsEmail, IsNotEmpty, Length, Matches } from 'class-validator'
 import { NotificationService } from '../../../notification/services/notification.service'
 import { BadRequestException } from '@nestjs/common'
 import { ApiProperty } from '@nestjs/swagger'
-import { UserService } from '../../../users/services/user.service'
+import { IUserService } from '../../../users/services/user.service'
 import { type I18nPath } from '../../../../../generated/i18n.generated'
 
 export class CreateUserCommand {
@@ -52,7 +52,7 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
     private readonly notificationService: NotificationService,
     private readonly cryptService: CryptService,
     private readonly prisma: PrismaService,
-    private readonly userService: UserService
+    private readonly userService: IUserService
   ) {}
 
   async execute(dto: CreateUserCommand): Promise<I18nPath> {

@@ -14,7 +14,6 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { ApiBody, ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
 import { LocalAuthGuard } from '../guards/local-auth.guard'
 import { Request, Response } from 'express'
-import { Public } from '../guards/public.guard'
 import { type TokensType } from '../types/tokens.type'
 import { Email } from '../application/dto/email.dto'
 import { SendRecoveryPasswordTempCodeCommand } from '../application/use-cases/send-recovery-password-temp-code.handler'
@@ -54,7 +53,6 @@ export class AuthController {
   })
   @ApiBody({ type: ValidateUserCommand })
   @ApiValidationException()
-  @Public()
   @UseGuards(LocalAuthGuard)
   @Post('/login')
   @HttpCode(HttpStatus.OK)
@@ -86,7 +84,6 @@ export class AuthController {
     description: 'Clears refresh token in cookie',
   })
   @ApiCookieAuth('refreshToken')
-  @Public()
   @Post('/logout')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -115,7 +112,6 @@ export class AuthController {
     },
   })
   @ApiCookieAuth('refreshToken')
-  @Public()
   @Post('/refresh-token')
   @UseGuards(JwtRefreshAuthGuard)
   @HttpCode(HttpStatus.OK)
@@ -146,7 +142,6 @@ export class AuthController {
     description: 'New password has been sent to your email',
   })
   @ApiValidationException()
-  @Public()
   @Post('/forgot-password')
   @HttpCode(HttpStatus.ACCEPTED)
   async recoveryPassword(@Body() { email }: Email) {
@@ -165,7 +160,6 @@ export class AuthController {
     description: 'Invalid token',
   })
   @ApiValidationException()
-  @Public()
   @Post('/forgot-password/verify-token')
   @HttpCode(HttpStatus.OK)
   async verifyToken(
@@ -183,7 +177,6 @@ export class AuthController {
     status: HttpStatus.NO_CONTENT,
     description: 'Set new password with recovery token',
   })
-  @Public()
   @Post('/new-password')
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmRecoveryPassword(@Body() { password, token }: NewPasswordDto) {
