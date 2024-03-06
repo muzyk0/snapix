@@ -8,5 +8,6 @@ export const clearDbBeforeTest = async (prisma: PrismaService) => {
   await prisma.post.deleteMany()
   await prisma.emailConfirmation.deleteMany()
   await prisma.account.deleteMany()
+  await prisma.profile.deleteMany()
   await prisma.user.deleteMany()
 }

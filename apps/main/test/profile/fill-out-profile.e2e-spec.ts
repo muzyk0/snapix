@@ -3,29 +3,12 @@ import request from 'supertest'
 import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
 import { mockNotificationService } from '../common/mocks/mockNotificationService'
+import { correctUser, incorrectUser } from './profile-input-value'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
-import { CONFIRMATION_STATUS } from '../../src/features/auth/types/confirm-status.enum'
-import {
-  aboutMe,
-  birthDate,
-  city,
-  email,
-  incAboutMe,
-  incBirthDate,
-  incCity,
-  incUserFirstName,
-  incUserLastName,
-  incUserName,
-  password,
-  userFirstName,
-  userLastName,
-  username,
-} from './profile-input-value'
 
 jest.setTimeout(1000 * 10)
 
-// fixme: Fix tests and remove skip method of describe
-describe.skip('ProfileController (e2e) - fill out', () => {
+describe('ProfileController (e2e) - fill out', () => {
   let app: INestApplication
   let prisma: PrismaService
 
@@ -42,131 +25,250 @@ describe.skip('ProfileController (e2e) - fill out', () => {
   })
 
   beforeEach(async () => {
+    await clearDbBeforeTest(prisma)
     jest.clearAllMocks()
     jest.clearAllTimers()
   })
 
-  let correctToken = ''
+  let refreshToken = ''
+  let accessToken = ''
   const badToken = '97603996-b7d5-4a80-a4fb-2b4334131b1d'
 
-  it('register and confirm user, before other test', async () => {
-    // clear db
-    await clearDbBeforeTest(prisma)
-
+  it('should not fill out profile, with bad request input', async () => {
     // register new user
-
-    const response1 = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/auth/register')
-      .send({ username, email, password })
+      .send({
+        username: correctUser.username,
+        email: correctUser.email,
+        password: correctUser.password,
+      })
       .expect(201)
 
-    expect(response1.body.message).toBe(
-      `You are registered. We have sent a link to confirm your email address to ${email}`
-    )
-
-    expect(mockNotificationService.sendEmailConfirmationCode).toHaveBeenCalledWith({
-      email,
-      userName: username,
-      token: expect.any(String),
-    })
-
     // get token
-    correctToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
+    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
 
     // confirm account
-    const acceptedResponse = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .post('/auth/register/confirm')
-      .send({ token: correctToken })
+      .send({ token: refreshToken })
       .expect(202)
       .then(res => res.body)
 
-    expect(acceptedResponse).toStrictEqual({
-      status: CONFIRMATION_STATUS.OK,
-      message: 'OK',
-    })
-  })
+    // login user
+    const loginUser = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: correctUser.email, password: correctUser.password })
+      .expect(200)
+    accessToken = loginUser.body.accessToken
 
-  it('should not fill out profile, with bad request input', async () => {
+    // test profile
     const incorrectResponse = await request(app.getHttpServer())
-      .post('/profile/fill-out')
+      .put('/users/profile')
+      .auth(accessToken, { type: 'bearer' })
       .send({
-        userName: incUserName,
-        firstName: incUserFirstName,
-        lastName: incUserLastName,
-        birthDate: incBirthDate,
-        city: incCity,
-        aboutMe: incAboutMe,
+        userName: incorrectUser.username,
+        firstName: incorrectUser.firstName,
+        lastName: incorrectUser.lastName,
+        birthDate: incorrectUser.birthDate,
+        city: incorrectUser.city,
+        aboutMe: incorrectUser.aboutMe,
       })
       .expect(400)
 
-    expect(incorrectResponse.body.message).toBe({
+    expect(incorrectResponse.body).toStrictEqual({
       message: 'Validation Exception',
       errors: {
         userName: {
           property: 'userName',
           message: expect.any(String),
-          meta: expect.any(Object),
+          meta: {
+            value: incorrectUser.username,
+            target: expect.any(Object),
+            children: null,
+          },
         },
         firstName: {
           property: 'firstName',
           message: expect.any(String),
-          meta: expect.any(Object),
+          meta: {
+            value: incorrectUser.firstName,
+            target: expect.any(Object),
+            children: null,
+          },
         },
         lastName: {
           property: 'lastName',
           message: expect.any(String),
-          meta: expect.any(Object),
+          meta: {
+            value: incorrectUser.lastName,
+            target: expect.any(Object),
+            children: null,
+          },
         },
         birthDate: {
           property: 'birthDate',
           message: expect.any(String),
-          meta: expect.any(Object),
+          meta: {
+            value: incorrectUser.birthDate,
+            target: expect.any(Object),
+            children: null,
+          },
         },
         city: {
           property: 'city',
           message: expect.any(String),
-          meta: expect.any(Object),
+          meta: {
+            value: incorrectUser.city,
+            target: expect.any(Object),
+            children: null,
+          },
         },
         aboutMe: {
           property: 'aboutMe',
           message: expect.any(String),
-          meta: expect.any(Object),
+          meta: {
+            value: incorrectUser.aboutMe,
+            target: expect.any(Object),
+            children: null,
+          },
         },
       },
     })
   })
 
   it('should not fill out profile, with incorrect auth', async () => {
+    // register new user
     await request(app.getHttpServer())
-      .post('/profile/fill-out')
+      .post('/auth/register')
+      .send({
+        username: correctUser.username,
+        email: correctUser.email,
+        password: correctUser.password,
+      })
+      .expect(201)
+
+    // get token
+    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
+
+    // confirm account
+    await request(app.getHttpServer())
+      .post('/auth/register/confirm')
+      .send({ token: refreshToken })
+      .expect(202)
+      .then(res => res.body)
+
+    // login user
+    const loginUser = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: correctUser.email, password: correctUser.password })
+      .expect(200)
+    accessToken = loginUser.body.accessToken
+
+    // test profile
+    await request(app.getHttpServer())
+      .put('/users/profile')
       .auth(badToken, {
         type: 'bearer',
       })
       .send({
-        userName: username,
-        firstName: userFirstName,
-        lastName: userLastName,
-        birthDate,
-        city,
-        aboutMe,
+        userName: correctUser.username,
+        firstName: correctUser.userFirstName,
+        lastName: correctUser.userLastName,
+        birthDate: correctUser.birthDate,
+        city: correctUser.city,
+        aboutMe: correctUser.aboutMe,
       })
       .expect(401)
   })
 
   it('should fill out profile', async () => {
+    // register new user
     await request(app.getHttpServer())
-      .post('/profile/fill-out')
-      .auth(correctToken, {
+      .post('/auth/register')
+      .send({
+        username: correctUser.username,
+        email: correctUser.email,
+        password: correctUser.password,
+      })
+      .expect(201)
+
+    // get token
+    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
+
+    // confirm account
+    await request(app.getHttpServer())
+      .post('/auth/register/confirm')
+      .send({ token: refreshToken })
+      .expect(202)
+      .then(res => res.body)
+
+    // login user
+    const loginUser = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: correctUser.email, password: correctUser.password })
+      .expect(200)
+    accessToken = loginUser.body.accessToken
+
+    // test profile
+    await request(app.getHttpServer())
+      .put('/users/profile')
+      .auth(accessToken, {
         type: 'bearer',
       })
       .send({
-        userName: username,
-        firstName: userFirstName,
-        lastName: userLastName,
-        birthDate,
-        city,
-        aboutMe,
+        userName: correctUser.username,
+        firstName: correctUser.userFirstName,
+        lastName: correctUser.userLastName,
+        birthDate: correctUser.birthDate,
+        city: correctUser.city,
+        aboutMe: correctUser.aboutMe,
+      })
+      .expect(200)
+  })
+
+  it('should update not mandatory value profile', async () => {
+    // register new user
+    await request(app.getHttpServer())
+      .post('/auth/register')
+      .send({
+        username: correctUser.username,
+        email: correctUser.email,
+        password: correctUser.password,
       })
       .expect(201)
+
+    // get token
+    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
+
+    // confirm account
+    await request(app.getHttpServer())
+      .post('/auth/register/confirm')
+      .send({ token: refreshToken })
+      .expect(202)
+      .then(res => res.body)
+
+    // login user
+    const loginUser = await request(app.getHttpServer())
+      .post('/auth/login')
+      .send({ email: correctUser.email, password: correctUser.password })
+      .expect(200)
+    accessToken = loginUser.body.accessToken
+
+    // test profile
+    await request(app.getHttpServer())
+      .put('/users/profile')
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({
+        userName: correctUser.username,
+        firstName: correctUser.userFirstName,
+        lastName: correctUser.userLastName,
+        city: null,
+        birthDate: null,
+        aboutMe: null,
+      })
+      .expect(200)
   })
 })
