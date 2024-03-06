@@ -1,7 +1,6 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { IsDate, IsNotEmpty, Length, Matches } from 'class-validator'
+import { IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
-import { MinAge } from '../../decorators/min-age.decorator'
 import { PrismaService } from '@app/prisma'
 
 export class FillOutProfileCommand {
@@ -37,23 +36,28 @@ export class FillOutProfileCommand {
 
   @ApiProperty({
     pattern: '^\\d{2}\\.\\d{2}\\.\\d{4}$',
+    type: String,
   })
-  @Matches(/^\d{2}\.\d{2}\.\d{4}$/)
-  @IsDate()
-  @MinAge(13, { message: 'User must be at least 13 years old' })
+  @IsOptional()
+  @Matches(/^\d{2}\.\d{2}\.\d{4}$/, { message: 'Invalid date format. Please use dd.mm.yyyy' })
+  @IsString()
   birthDate: string
 
   @ApiProperty({
     pattern: '^[a-zA-Zа-яА-Я\\s\\-]+$',
   })
+  @IsOptional()
   @Matches(/^[a-zA-Zа-яА-Я\s-]+$/)
   city: string
 
   @ApiProperty({
     maxLength: 200,
-    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,20}$',
+    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
   })
-  @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,20}$/)
+  @IsOptional()
+  @Length(0, 200)
+  @IsString()
+  // @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$/)
   aboutMe: string
 
   userId: number
@@ -65,10 +69,9 @@ export class FillOutProfileCommand {
     birthDate: string,
     city: string,
     aboutMe: string,
-    userId: number,
-    name: string
+    userId: number
   ) {
-    this.userName = userName ?? name
+    this.userName = userName
     this.firstName = firstName
     this.lastName = lastName
     this.birthDate = birthDate
@@ -83,27 +86,35 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(dto: FillOutProfileCommand) {
-    const profile = await this.prisma.profile.findFirst({
-      where: {
-        userId: dto.userId,
-      },
-    })
-    await this.prisma.profile.update({
-      where: {
-        id: profile?.id,
-      },
-      data: {
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        birthDate: dto.birthDate,
-        city: dto.city,
-        aboutMe: dto.aboutMe,
-        user: {
-          update: {
-            name: dto.userName,
+    let birthDate: Date | null
+    if (!dto.birthDate) {
+      birthDate = null
+    } else {
+      birthDate = new Date(new Date(dto.birthDate).toLocaleDateString('en-GB'))
+    }
+
+    try {
+      await this.prisma.user.update({
+        where: {
+          id: dto.userId,
+        },
+        data: {
+          name: dto.userName,
+          profile: {
+            update: {
+              firstName: dto.firstName,
+              lastName: dto.lastName,
+              birthDate,
+              city: dto.city,
+              aboutMe: dto.aboutMe,
+            },
           },
         },
-      },
-    })
+      })
+      return true
+    } catch (e) {
+      console.log(e)
+      return false
+    }
   }
 }

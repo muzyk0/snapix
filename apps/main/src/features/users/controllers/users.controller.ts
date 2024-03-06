@@ -1,10 +1,12 @@
 import {
+  Body,
   Controller,
   Delete,
   Get,
   HttpCode,
   HttpStatus,
   Post,
+  Put,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -18,6 +20,7 @@ import { UploadAvatarCommand } from '../application/use-cases/upload-avatar.hand
 import { GetUserContextDecorator } from '../../auth/decorators/get-user-context.decorator'
 import { JwtAtPayload } from '../../auth/types/jwt.type'
 import { DeleteAvatarCommand } from '../application/use-cases/delete-avatar.command'
+import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.handler'
 import type { UploadAvatarViewDto } from '../application/dto/upload-avatar-view.dto'
 import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
@@ -59,5 +62,25 @@ export class UsersController {
   @Delete('/profile/avatar')
   async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload): Promise<void> {
     return this.commandBus.execute<DeleteAvatarCommand>(new DeleteAvatarCommand(ctx.user.id))
+  }
+
+  @AuthGuard()
+  @Put('/profile')
+  @HttpCode(HttpStatus.OK)
+  async fillOutProfile(
+    @Body() body: FillOutProfileCommand,
+    @GetUserContextDecorator() ctx: JwtAtPayload
+  ) {
+    await this.commandBus.execute<FillOutProfileCommand>(
+      new FillOutProfileCommand(
+        body.userName,
+        body.firstName,
+        body.lastName,
+        body.birthDate,
+        body.city,
+        body.aboutMe,
+        ctx.user.id
+      )
+    )
   }
 }
