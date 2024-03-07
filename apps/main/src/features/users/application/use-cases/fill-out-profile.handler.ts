@@ -45,7 +45,8 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
   }
 
   async checkAge(birthDate: Date | null): Promise<string> {
-    if (birthDate == null) return 'No age'
+    if (isNil(birthDate)) return 'No age'
+
     const currentDate = new Date()
 
     const approximateAge = currentDate.getFullYear() - birthDate.getFullYear()
@@ -70,6 +71,6 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
 
     // date conversion
     const [day, month, year] = birthDate.split('.').map(Number)
-    return new Date(year, month - 1, day)
+    return new Date(Date.UTC(year, month - 1, day, 0, 0, 0, 0))
   }
 }

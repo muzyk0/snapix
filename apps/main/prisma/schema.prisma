@@ -133,7 +133,7 @@ model Profile {
   user      User?
   firstName String?
   lastName  String?
-  birthDate DateTime?
+  birthDate DateTime?@db.Date
   city      String?
   aboutMe   String?
   updatedAt DateTime @updatedAt()
