@@ -8,8 +8,14 @@ export interface UploadFileParams {
   mimetype: string
 }
 
-export abstract class IStorageAdapter {
-  abstract upload(payload: UploadFileParams): Promise<{ path: string }>
+export interface UploadFileOutput {
+  path: string
+  key: string
+  ETag: string
+}
 
-  abstract delete(type: StorageCommandEnum, ownerId: string): Promise<void>
+export abstract class IStorageAdapter {
+  abstract upload(payload: UploadFileParams): Promise<UploadFileOutput>
+
+  abstract delete(key: string): Promise<void>
 }

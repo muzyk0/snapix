@@ -1,9 +1,14 @@
-import { Injectable, Logger } from '@nestjs/common'
+import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common'
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { AppConfigService } from '@app/config'
-import { type IStorageAdapter, type UploadFileParams } from './storage-adapter.abstract'
+import {
+  type UploadFileOutput,
+  type IStorageAdapter,
+  type UploadFileParams,
+} from './storage-adapter.abstract'
 import * as mime from 'mime-types'
 import * as crypto from 'crypto'
+import { isNil } from 'lodash'
 
 @Injectable()
 export class FilesStorageAdapter implements IStorageAdapter {
@@ -22,7 +27,7 @@ export class FilesStorageAdapter implements IStorageAdapter {
     })
   }
 
-  public async upload({ dirKey, buffer, mimetype }: UploadFileParams): Promise<{ path: string }> {
+  public async upload({ dirKey, buffer, mimetype }: UploadFileParams): Promise<UploadFileOutput> {
     // fixme: This this object {type: 'Buffer', data: number[]}
     const fileBuffer = Buffer.from(buffer)
 
@@ -40,7 +45,12 @@ export class FilesStorageAdapter implements IStorageAdapter {
       console.log('putObjectCommand', command)
       const response = await this.client.send(command)
       console.log('upload response', response)
+      if (isNil(command.input.Key) || isNil(response.ETag)) {
+        throw new InternalServerErrorException()
+      }
       return {
+        key: command.input.Key,
+        ETag: response.ETag,
         path: `https://${this.bucket}.storage.yandexcloud.net/${command.input.Key}`,
       }
     } catch (e) {

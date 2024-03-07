@@ -23,6 +23,7 @@ interface EnvironmentVariables {
   AWS_SECRET_ACCESS_KEY: string
   STORAGE_SERVICE_HOST: string
   STORAGE_SERVICE_PORT: number
+  STORAGE_SERVICE_MONGO_DB: string
 }
 
 @Injectable()
@@ -98,6 +99,14 @@ export class AppConfigService {
     return {
       host: this.configService.get('STORAGE_SERVICE_HOST') ?? '',
       port: this.configService.get('STORAGE_SERVICE_PORT', 3001, { infer: true }),
+    }
+  }
+
+  get mongoDbOptions(): {
+    uri: string
+  } {
+    return {
+      uri: this.configService.get('STORAGE_SERVICE_MONGO_DB', ''),
     }
   }
 }
