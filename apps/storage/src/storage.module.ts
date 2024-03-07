@@ -1,10 +1,18 @@
 import { Module } from '@nestjs/common'
-import { StorageController } from './storage.controller'
-import { StorageService } from './storage.service'
+import { FilesModule } from './files/files.module'
+import { AppConfigModule } from '@app/config'
+import { ConfigModule } from '@nestjs/config'
 
 @Module({
-  imports: [],
-  controllers: [StorageController],
-  providers: [StorageService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '.env.test'],
+    }),
+    FilesModule,
+    AppConfigModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class StorageModule {}

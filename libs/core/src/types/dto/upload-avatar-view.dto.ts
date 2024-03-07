@@ -1,6 +1,6 @@
 import { IsArray, ValidateNested, IsNumber, Min, Max, IsUrl } from 'class-validator'
 
-export class AvatarInfo {
+export class ImageFileInfo {
   @IsUrl()
   url!: string
 
@@ -22,5 +22,5 @@ export class AvatarInfo {
 export class UploadAvatarViewDto {
   @IsArray()
   @ValidateNested({ each: true })
-  avatars!: AvatarInfo[]
+  avatars!: ImageFileInfo[]
 }

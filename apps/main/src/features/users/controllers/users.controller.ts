@@ -26,6 +26,7 @@ import { UpdateProfileDto } from '../application/dto/update-profile.dto'
 import type { UploadAvatarViewDto } from '../application/dto/upload-avatar-view.dto'
 import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
+import { type UploadAvatarViewDto } from '@app/core/types/dto'
 
 @ApiTags('Users')
 @Controller('users')
@@ -54,7 +55,12 @@ export class UsersController {
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
     return this.commandBus.execute<UploadAvatarCommand, UploadAvatarViewDto>(
-      new UploadAvatarCommand(ctx.user.id, file)
+      new UploadAvatarCommand({
+        ownerId: String(ctx.user.id),
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+      })
     )
   }
 

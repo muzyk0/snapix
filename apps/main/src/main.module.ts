@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common'
 import { MainController } from './main.controller'
 import { MainService } from './main.service'
 import { ConfigModule } from '@nestjs/config'
-import { AppConfigModule } from '@app/config'
+import { AppConfigModule, AppConfigService } from '@app/config'
 import { UsersModule } from './features/users/users.module'
 import { PrismaModule } from '@app/prisma'
 import { APP_FILTER } from '@nestjs/core'
@@ -15,6 +15,8 @@ import { ValidationExceptionFilter } from './exception-filters/validation-except
 import { HealthModule } from './features/health/health.module'
 import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n'
 import * as path from 'path'
+import { ClientsModule, type TcpClientOptions, Transport } from '@nestjs/microservices'
+import { ServicesEnum } from '@app/core/constants'
 
 @Module({
   imports: [
@@ -40,6 +42,24 @@ import * as path from 'path'
       resolvers: [new HeaderResolver(['x-lang']), AcceptLanguageResolver],
       inject: [],
     }),
+
+    ClientsModule.registerAsync([
+      {
+        name: ServicesEnum.STORAGE_SERVICE,
+        imports: [AppConfigModule],
+        useFactory: (configService: AppConfigService) => {
+          return {
+            transport: Transport.TCP,
+            options: {
+              host: configService.storageService.host,
+              port: configService.storageService.port,
+            },
+          } satisfies TcpClientOptions
+        },
+        inject: [AppConfigService],
+      },
+    ]),
+
     AppConfigModule,
     UsersModule,
     PrismaModule,
