@@ -1,5 +1,16 @@
+export interface CorrectUser {
+  username: string
+  email: string
+  password: string
+  userFirstName: string
+  userLastName: string
+  birthDate: string
+  city: string
+  aboutMe: string
+}
+
 // correct input values
-export const correctUser = {
+export const correctUser: CorrectUser = {
   username: 'newUser1',
   email: 'newUser1@example.com',
   password: 'password0aA!=',

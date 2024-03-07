@@ -2,9 +2,9 @@ import { type INestApplication } from '@nestjs/common'
 import request from 'supertest'
 import { PrismaService } from '@app/prisma'
 import { setupInitApp } from '../setupInitApp'
-import { mockNotificationService } from '../common/mocks/mockNotificationService'
 import { correctUser, incorrectUser } from './profile-input-value'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
+import { registerConfirmAndLogin } from '../common/utils/authHelper'
 
 jest.setTimeout(1000 * 10)
 
@@ -30,37 +30,12 @@ describe('ProfileController (e2e) - fill out', () => {
     jest.clearAllTimers()
   })
 
-  let refreshToken = ''
   let accessToken = ''
   const badToken = '97603996-b7d5-4a80-a4fb-2b4334131b1d'
 
   it('should not fill out profile, with bad request input', async () => {
-    // register new user
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        username: correctUser.username,
-        email: correctUser.email,
-        password: correctUser.password,
-      })
-      .expect(201)
-
-    // get token
-    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
-
-    // confirm account
-    await request(app.getHttpServer())
-      .post('/auth/register/confirm')
-      .send({ token: refreshToken })
-      .expect(202)
-      .then(res => res.body)
-
-    // login user
-    const loginUser = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: correctUser.email, password: correctUser.password })
-      .expect(200)
-    accessToken = loginUser.body.accessToken
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test profile
     const incorrectResponse = await request(app.getHttpServer())
@@ -138,32 +113,8 @@ describe('ProfileController (e2e) - fill out', () => {
   })
 
   it('should not fill out profile, with incorrect auth', async () => {
-    // register new user
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        username: correctUser.username,
-        email: correctUser.email,
-        password: correctUser.password,
-      })
-      .expect(201)
-
-    // get token
-    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
-
-    // confirm account
-    await request(app.getHttpServer())
-      .post('/auth/register/confirm')
-      .send({ token: refreshToken })
-      .expect(202)
-      .then(res => res.body)
-
-    // login user
-    const loginUser = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: correctUser.email, password: correctUser.password })
-      .expect(200)
-    accessToken = loginUser.body.accessToken
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test profile
     await request(app.getHttpServer())
@@ -183,32 +134,8 @@ describe('ProfileController (e2e) - fill out', () => {
   })
 
   it('should fill out profile', async () => {
-    // register new user
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        username: correctUser.username,
-        email: correctUser.email,
-        password: correctUser.password,
-      })
-      .expect(201)
-
-    // get token
-    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
-
-    // confirm account
-    await request(app.getHttpServer())
-      .post('/auth/register/confirm')
-      .send({ token: refreshToken })
-      .expect(202)
-      .then(res => res.body)
-
-    // login user
-    const loginUser = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: correctUser.email, password: correctUser.password })
-      .expect(200)
-    accessToken = loginUser.body.accessToken
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test profile
     await request(app.getHttpServer())
@@ -228,32 +155,8 @@ describe('ProfileController (e2e) - fill out', () => {
   })
 
   it('should update not mandatory value profile', async () => {
-    // register new user
-    await request(app.getHttpServer())
-      .post('/auth/register')
-      .send({
-        username: correctUser.username,
-        email: correctUser.email,
-        password: correctUser.password,
-      })
-      .expect(201)
-
-    // get token
-    refreshToken = mockNotificationService.sendEmailConfirmationCode.mock.calls[0][0]?.token
-
-    // confirm account
-    await request(app.getHttpServer())
-      .post('/auth/register/confirm')
-      .send({ token: refreshToken })
-      .expect(202)
-      .then(res => res.body)
-
-    // login user
-    const loginUser = await request(app.getHttpServer())
-      .post('/auth/login')
-      .send({ email: correctUser.email, password: correctUser.password })
-      .expect(200)
-    accessToken = loginUser.body.accessToken
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test profile
     await request(app.getHttpServer())
@@ -270,5 +173,42 @@ describe('ProfileController (e2e) - fill out', () => {
         aboutMe: null,
       })
       .expect(200)
+  })
+
+  it('should get profile info', async () => {
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
+
+    // test profile
+    await request(app.getHttpServer())
+      .put('/users/profile')
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({
+        userName: correctUser.username,
+        firstName: correctUser.userFirstName,
+        lastName: correctUser.userLastName,
+        birthDate: correctUser.birthDate,
+        city: correctUser.city,
+        aboutMe: correctUser.aboutMe,
+      })
+      .expect(200)
+
+    const getProfile = await request(app.getHttpServer())
+      .get('/users/profile')
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .expect(200)
+    expect(getProfile.body).toEqual({
+      userName: correctUser.username,
+      firstName: correctUser.userFirstName,
+      lastName: correctUser.userLastName,
+      birthDate: correctUser.birthDate,
+      city: correctUser.city,
+      aboutMe: correctUser.aboutMe,
+      lastUpdate: expect.any(String),
+    })
   })
 })
