@@ -72,7 +72,7 @@ export class UsersController {
     @Body() body: FillOutProfileCommand,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
-    await this.commandBus.execute<FillOutProfileCommand>(
+    return await this.commandBus.execute<FillOutProfileCommand>(
       new FillOutProfileCommand(
         body.userName,
         body.firstName,

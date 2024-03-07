@@ -88,12 +88,8 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(dto: FillOutProfileCommand) {
-    let birthDate: Date | null
-    if (!dto.birthDate) {
-      birthDate = null
-    } else {
-      birthDate = new Date(new Date(dto.birthDate).toLocaleDateString('en-GB'))
-    }
+    const birthDate = await this.handlerDate(dto.birthDate)
+    const checkAge = await this.checkAge(birthDate)
 
     try {
       await this.prisma.user.update({
@@ -113,9 +109,37 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
           },
         },
       })
-      return { message: 'Profile updated successfully' }
+
+      return { message: checkAge }
     } catch (error) {
-      throw new HttpException('Error updating profile', HttpStatus.INTERNAL_SERVER_ERROR)
+      throw new HttpException('Error! Server is not available!', HttpStatus.INTERNAL_SERVER_ERROR)
     }
+  }
+
+  async checkAge(birthDate: Date | null): Promise<string> {
+    if (birthDate == null) return 'No age'
+
+    const currentDate = new Date()
+
+    // calculate user age
+    let age = currentDate.getFullYear() - birthDate.getFullYear()
+
+    // compare month
+    if (
+      currentDate.getMonth() < birthDate.getMonth() ||
+      (currentDate.getMonth() === birthDate.getMonth() &&
+        currentDate.getDate() < birthDate.getDate())
+    ) {
+      age--
+    }
+    if (age < 13) return 'A user under 13 cannot create a profile. Privacy Policy'
+    return 'Your settings are saved!'
+  }
+
+  async handlerDate(birthDate: string | null): Promise<Date | null> {
+    if (birthDate == null) {
+      return null
+    }
+    return new Date(new Date(birthDate).toLocaleDateString('en-GB'))
   }
 }
