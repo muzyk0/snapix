@@ -21,6 +21,7 @@ import { GetUserContextDecorator } from '../../auth/decorators/get-user-context.
 import { JwtAtPayload } from '../../auth/types/jwt.type'
 import { DeleteAvatarCommand } from '../application/use-cases/delete-avatar.command'
 import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.handler'
+import { GetProfileInfoCommand } from '../application/use-cases/get-profile-info.handler'
 import type { UploadAvatarViewDto } from '../application/dto/upload-avatar-view.dto'
 import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
@@ -82,5 +83,12 @@ export class UsersController {
         ctx.user.id
       )
     )
+  }
+
+  @AuthGuard()
+  @Get('/profile')
+  @HttpCode(HttpStatus.OK)
+  async getProfileInfo(@GetUserContextDecorator() ctx: JwtAtPayload) {
+    return this.commandBus.execute(new GetProfileInfoCommand(ctx.user.id))
   }
 }
