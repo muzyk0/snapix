@@ -2,6 +2,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 import { PrismaService } from '@app/prisma'
+import { HttpException, HttpStatus } from '@nestjs/common'
 
 export class FillOutProfileCommand {
   @ApiProperty({
@@ -52,12 +53,13 @@ export class FillOutProfileCommand {
 
   @ApiProperty({
     maxLength: 200,
-    pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
+    pattern:
+      '/^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
   })
   @IsOptional()
   @Length(0, 200)
   @IsString()
-  // @Matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$/)
+  @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
   aboutMe: string
 
   userId: number
@@ -111,10 +113,9 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
           },
         },
       })
-      return true
-    } catch (e) {
-      console.log(e)
-      return false
+      return { message: 'Profile updated successfully' }
+    } catch (error) {
+      throw new HttpException('Error updating profile', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 }

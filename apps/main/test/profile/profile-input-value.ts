@@ -13,9 +13,9 @@ export const correctUser = {
 // incorrect input values (inc)
 export const incorrectUser = {
   username: 'Abrah',
-  firstName: 1234,
+  firstName: '1234',
   lastName: 'Lin_Coln',
-  birthDate: 111,
+  birthDate: '111',
   city: true,
   aboutMe:
     'Okey, this text more then 200 symbols:' +
