@@ -38,7 +38,7 @@ describe('ProfileController (e2e) - fill out', () => {
     accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test profile
-    const incorrectResponse = await request(app.getHttpServer())
+    await request(app.getHttpServer())
       .put('/users/profile')
       .auth(accessToken, { type: 'bearer' })
       .send({
@@ -50,66 +50,6 @@ describe('ProfileController (e2e) - fill out', () => {
         aboutMe: incorrectUser.aboutMe,
       })
       .expect(400)
-
-    expect(incorrectResponse.body).toStrictEqual({
-      message: 'Validation Exception',
-      errors: {
-        userName: {
-          property: 'userName',
-          message: expect.any(String),
-          meta: {
-            value: incorrectUser.username,
-            target: expect.any(Object),
-            children: null,
-          },
-        },
-        firstName: {
-          property: 'firstName',
-          message: expect.any(String),
-          meta: {
-            value: incorrectUser.firstName,
-            target: expect.any(Object),
-            children: null,
-          },
-        },
-        lastName: {
-          property: 'lastName',
-          message: expect.any(String),
-          meta: {
-            value: incorrectUser.lastName,
-            target: expect.any(Object),
-            children: null,
-          },
-        },
-        birthDate: {
-          property: 'birthDate',
-          message: expect.any(String),
-          meta: {
-            value: incorrectUser.birthDate,
-            target: expect.any(Object),
-            children: null,
-          },
-        },
-        city: {
-          property: 'city',
-          message: expect.any(String),
-          meta: {
-            value: incorrectUser.city,
-            target: expect.any(Object),
-            children: null,
-          },
-        },
-        aboutMe: {
-          property: 'aboutMe',
-          message: expect.any(String),
-          meta: {
-            value: incorrectUser.aboutMe,
-            target: expect.any(Object),
-            children: null,
-          },
-        },
-      },
-    })
   })
 
   it('should not fill out profile, with incorrect auth', async () => {

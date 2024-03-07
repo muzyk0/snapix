@@ -1,86 +1,14 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator'
-import { ApiProperty } from '@nestjs/swagger'
 import { PrismaService } from '@app/prisma'
 import { HttpException, HttpStatus } from '@nestjs/common'
+import { type UpdateProfileDto } from '../dto/update-profile.dto'
+import { isNil } from 'lodash'
 
 export class FillOutProfileCommand {
-  @ApiProperty({
-    minLength: 6,
-    maxLength: 30,
-    pattern: '^[a-zA-Z0-9_-]+$',
-  })
-  @Length(6, 30)
-  @IsNotEmpty()
-  @Matches(/^[a-zA-Z0-9_-]+$/)
-  userName: string
-
-  @ApiProperty({
-    minLength: 1,
-    maxLength: 50,
-    pattern: '^([a-zA-Zа-яА-Я]+)$',
-  })
-  @Length(1, 50)
-  @IsNotEmpty()
-  @Matches(/^([a-zA-Zа-яА-Я]+)$/)
-  firstName!: string
-
-  @ApiProperty({
-    minLength: 1,
-    maxLength: 50,
-    pattern: '^([a-zA-Zа-яА-Я]+)$',
-  })
-  @Length(1, 50)
-  @IsNotEmpty()
-  @Matches(/^([a-zA-Zа-яА-Я]+)$/)
-  lastName!: string
-
-  @ApiProperty({
-    pattern: '^\\d{2}\\.\\d{2}\\.\\d{4}$',
-    type: String,
-  })
-  @IsOptional()
-  @Matches(/^\d{2}\.\d{2}\.\d{4}$/, { message: 'Invalid date format. Please use dd.mm.yyyy' })
-  @IsString()
-  birthDate: string
-
-  @ApiProperty({
-    pattern: '^[a-zA-Zа-яА-Я\\s\\-]+$',
-  })
-  @IsOptional()
-  @Matches(/^[a-zA-Zа-яА-Я\s-]+$/)
-  city: string
-
-  @ApiProperty({
-    maxLength: 200,
-    pattern:
-      '/^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
-  })
-  @IsOptional()
-  @Length(0, 200)
-  @IsString()
-  @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
-  aboutMe: string
-
-  userId: number
-
   constructor(
-    userName: string,
-    firstName: string,
-    lastName: string,
-    birthDate: string,
-    city: string,
-    aboutMe: string,
-    userId: number
-  ) {
-    this.userName = userName
-    this.firstName = firstName
-    this.lastName = lastName
-    this.birthDate = birthDate
-    this.city = city
-    this.aboutMe = aboutMe
-    this.userId = userId
-  }
+    public readonly userId: number,
+    public readonly body: UpdateProfileDto
+  ) {}
 }
 
 @CommandHandler(FillOutProfileCommand)
@@ -88,7 +16,7 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
   constructor(private readonly prisma: PrismaService) {}
 
   async execute(dto: FillOutProfileCommand) {
-    const birthDate = await this.handlerDate(dto.birthDate)
+    const birthDate = await this.handlerDate(dto.body.birthDate)
     const checkAge = await this.checkAge(birthDate)
 
     try {
@@ -97,14 +25,14 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
           id: dto.userId,
         },
         data: {
-          name: dto.userName,
+          name: dto.body.userName,
           profile: {
             update: {
-              firstName: dto.firstName,
-              lastName: dto.lastName,
+              firstName: dto.body.firstName,
+              lastName: dto.body.lastName,
               birthDate,
-              city: dto.city,
-              aboutMe: dto.aboutMe,
+              city: dto.body.city,
+              aboutMe: dto.body.aboutMe,
             },
           },
         },
@@ -118,28 +46,30 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
 
   async checkAge(birthDate: Date | null): Promise<string> {
     if (birthDate == null) return 'No age'
-
     const currentDate = new Date()
 
-    // calculate user age
-    let age = currentDate.getFullYear() - birthDate.getFullYear()
+    const approximateAge = currentDate.getFullYear() - birthDate.getFullYear()
 
-    // compare month
     if (
       currentDate.getMonth() < birthDate.getMonth() ||
       (currentDate.getMonth() === birthDate.getMonth() &&
         currentDate.getDate() < birthDate.getDate())
     ) {
-      age--
+      if (approximateAge < 13) {
+        throw new HttpException(
+          'A user under 13 cannot create a profile. Privacy Policy',
+          HttpStatus.NOT_ACCEPTABLE
+        )
+      }
     }
-    if (age < 13) return 'A user under 13 cannot create a profile. Privacy Policy'
     return 'Your settings are saved!'
   }
 
-  async handlerDate(birthDate: string | null): Promise<Date | null> {
-    if (birthDate == null) {
-      return null
-    }
-    return new Date(new Date(birthDate).toLocaleDateString('en-GB'))
+  async handlerDate(birthDate: string | null | undefined): Promise<Date | null> {
+    if (isNil(birthDate)) return null
+
+    // date conversion
+    const [day, month, year] = birthDate.split('.').map(Number)
+    return new Date(year, month - 1, day)
   }
 }

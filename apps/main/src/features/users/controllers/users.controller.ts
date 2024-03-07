@@ -22,6 +22,7 @@ import { JwtAtPayload } from '../../auth/types/jwt.type'
 import { DeleteAvatarCommand } from '../application/use-cases/delete-avatar.command'
 import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.handler'
 import { GetProfileInfoCommand } from '../application/use-cases/get-profile-info.handler'
+import { UpdateProfileDto } from '../application/dto/update-profile.dto'
 import type { UploadAvatarViewDto } from '../application/dto/upload-avatar-view.dto'
 import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
@@ -69,19 +70,11 @@ export class UsersController {
   @Put('/profile')
   @HttpCode(HttpStatus.OK)
   async fillOutProfile(
-    @Body() body: FillOutProfileCommand,
+    @Body() body: UpdateProfileDto,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
-    return await this.commandBus.execute<FillOutProfileCommand>(
-      new FillOutProfileCommand(
-        body.userName,
-        body.firstName,
-        body.lastName,
-        body.birthDate,
-        body.city,
-        body.aboutMe,
-        ctx.user.id
-      )
+    return this.commandBus.execute<FillOutProfileCommand>(
+      new FillOutProfileCommand(ctx.user.id, body)
     )
   }
 
