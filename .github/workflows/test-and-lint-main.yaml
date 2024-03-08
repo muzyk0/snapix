@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - apps/main/**
+      - .github/workflows/**
     branches-ignore:
       - release/**
 
@@ -41,6 +42,11 @@ jobs:
 
       - name: Install dependencies
         run: yarn install
+
+      - name: Prisma deploy migrations
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: yarn prisma migrate deploy
 
       - name: Generate Prisma
         run: yarn main:prisma:generate

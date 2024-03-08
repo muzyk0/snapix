@@ -80,9 +80,13 @@ export class CreateUserHandler implements ICommandHandler<CreateUserCommand> {
             expiresAt: addDays(new Date(), 1),
           },
         },
+        profile: {
+          create: {},
+        },
       },
       include: {
         emailConfirmation: true,
+        profile: true,
       },
     })
 
