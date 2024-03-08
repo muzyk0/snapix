@@ -1,18 +1,17 @@
 import { Injectable, Logger } from '@nestjs/common'
 import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
 import { AppConfigService } from '@app/config'
-import { type User } from '@prisma/client'
-
-export abstract class IStorageAdapter {
-  abstract uploadAvatar(userId: User['id'], file: Express.Multer.File): Promise<{ path: string }>
-
-  abstract deleteAvatar(userId: User['id']): Promise<void>
-}
+import {
+  type IStorageAdapter,
+  type StorageCommandEnum,
+  type UploadAvatarParams,
+} from './storage-adapter.abstract'
+import { type ImageFileInfo } from '@app/core/types/dto'
 
 @Injectable()
-export class LocalStorageAdapter implements IStorageAdapter {
+export class LocalS3StorageAdapter implements IStorageAdapter {
   private readonly client: S3Client
-  private readonly logger = new Logger(LocalStorageAdapter.name)
+  private readonly logger = new Logger(LocalS3StorageAdapter.name)
 
   constructor(config: AppConfigService) {
     this.client = new S3Client({
@@ -25,39 +24,45 @@ export class LocalStorageAdapter implements IStorageAdapter {
     })
   }
 
-  public async uploadAvatar(
-    userId: User['id'],
-    file: Express.Multer.File
-  ): Promise<{ path: string }> {
+  public async upload(
+    type: StorageCommandEnum,
+    payload: UploadAvatarParams
+  ): Promise<ImageFileInfo[]> {
     try {
       const deleteCommand = new DeleteObjectCommand({
         Bucket: 'snapix',
-        Key: `content/users/${userId}/avatars/${userId}_avatar.png`,
+        Key: `content/users/${payload.ownerId}/${type}/${payload.ownerId}_avatar.png`,
       })
 
       await this.client.send(deleteCommand)
 
       const command = new PutObjectCommand({
         Bucket: 'snapix',
-        Key: `content/users/${userId}/avatars/${userId}_avatar.png`,
-        Body: file.buffer,
+        Key: `content/users/${payload.ownerId}/${type}/${payload.ownerId}_avatar.png`,
+        Body: payload.buffer,
         ContentType: 'image/png',
       })
       await this.client.send(command)
-      return {
-        path: `https://${command.input.Bucket}.storage.yandexcloud.net/${command.input.Key}`,
-      }
+
+      return [
+        {
+          url: `https://${command.input.Bucket}.storage.yandexcloud.net/${command.input.Key}`,
+          width: 300,
+          height: 300,
+          size: 300,
+        },
+      ]
     } catch (e) {
       this.logger.error(e)
       throw e
     }
   }
 
-  public async deleteAvatar(userId: User['id']): Promise<void> {
+  public async delete(type: StorageCommandEnum, ownerId: string): Promise<void> {
     try {
       const getObjectCommand = new DeleteObjectCommand({
         Bucket: 'snapix',
-        Key: `content/users/${userId}/avatars/${userId}_avatar.png`,
+        Key: `content/users/${ownerId}/${type}/${ownerId}_avatar.png`,
       })
 
       await this.client.send(getObjectCommand)

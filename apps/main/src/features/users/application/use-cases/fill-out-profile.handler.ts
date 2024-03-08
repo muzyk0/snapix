@@ -1,8 +1,8 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { PrismaService } from '@app/prisma'
 import { HttpException, HttpStatus } from '@nestjs/common'
-import { type UpdateProfileDto } from '../dto/update-profile.dto'
 import { isNil } from 'lodash'
+import { type UpdateProfileDto } from '@app/core/types/dto/update-profile.dto'
 
 export class FillOutProfileCommand {
   constructor(

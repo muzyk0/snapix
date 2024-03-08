@@ -1,10 +1,25 @@
 import { Module } from '@nestjs/common'
-import { StorageController } from './storage.controller'
-import { StorageService } from './storage.service'
+import { FilesModule } from './files/files.module'
+import { AppConfigModule, AppConfigService } from '@app/config'
+import { ConfigModule } from '@nestjs/config'
+import { MongooseModule } from '@nestjs/mongoose'
 
 @Module({
-  imports: [],
-  controllers: [StorageController],
-  providers: [StorageService],
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      envFilePath: ['.env', '.env.test'],
+    }),
+    MongooseModule.forRootAsync({
+      useFactory: (configService: AppConfigService) => ({
+        uri: configService.mongoDbOptions.uri,
+      }),
+      inject: [AppConfigService],
+    }),
+    FilesModule,
+    AppConfigModule,
+  ],
+  controllers: [],
+  providers: [],
 })
 export class StorageModule {}
