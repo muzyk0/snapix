@@ -1,4 +1,4 @@
-import { type ArgumentsHost, Catch, type ExceptionFilter, Injectable } from '@nestjs/common'
+import { type ArgumentsHost, Catch, type ExceptionFilter, Injectable, Logger } from '@nestjs/common'
 import { ValidationException } from '../setup-app'
 import { AuditLogServiceAbstract } from '@app/core/audit-log/audit-log-service.abstract'
 import { type Request, type Response } from 'express'
@@ -9,6 +9,7 @@ import { ErrorMapper } from './utils/error-mapper'
 @Catch(ValidationException)
 @Injectable()
 export class ValidationExceptionFilter implements ExceptionFilter {
+  logger = new Logger(ValidationExceptionFilter.name)
   constructor(private readonly auditLogService: AuditLogServiceAbstract) {}
 
   async catch(exception: ValidationException, host: ArgumentsHost) {
@@ -44,6 +45,8 @@ export class ValidationExceptionFilter implements ExceptionFilter {
         stack: exception.stack,
       }),
     })
+
+    this.logger.error(exception.message, exception.stack)
 
     // send the custom JSON response to the client
     response.status(status).json({
