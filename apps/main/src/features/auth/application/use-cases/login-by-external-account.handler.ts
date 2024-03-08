@@ -45,12 +45,19 @@ export class LoginByExternalAccountHandler
       return existingUserWithThisEmail
     }
 
-    const countUsers = await this.prisma.user.count()
+    const countUsers = await this.prisma.user.count({
+      where: {
+        name: externalAccount.displayName,
+      },
+    })
     const user = await this.prisma.user.create({
       data: {
-        name: `${externalAccount.displayName}${countUsers}`,
+        name: `${externalAccount.displayName}${countUsers !== 0 ? countUsers + 1 : ''}`,
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         email: externalAccount.email!, // todo: mayme null
+        profile: {
+          create: {},
+        },
       },
     })
 

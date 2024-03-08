@@ -21,8 +21,7 @@ export class GetProfileInfoHandler implements ICommandHandler<GetProfileInfoComm
 
     const profile = await this.prisma.profile.findUnique({
       where: {
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        id: user.profileId!,
+        id: user.profileId,
       },
     })
     if (isNil(profile)) throw new NotFoundException('No profile')
