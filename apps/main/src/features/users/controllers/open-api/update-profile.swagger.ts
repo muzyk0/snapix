@@ -50,7 +50,7 @@ export function ApiUpdateUserProfile() {
             type: 'string',
             example: 'A good man from the amazing city of Paris!',
             pattern:
-              '/^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
+              '/^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$/^[a-zA-Z0-9._%+-]',
             maxLength: 200,
             nullable: true,
           },
