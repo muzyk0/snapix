@@ -11,7 +11,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
-import { CommandBus } from '@nestjs/cqrs'
+import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
 
 import { UsersQueryRepository } from '../infrastructure/users.query.repository'
@@ -26,12 +26,15 @@ import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
 import { type UploadAvatarViewDto } from '@app/core/types/dto'
 import { UpdateProfileDto } from '@app/core/types/dto/update-profile.dto'
+import { GetAvatarQuery } from '../application/use-cases/get-avatar.query.handler'
+import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(
     private readonly commandBus: CommandBus,
+    private readonly queryBus: QueryBus,
     private readonly usersQueryRepository: UsersQueryRepository
   ) {}
 
@@ -43,6 +46,15 @@ export class UsersController {
   @Get('/count-register-users')
   async countRegisteredUsers() {
     return await this.usersQueryRepository.countRegisteredUsers()
+  }
+
+  @ApiGetUserAvatar()
+  @AuthGuard()
+  @Get('/profile/avatar')
+  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload) {
+    return this.queryBus.execute<GetAvatarQuery, UploadAvatarViewDto>(
+      new GetAvatarQuery(ctx.user.id)
+    )
   }
 
   @ApiUploadUserAvatar()
@@ -67,7 +79,7 @@ export class UsersController {
   @AuthGuard()
   @HttpCode(HttpStatus.NO_CONTENT)
   @Delete('/profile/avatar')
-  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload): Promise<void> {
+  async deleteAvatar(@GetUserContextDecorator() ctx: JwtAtPayload): Promise<void> {
     return this.commandBus.execute<DeleteAvatarCommand>(new DeleteAvatarCommand(ctx.user.id))
   }
 

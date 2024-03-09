@@ -12,6 +12,8 @@ export interface UploadAvatarParams {
 }
 
 export abstract class IStorageAdapter {
+  abstract get(type: StorageCommandEnum, ownerId: string): Promise<ImageFileInfo[]>
+
   abstract upload(type: StorageCommandEnum, payload: UploadAvatarParams): Promise<ImageFileInfo[]>
 
   abstract delete(type: StorageCommandEnum, ownerId: string): Promise<void>

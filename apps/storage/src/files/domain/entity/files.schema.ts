@@ -3,7 +3,12 @@ import { type HydratedDocument } from 'mongoose'
 
 export type FileDocument = HydratedDocument<File>
 
-@Schema()
+@Schema({
+  timestamps: {
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt',
+  },
+})
 export class File {
   @Prop({ required: true })
   ownerId!: string
@@ -16,6 +21,12 @@ export class File {
 
   @Prop({ required: true })
   ETag!: string
+
+  @Prop()
+  createdAt!: Date
+
+  @Prop()
+  updatedAt!: Date
 }
 
 export const FileSchema = SchemaFactory.createForClass(File)

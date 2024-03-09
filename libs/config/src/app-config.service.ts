@@ -98,7 +98,7 @@ export class AppConfigService {
   } {
     return {
       host: this.configService.get('STORAGE_SERVICE_HOST') ?? '',
-      port: this.configService.get('STORAGE_SERVICE_PORT', 3001, { infer: true }),
+      port: this.configService.get('STORAGE_SERVICE_PORT', 3247, { infer: true }),
     }
   }
 

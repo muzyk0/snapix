@@ -24,6 +24,10 @@ export class LocalS3StorageAdapter implements IStorageAdapter {
     })
   }
 
+  public async get(_type: StorageCommandEnum, _ownerId: string): Promise<ImageFileInfo[]> {
+    return []
+  }
+
   public async upload(
     type: StorageCommandEnum,
     payload: UploadAvatarParams

@@ -14,7 +14,13 @@ export interface UploadFileOutput {
   ETag: string
 }
 
+export interface GetFileOutput {
+  path: string
+}
+
 export abstract class IStorageAdapter {
+  abstract get(key: string): Promise<GetFileOutput>
+
   abstract upload(payload: UploadFileParams): Promise<UploadFileOutput>
 
   abstract delete(key: string): Promise<void>

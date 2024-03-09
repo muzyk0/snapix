@@ -1,10 +1,16 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common'
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 import { AppConfigService } from '@app/config'
 import {
   type UploadFileOutput,
   type IStorageAdapter,
   type UploadFileParams,
+  type GetFileOutput,
 } from './storage-adapter.abstract'
 import * as mime from 'mime-types'
 import * as crypto from 'crypto'
@@ -25,6 +31,26 @@ export class FilesStorageAdapter implements IStorageAdapter {
         secretAccessKey: config.s3Config.secretAccessKey,
       },
     })
+  }
+
+  public async get(key: string): Promise<GetFileOutput> {
+    try {
+      const command = new GetObjectCommand({
+        Bucket: this.bucket,
+        Key: key,
+      })
+
+      const response = await this.client.send(command)
+
+      console.log('response GetObjectCommand', response)
+
+      return {
+        path: `https://${this.bucket}.storage.yandexcloud.net/${command.input.Key}`,
+      }
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
   }
 
   public async upload({ dirKey, buffer, mimetype }: UploadFileParams): Promise<UploadFileOutput> {

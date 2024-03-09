@@ -15,6 +15,21 @@ export class StorageServiceAdapter implements IStorageAdapter {
 
   constructor(@Inject(ServicesEnum.STORAGE_SERVICE) private readonly client: ClientProxy) {}
 
+  public async get(type: StorageCommandEnum, ownerId: string): Promise<ImageFileInfo[]> {
+    try {
+      const response = this.client
+        .send<ImageFileInfo[]>({ cmd: 'get-file', type }, ownerId)
+        .pipe(timeout(defaultTimeoutTcpRequest))
+
+      const images = await firstValueFrom(response)
+
+      return images
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
   public async upload(
     type: StorageCommandEnum,
     payload: UploadAvatarParams

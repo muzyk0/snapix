@@ -1,22 +1,10 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiBody, ApiConsumes, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
-export function ApiUploadUserAvatar() {
+export function ApiGetUserAvatar() {
   return applyDecorators(
     ApiOperation({
-      summary: 'Uploads the user avatar.',
-    }),
-    ApiConsumes('multipart/form-data'),
-    ApiBody({
-      schema: {
-        type: 'object',
-        properties: {
-          file: {
-            type: 'string',
-            format: 'binary',
-          },
-        },
-      },
+      summary: 'Get the user avatar.',
     }),
     ApiResponse({
       status: HttpStatus.CREATED,
