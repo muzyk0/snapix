@@ -1,11 +1,14 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { UpdateProfileDto } from '../dto/update-profile.dto'
 
 export function ApiUpdateUserProfile() {
   return applyDecorators(
-    ApiBearerAuth('accessToken'),
     ApiOperation({
       summary: 'Update user profile',
+    }),
+    ApiBody({
+      type: () => UpdateProfileDto,
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -62,15 +65,8 @@ export function ApiUpdateUserProfile() {
       description: 'If the inputModel has incorrect values',
     }),
     ApiResponse({
-      status: HttpStatus.UNAUTHORIZED,
-    }),
-    ApiResponse({
       status: HttpStatus.NOT_ACCEPTABLE,
       description: 'A user under 13 cannot create a profile. Privacy Policy',
-    }),
-    ApiResponse({
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-      description: 'Error! Server is not available!',
     })
   )
 }

@@ -2,22 +2,22 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { PrismaService } from '@app/prisma'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { isNil } from 'lodash'
-import { type UpdateProfileDto } from '@app/core/types/dto/update-profile.dto'
+import { type UpdateProfileDto } from '../../controllers/dto/update-profile.dto'
 
-export class FillOutProfileCommand {
+export class UpdateProfileCommand {
   constructor(
     public readonly userId: number,
     public readonly body: UpdateProfileDto
   ) {}
 }
 
-@CommandHandler(FillOutProfileCommand)
-export class FillOutProfileHandler implements ICommandHandler<FillOutProfileCommand> {
+@CommandHandler(UpdateProfileCommand)
+export class UpdateProfileHandler implements ICommandHandler<UpdateProfileCommand> {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute(dto: FillOutProfileCommand) {
+  async execute(dto: UpdateProfileCommand) {
     const birthDate = await this.handlerDate(dto.body.birthDate)
-    const checkAge = await this.checkAge(birthDate)
+    await this.validateAgeIfExists(birthDate)
 
     try {
       await this.prisma.user.update({
@@ -38,19 +38,19 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
         },
       })
 
-      return { message: checkAge }
+      return { message: 'Your settings are saved!' }
     } catch (error) {
       throw new HttpException('Error! Server is not available!', HttpStatus.INTERNAL_SERVER_ERROR)
     }
   }
 
-  async checkAge(birthDate: Date | null): Promise<string> {
-    if (isNil(birthDate)) return 'Your settings are saved!'
+  async validateAgeIfExists(birthDate: Date | null): Promise<void> {
+    if (isNil(birthDate)) return
 
     const currentDate = new Date()
 
+    // todo: Refactor this with date-fns
     const approximateAge = currentDate.getFullYear() - birthDate.getFullYear()
-
     if (
       currentDate.getMonth() < birthDate.getMonth() ||
       (currentDate.getMonth() === birthDate.getMonth() &&
@@ -63,7 +63,6 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
         )
       }
     }
-    return 'Your settings are saved!'
   }
 
   async handlerDate(birthDate: string | null | undefined): Promise<Date | null> {

@@ -1,9 +1,8 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
-export function ApiGetUserProfileInfo() {
+export function ApiGetUserProfile() {
   return applyDecorators(
-    ApiBearerAuth('accessToken'),
     ApiOperation({
       summary: 'get user profile information',
     }),
@@ -39,9 +38,6 @@ export function ApiGetUserProfileInfo() {
           },
         },
       },
-    }),
-    ApiResponse({
-      status: HttpStatus.UNAUTHORIZED,
     })
   )
 }
