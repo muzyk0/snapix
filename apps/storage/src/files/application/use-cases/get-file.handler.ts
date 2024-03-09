@@ -1,34 +1,41 @@
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { IStorageAdapter, type StorageCommandEnum } from '../../adapters/storage-adapter.abstract'
 import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { isNil } from 'lodash'
-import { BadRequestException } from '@nestjs/common'
+import type { ImageFileInfo } from '@app/core/types/dto'
 
-export class DeleteAvatarFileCommand {
+export class GetFileQuery {
   constructor(
     readonly type: StorageCommandEnum.AVATAR,
     readonly ownerId: string
   ) {}
 }
 
-@CommandHandler(DeleteAvatarFileCommand)
-export class DeleteFileHandler implements ICommandHandler<DeleteAvatarFileCommand> {
+@QueryHandler(GetFileQuery)
+export class GetFileHandler implements IQueryHandler<GetFileQuery> {
   constructor(
     private readonly storage: IStorageAdapter,
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute(payload: DeleteAvatarFileCommand): Promise<void> {
+  async execute(payload: GetFileQuery): Promise<ImageFileInfo[]> {
     const file = await this.fileModel.findOne(payload)
 
     if (isNil(file)) {
-      throw new BadRequestException()
+      return []
     }
 
-    await this.storage.delete(file.key)
+    const result = await this.storage.get(file.key)
 
-    await this.fileModel.deleteOne({ _id: file._id })
+    return [
+      {
+        url: result.path,
+        width: 0,
+        height: 0,
+        size: 0,
+      },
+    ]
   }
 }
