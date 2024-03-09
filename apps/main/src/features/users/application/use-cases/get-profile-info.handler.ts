@@ -1,6 +1,6 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { PrismaService } from '@app/prisma'
-import { NotFoundException } from '@nestjs/common'
+import { UnauthorizedException } from '@nestjs/common'
 import { isNil } from 'lodash'
 
 export class GetProfileInfoCommand {
@@ -17,14 +17,14 @@ export class GetProfileInfoHandler implements ICommandHandler<GetProfileInfoComm
         id: dto.userId,
       },
     })
-    if (isNil(user)) throw new NotFoundException('No user')
+    if (isNil(user)) throw new UnauthorizedException()
 
     const profile = await this.prisma.profile.findUnique({
       where: {
         id: user.profileId,
       },
     })
-    if (isNil(profile)) throw new NotFoundException('No profile')
+    if (isNil(profile)) throw new UnauthorizedException('No profile')
 
     const birthDate = await this.handlerDate(profile.birthDate)
 

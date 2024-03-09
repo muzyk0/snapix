@@ -26,6 +26,8 @@ import { UpdateProfileDto } from '../application/dto/update-profile.dto'
 import type { UploadAvatarViewDto } from '../application/dto/upload-avatar-view.dto'
 import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
+import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
+import { ApiGetUserProfileInfo } from './open-api/get-profile-information.swagger'
 
 @ApiTags('Users')
 @Controller('users')
@@ -66,6 +68,7 @@ export class UsersController {
     return this.commandBus.execute<DeleteAvatarCommand>(new DeleteAvatarCommand(ctx.user.id))
   }
 
+  @ApiUpdateUserProfile()
   @AuthGuard()
   @Put('/profile')
   @HttpCode(HttpStatus.OK)
@@ -78,6 +81,7 @@ export class UsersController {
     )
   }
 
+  @ApiGetUserProfileInfo()
   @AuthGuard()
   @Get('/profile')
   @HttpCode(HttpStatus.OK)
