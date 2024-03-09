@@ -45,7 +45,7 @@ export class FillOutProfileHandler implements ICommandHandler<FillOutProfileComm
   }
 
   async checkAge(birthDate: Date | null): Promise<string> {
-    if (isNil(birthDate)) return 'No age'
+    if (isNil(birthDate)) return 'Your settings are saved!'
 
     const currentDate = new Date()
 
