@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  ParseFilePipeBuilder,
   Post,
   Put,
   UploadedFile,
@@ -62,7 +63,21 @@ export class UsersController {
   @Post('/profile/avatar')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({
+          maxSize: 1024 * 1024 + 10,
+        })
+        .addFileTypeValidator({
+          fileType: ['jpeg', 'png'].join('|'),
+        })
+        .build({
+          // todo: Implement exceptionFactory
+          fileIsRequired: true,
+          errorHttpStatusCode: HttpStatus.PAYLOAD_TOO_LARGE,
+        })
+    )
+    file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
     return this.commandBus.execute<UploadAvatarCommand, UploadAvatarViewDto>(

@@ -30,8 +30,5 @@ export class DeleteFileHandler implements ICommandHandler<DeleteAvatarFileComman
     await this.storage.delete(file.key)
 
     await this.fileModel.deleteOne({ _id: file._id })
-
-    const file2 = await this.fileModel.findOne({ _id: file._id })
-    console.log(file2)
   }
 }

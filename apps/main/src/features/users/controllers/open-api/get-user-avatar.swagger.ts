@@ -7,7 +7,7 @@ export function ApiGetUserAvatar() {
       summary: 'Get the user avatar.',
     }),
     ApiResponse({
-      status: HttpStatus.CREATED,
+      status: HttpStatus.OK,
       description:
         'Uploads the user avatar. Returns an array of uploaded images with must contain medium photo size (192x192) and thumbnail size (48x48).',
       schema: {

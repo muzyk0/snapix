@@ -5,6 +5,7 @@ import { type UploadAvatarDto } from '../../controllers/dto/upload-avatar.dto'
 import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
+import { isNil } from 'lodash'
 
 export class UploadAvatarFileCommand {
   constructor(
@@ -27,10 +28,14 @@ export class UploadFileHandler implements ICommandHandler<UploadAvatarFileComman
       mimetype: payload.mimetype,
     })
 
-    await this.fileModel.deleteOne({
+    const fileForRemove = await this.fileModel.findOneAndDelete({
       type,
       ownerId: payload.ownerId,
     })
+
+    if (!isNil(fileForRemove)) {
+      await this.storage.delete(fileForRemove.key)
+    }
 
     const file = await this.fileModel.create({
       type,
