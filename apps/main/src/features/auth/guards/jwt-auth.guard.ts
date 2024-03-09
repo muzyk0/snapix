@@ -8,7 +8,7 @@ export class JwtAuthGuard extends PassportAuthGuard('jwt-access') {}
 export const AuthGuard = () =>
   applyDecorators(
     UseGuards(JwtAuthGuard),
-    ApiBearerAuth(),
+    ApiBearerAuth('accessToken'),
     ApiUnauthorizedResponse({
       status: 401,
       description: 'Unauthorized',

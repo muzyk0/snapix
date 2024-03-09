@@ -1,11 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger'
 import { IsNotEmpty, IsOptional, IsString, Length, Matches } from 'class-validator'
+import { ApiProperty } from '@nestjs/swagger'
 
 export class UpdateProfileDto {
   @ApiProperty({
+    pattern: '^[a-zA-Z0-9_-]+$',
     minLength: 6,
     maxLength: 30,
-    pattern: '^[a-zA-Z0-9_-]+$',
+    required: true,
+    example: 'John009',
   })
   @Length(6, 30)
   @IsNotEmpty()
@@ -13,9 +15,11 @@ export class UpdateProfileDto {
   userName!: string
 
   @ApiProperty({
+    pattern: '^[a-zA-Zа-яА-Я]+$',
     minLength: 1,
     maxLength: 50,
-    pattern: '^([a-zA-Zа-яА-Я]+)$',
+    required: true,
+    example: 'John',
   })
   @Length(1, 50)
   @IsNotEmpty()
@@ -23,9 +27,11 @@ export class UpdateProfileDto {
   firstName!: string
 
   @ApiProperty({
+    pattern: '^[a-zA-Zа-яА-Я]+$',
     minLength: 1,
     maxLength: 50,
-    pattern: '^([a-zA-Zа-яА-Я]+)$',
+    required: true,
+    example: 'Carter',
   })
   @Length(1, 50)
   @IsNotEmpty()
@@ -33,8 +39,9 @@ export class UpdateProfileDto {
   lastName!: string
 
   @ApiProperty({
-    pattern: '^\\d{2}\\.\\d{2}\\.\\d{4}$',
-    type: String,
+    pattern: '/^\\d{2}\\.\\d{2}\\.\\d{4}$/',
+    example: '10.12.2000',
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -42,16 +49,19 @@ export class UpdateProfileDto {
   birthDate?: string
 
   @ApiProperty({
-    pattern: '^[a-zA-Zа-яА-Я\\s\\-]+$',
+    pattern: '^[a-zA-Zа-яА-Я\\s-]+$',
+    required: false,
+    example: 'Paris',
   })
   @IsOptional()
   @Matches(/^[a-zA-Zа-яА-Я\s-]+$/)
   city?: string
 
   @ApiProperty({
+    pattern: '^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$',
+    example: 'A good man from the amazing city of Paris!',
     maxLength: 200,
-    pattern:
-      '/^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+$',
+    required: false,
   })
   @IsOptional()
   @Length(0, 200)
