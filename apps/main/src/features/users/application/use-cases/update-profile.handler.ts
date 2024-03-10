@@ -3,6 +3,7 @@ import { PrismaService } from '@app/prisma'
 import { HttpException, HttpStatus } from '@nestjs/common'
 import { isNil } from 'lodash'
 import { type UpdateProfileDto } from '../../controllers/dto/update-profile.dto'
+import { differenceInYears, isBefore } from 'date-fns'
 
 export class UpdateProfileCommand {
   constructor(
@@ -49,19 +50,12 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
 
     const currentDate = new Date()
 
-    // todo: Refactor this with date-fns
-    const approximateAge = currentDate.getFullYear() - birthDate.getFullYear()
-    if (
-      currentDate.getMonth() < birthDate.getMonth() ||
-      (currentDate.getMonth() === birthDate.getMonth() &&
-        currentDate.getDate() < birthDate.getDate())
-    ) {
-      if (approximateAge < 13) {
-        throw new HttpException(
-          'A user under 13 cannot create a profile. Privacy Policy',
-          HttpStatus.NOT_ACCEPTABLE
-        )
-      }
+    const approximateAge = differenceInYears(currentDate, birthDate)
+    if (isBefore(currentDate, birthDate) && approximateAge < 13) {
+      throw new HttpException(
+        'A user under 13 cannot create a profile. Privacy Policy',
+        HttpStatus.NOT_ACCEPTABLE
+      )
     }
   }
 
