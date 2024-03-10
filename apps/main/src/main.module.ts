@@ -17,6 +17,7 @@ import { AcceptLanguageResolver, HeaderResolver, I18nModule } from 'nestjs-i18n'
 import * as path from 'path'
 import { ClientsModule, type TcpClientOptions, Transport } from '@nestjs/microservices'
 import { ServicesEnum } from '@app/core/constants'
+import { PostsModule } from './features/posts/posts.module'
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { ServicesEnum } from '@app/core/constants'
     HealthModule,
     AuthModule,
     NotificationModule,
+    PostsModule,
   ],
   controllers: [MainController],
   providers: [

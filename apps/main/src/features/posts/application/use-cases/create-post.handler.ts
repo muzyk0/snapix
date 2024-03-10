@@ -17,7 +17,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   async execute(dto: CreatePostCommand) {
     await this.postRepository.save(
       CreatePostEntity.createPost({
-        userId: dto.userId,
+        authorId: dto.userId,
         photoId: dto.photoId,
         content: dto.content,
       })

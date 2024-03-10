@@ -9,7 +9,7 @@ export class ContentPostDto {
     required: false,
   })
   @IsOptional()
-  @Length(2000)
+  @Length(0, 2000)
   @IsString()
   @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
   content?: string
@@ -18,8 +18,6 @@ export class ContentPostDto {
     example: 'photoId',
     required: true,
   })
-  @Length(2000)
   @IsString()
-  @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
   photoId!: string
 }

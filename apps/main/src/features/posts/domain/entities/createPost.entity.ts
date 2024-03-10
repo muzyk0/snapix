@@ -2,25 +2,25 @@ import type { Post, User } from '@prisma/client'
 import { AggregateRoot } from '@nestjs/cqrs'
 
 export interface CreatePostType {
-  userId: User['id']
+  authorId: User['id']
   photoId: string
   content: string | undefined
 }
 
 export class CreatePostEntity extends AggregateRoot implements Partial<Post> {
-  userId!: number
+  authorId!: number
   photoId: string
   content: string | undefined
 
-  constructor({ userId, photoId, content }: CreatePostType) {
+  constructor({ authorId, photoId, content }: CreatePostType) {
     super()
 
-    this.userId = userId
+    this.authorId = authorId
     this.photoId = photoId
     this.content = content
   }
 
-  static createPost({ userId, photoId, content }: CreatePostType): CreatePostEntity {
-    return new CreatePostEntity({ userId, photoId, content })
+  static createPost({ authorId, photoId, content }: CreatePostType): CreatePostEntity {
+    return new CreatePostEntity({ authorId, photoId, content })
   }
 }

@@ -10,14 +10,14 @@ import { ApiCreatePost } from './open-api/create-post.swagger'
 import { ContentPostDto } from './dto/content-post.dto'
 
 @ApiTags('Posts')
-@Controller('posts')
+@Controller('/posts')
 export class PostsController {
   constructor(private readonly commandBus: CommandBus) {}
 
   @ApiCreatePost()
   @AuthGuard()
-  @Post('')
-  @HttpCode(HttpStatus.OK)
+  @Post('/')
+  @HttpCode(HttpStatus.CREATED)
   async createPost(@Body() body: ContentPostDto, @GetUserContextDecorator() ctx: JwtAtPayload) {
     await this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content, body.photoId))
   }

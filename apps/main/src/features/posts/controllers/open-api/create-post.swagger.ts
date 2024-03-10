@@ -11,7 +11,7 @@ export function ApiCreatePost() {
       type: () => ContentPostDto,
     }),
     ApiResponse({
-      status: HttpStatus.OK,
+      status: HttpStatus.CREATED,
       description: 'success',
       schema: {
         type: 'object',
