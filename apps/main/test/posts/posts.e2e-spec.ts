@@ -86,7 +86,7 @@ describe('PostController (e2e) - fill out', () => {
     // User register/confirm/login
     accessToken = await registerConfirmAndLogin(app, correctUser)
 
-    // test profile
+    // test post
     await request(app.getHttpServer())
       .post('/posts')
       .auth(accessToken, {
@@ -96,5 +96,29 @@ describe('PostController (e2e) - fill out', () => {
         photoId: 'correctId_2',
       })
       .expect(201)
+  })
+
+  it('should get content without content', async () => {
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
+
+    // test post
+    const postResponse = await request(app.getHttpServer())
+      .post('/posts')
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({
+        photoId: 'correctId_2',
+      })
+      .expect(201)
+
+    const getResponse = await request(app.getHttpServer())
+      .get(`/posts/${postResponse.body.postId}`)
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .expect(200)
+    expect(getResponse.body.content).toBe(null)
   })
 })

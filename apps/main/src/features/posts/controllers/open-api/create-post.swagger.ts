@@ -16,17 +16,9 @@ export function ApiCreatePost() {
       schema: {
         type: 'object',
         properties: {
-          content: {
-            type: 'string',
-            example: 'Anything that can go wrong will go wrong!',
-            pattern:
-              '/^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$/^[a-zA-Z0-9._%+-]',
-            maxLength: 2000,
-            nullable: true,
-          },
-          photoId: {
-            type: 'string',
-            example: 'photoId',
+          postId: {
+            example: '313',
+            type: 'number',
           },
         },
       },

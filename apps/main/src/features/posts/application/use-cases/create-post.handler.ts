@@ -14,13 +14,14 @@ export class CreatePostCommand {
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   constructor(private readonly postRepository: IPostRepository) {}
 
-  async execute(dto: CreatePostCommand) {
-    await this.postRepository.save(
+  async execute(dto: CreatePostCommand): Promise<{ postId: number }> {
+    const newPost = await this.postRepository.save(
       CreatePostEntity.createPost({
         authorId: dto.userId,
         photoId: dto.photoId,
         content: dto.content,
       })
     )
+    return { postId: newPost.id }
   }
 }
