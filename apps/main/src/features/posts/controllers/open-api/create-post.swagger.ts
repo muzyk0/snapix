@@ -24,6 +24,10 @@ export function ApiCreatePost() {
             maxLength: 2000,
             nullable: true,
           },
+          photoId: {
+            type: 'string',
+            example: 'photoId',
+          },
         },
       },
     }),

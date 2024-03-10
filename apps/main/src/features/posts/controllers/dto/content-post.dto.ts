@@ -13,4 +13,13 @@ export class ContentPostDto {
   @IsString()
   @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
   content?: string
+
+  @ApiProperty({
+    example: 'photoId',
+    required: true,
+  })
+  @Length(2000)
+  @IsString()
+  @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
+  photoId!: string
 }

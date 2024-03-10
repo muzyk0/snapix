@@ -19,6 +19,6 @@ export class PostsController {
   @Post('')
   @HttpCode(HttpStatus.OK)
   async createPost(@Body() body: ContentPostDto, @GetUserContextDecorator() ctx: JwtAtPayload) {
-    await this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content))
+    await this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content, body.photoId))
   }
 }

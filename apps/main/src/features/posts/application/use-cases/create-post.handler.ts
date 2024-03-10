@@ -1,18 +1,26 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { PrismaService } from '@app/prisma'
+import { IPostRepository } from '../interface'
+import { CreatePostEntity } from '../../domain/entities/createPost.entity'
 
 export class CreatePostCommand {
   constructor(
     public readonly userId: number,
-    public readonly content: string | undefined
+    public readonly content: string | undefined,
+    public readonly photoId: string
   ) {}
 }
 
 @CommandHandler(CreatePostCommand)
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly postRepository: IPostRepository) {}
 
   async execute(dto: CreatePostCommand) {
-    // in process...
+    await this.postRepository.save(
+      CreatePostEntity.createPost({
+        userId: dto.userId,
+        photoId: dto.photoId,
+        content: dto.content,
+      })
+    )
   }
 }
