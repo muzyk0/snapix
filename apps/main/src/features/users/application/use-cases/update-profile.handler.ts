@@ -20,29 +20,25 @@ export class UpdateProfileHandler implements ICommandHandler<UpdateProfileComman
     const birthDate = await this.handlerDate(dto.body.birthDate)
     await this.validateAgeIfExists(birthDate)
 
-    try {
-      await this.prisma.user.update({
-        where: {
-          id: dto.userId,
-        },
-        data: {
-          name: dto.body.userName,
-          profile: {
-            update: {
-              firstName: dto.body.firstName,
-              lastName: dto.body.lastName,
-              birthDate,
-              city: dto.body.city,
-              aboutMe: dto.body.aboutMe,
-            },
+    await this.prisma.user.update({
+      where: {
+        id: dto.userId,
+      },
+      data: {
+        name: dto.body.userName,
+        profile: {
+          update: {
+            firstName: dto.body.firstName,
+            lastName: dto.body.lastName,
+            birthDate,
+            city: dto.body.city,
+            aboutMe: dto.body.aboutMe,
           },
         },
-      })
+      },
+    })
 
-      return { message: 'Your settings are saved!' }
-    } catch (error) {
-      throw new HttpException('Error! Server is not available!', HttpStatus.INTERNAL_SERVER_ERROR)
-    }
+    return { message: 'Your settings are saved!' }
   }
 
   async validateAgeIfExists(birthDate: Date | null): Promise<void> {
