@@ -1,7 +1,7 @@
 import { IsOptional, IsString, Length, Matches } from 'class-validator'
 import { ApiProperty } from '@nestjs/swagger'
 
-export class ContentPostDto {
+export class CreatePostDto {
   @ApiProperty({
     pattern: '^[0-9a-zA-Zа-яА-Я\\s!,.?":;\'\\-()/=+*&%$#@^<>[\\]{}|~`€£¥§]+$',
     example: 'Anything that can go wrong will go wrong!',

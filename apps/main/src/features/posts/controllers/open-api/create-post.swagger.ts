@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { ContentPostDto } from '../dto/content-post.dto'
+import { CreatePostDto } from '../dto/create-post.dto'
 
 export function ApiCreatePost() {
   return applyDecorators(
@@ -8,7 +8,7 @@ export function ApiCreatePost() {
       summary: 'Create post',
     }),
     ApiBody({
-      type: () => ContentPostDto,
+      type: () => CreatePostDto,
     }),
     ApiResponse({
       status: HttpStatus.CREATED,

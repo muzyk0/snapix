@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post } from '@nestjs/common'
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { ApiTags } from '@nestjs/swagger'
 
@@ -7,7 +7,7 @@ import { GetUserContextDecorator } from '../../auth/decorators/get-user-context.
 import { JwtAtPayload } from '../../auth/types/jwt.type'
 import { CreatePostCommand } from '../application/use-cases/create-post.handler'
 import { ApiCreatePost } from './open-api/create-post.swagger'
-import { ContentPostDto } from './dto/content-post.dto'
+import { CreatePostDto } from './dto/create-post.dto'
 import { GetPostCommand } from '../application/use-cases/get-post.handler'
 import { ApiGetPost } from './open-api/get-post.swagger'
 
@@ -20,7 +20,7 @@ export class PostsController {
   @AuthGuard()
   @Post('')
   @HttpCode(HttpStatus.CREATED)
-  async createPost(@Body() body: ContentPostDto, @GetUserContextDecorator() ctx: JwtAtPayload) {
+  async createPost(@Body() body: CreatePostDto, @GetUserContextDecorator() ctx: JwtAtPayload) {
     return this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content, body.photoId))
   }
 
@@ -29,6 +29,13 @@ export class PostsController {
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
   async getPost(@Param('id') postId: string) {
+    return this.commandBus.execute(new GetPostCommand(+postId))
+  }
+
+  @AuthGuard()
+  @Put('/:id')
+  @HttpCode(HttpStatus.OK)
+  async updatePost(@Param('id') postId: string) {
     return this.commandBus.execute(new GetPostCommand(+postId))
   }
 }
