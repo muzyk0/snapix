@@ -7,7 +7,7 @@ export function ApiGetPost() {
       summary: 'Get post',
     }),
     ApiResponse({
-      status: HttpStatus.CREATED,
+      status: HttpStatus.OK,
       description: 'success',
       schema: {
         type: 'object',
@@ -30,11 +30,13 @@ export function ApiGetPost() {
           },
           createdAt: {
             example: '2024-03-10 14:27:20.034',
-            type: 'date string',
+            type: 'string',
+            format: 'date-time',
           },
           updatedAt: {
             example: '2024-03-10 14:27:20.034',
             type: 'string',
+            format: 'date-time',
           },
           photo: {
             type: 'object',
