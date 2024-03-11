@@ -3,6 +3,7 @@ import {
   type IStorageAdapter,
   type StorageCommandEnum,
   type UploadAvatarParams,
+  type UploadPhotoToPostParams,
 } from './storage-adapter.abstract'
 import { ClientProxy } from '@nestjs/microservices'
 import { defaultTimeoutTcpRequest, ServicesEnum } from '@app/core/constants'
@@ -53,6 +54,24 @@ export class StorageServiceAdapter implements IStorageAdapter {
       this.client
         .emit<number>({ cmd: 'delete-file', type }, ownerId)
         .pipe(timeout(defaultTimeoutTcpRequest))
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public async uploadPhotoToPost(
+    type: StorageCommandEnum,
+    payload: UploadPhotoToPostParams
+  ): Promise<ImageFileInfo[]> {
+    try {
+      const response = this.client
+        .send<ImageFileInfo[]>({ cmd: 'upload-file', type }, payload)
+        .pipe(timeout(defaultTimeoutTcpRequest))
+
+      const images = await firstValueFrom(response)
+
+      return images
     } catch (e) {
       this.logger.error(e)
       throw e

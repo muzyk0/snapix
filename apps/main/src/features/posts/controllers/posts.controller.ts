@@ -1,4 +1,16 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  ParseFilePipeBuilder,
+  Post,
+  Put,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common'
 import { CommandBus } from '@nestjs/cqrs'
 import { ApiTags } from '@nestjs/swagger'
 
@@ -13,11 +25,49 @@ import { ApiGetPost } from './open-api/get-post.swagger'
 import { UpdatePostDto } from './dto/update-post.dto'
 import { ApiUpdatePost } from './open-api/update-post.swagger'
 import { UpdatePostCommand } from '../application/use-cases/update-post.handler'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { ApiUploadPhotoToPost } from './open-api/upload-photo-to-post.swagger'
+import { UploadPhotoToPostCommand } from '../application/use-cases/upload-photo-to-post.handler'
+import { type UploadPhotoToPostViewDto } from './dto/upload-photo-to-post.dto'
+import { randomUUID } from 'crypto'
 
 @ApiTags('Posts')
 @Controller('/posts')
 export class PostsController {
   constructor(private readonly commandBus: CommandBus) {}
+
+  @ApiUploadPhotoToPost()
+  @AuthGuard()
+  @Post('/photo')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadPhotoToPost(
+    @UploadedFile(
+      new ParseFilePipeBuilder()
+        .addMaxSizeValidator({
+          maxSize: 1024 * 1024 + 10,
+        })
+        .addFileTypeValidator({
+          fileType: ['jpeg', 'png'].join('|'),
+        })
+        .build({
+          // todo: Implement exceptionFactory
+          fileIsRequired: true,
+          errorHttpStatusCode: HttpStatus.PAYLOAD_TOO_LARGE,
+        })
+    )
+    file: Express.Multer.File,
+    @GetUserContextDecorator() ctx: JwtAtPayload
+  ) {
+    return this.commandBus.execute<UploadPhotoToPostCommand, UploadPhotoToPostViewDto>(
+      new UploadPhotoToPostCommand({
+        photoId: randomUUID(),
+        ownerId: String(ctx.user.id),
+        buffer: file.buffer,
+        mimetype: file.mimetype,
+        originalname: file.originalname,
+      })
+    )
+  }
 
   @ApiCreatePost()
   @AuthGuard()
