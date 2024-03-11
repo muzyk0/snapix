@@ -33,6 +33,7 @@ import { type UploadPhotoToPostViewDto } from './dto/upload-photo-to-post.dto'
 import { randomUUID } from 'crypto'
 import { DeletePostCommand } from '../application/use-cases/delete-post.handler'
 import { ApiDeletePost } from './open-api/delete-post.swagger'
+import { GetAllPostCommand } from '../application/use-cases/get-all-posts.handler'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -78,6 +79,13 @@ export class PostsController {
   @HttpCode(HttpStatus.CREATED)
   async createPost(@Body() body: CreatePostDto, @GetUserContextDecorator() ctx: JwtAtPayload) {
     return this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content, body.photoId))
+  }
+
+  @AuthGuard()
+  @Get('')
+  @HttpCode(HttpStatus.OK)
+  async getAllPosts(@GetUserContextDecorator() ctx: JwtAtPayload) {
+    return this.commandBus.execute(new GetAllPostCommand(ctx.user.id))
   }
 
   @ApiGetPost()

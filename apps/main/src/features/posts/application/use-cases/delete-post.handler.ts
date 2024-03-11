@@ -21,6 +21,6 @@ export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
 
     // delete post and photo
     await this.postRepository.delete(dto.postId)
-    await this.storage.deleteAvatar(post.photoId)
+    await this.storage.deletePhotoToPost(post.photoId)
   }
 }

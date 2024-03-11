@@ -22,6 +22,14 @@ export class PostsRepository implements IPostRepository {
     })
   }
 
+  public async findMany(userId: number): Promise<Post[] | null> {
+    return this.prisma.post.findMany({
+      where: {
+        authorId: userId,
+      },
+    })
+  }
+
   public async update(postId: number, content: string | undefined): Promise<void> {
     try {
       await this.prisma.post.update({

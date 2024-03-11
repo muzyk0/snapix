@@ -31,4 +31,8 @@ export abstract class IStorageAdapter {
     type: StorageCommandEnum,
     payload: UploadPhotoToPostParams
   ): Promise<ImageFileInfo[]>
+
+  abstract deletePhotoToPost(type: StorageCommandEnum, photoId: string): Promise<void>
+
+  abstract getPhotoToPost(type: StorageCommandEnum, photoId: string): Promise<ImageFileInfo[]>
 }

@@ -38,21 +38,24 @@ export function ApiGetPost() {
           },
           photo: {
             type: 'object',
-            properties: {
-              url: {
-                type: 'string',
-                example: 'https://cdn.com/image.png',
-              },
-              width: {
-                type: 'number',
-                default: 192,
-              },
-              height: {
-                type: 'number',
-                default: 192,
-              },
-              size: {
-                type: 'number',
+            items: {
+              type: 'array',
+              properties: {
+                url: {
+                  type: 'string',
+                  example: 'https://cdn.com/image.png',
+                },
+                width: {
+                  type: 'number',
+                  default: 192,
+                },
+                height: {
+                  type: 'number',
+                  default: 192,
+                },
+                size: {
+                  type: 'number',
+                },
               },
             },
           },

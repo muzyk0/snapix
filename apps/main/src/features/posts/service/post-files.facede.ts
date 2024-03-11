@@ -7,26 +7,26 @@ import {
 import { type ImageFileInfo } from '@app/core/types/dto'
 
 export abstract class IPostFilesFacade {
-  // abstract getAvatar(userId: User['id']): Promise<ImageFileInfo[]>
+  abstract getPhotoToPost(photoId: string): Promise<ImageFileInfo[]>
 
   abstract uploadPhotoToPost(payload: UploadPhotoToPostParams): Promise<ImageFileInfo[]>
 
-  abstract deleteAvatar(photoId: string): Promise<void>
+  abstract deletePhotoToPost(photoId: string): Promise<void>
 }
 
 @Injectable()
 export class PostFilesFacade implements IPostFilesFacade {
   constructor(private readonly storage: IStorageAdapter) {}
 
-  /* public async getAvatar(userId: User['id']): Promise<ImageFileInfo[]> {
-        return this.storage.get(StorageCommandEnum.AVATAR, String(userId))
-    } */
+  public async getPhotoToPost(photoId: string): Promise<ImageFileInfo[]> {
+    return this.storage.getPhotoToPost(StorageCommandEnum.POST, photoId)
+  }
 
   public async uploadPhotoToPost(payload: UploadPhotoToPostParams): Promise<ImageFileInfo[]> {
     return this.storage.uploadPhotoToPost(StorageCommandEnum.POST, payload)
   }
 
-  public async deleteAvatar(photoId: string): Promise<void> {
-    return this.storage.delete(StorageCommandEnum.AVATAR, photoId)
+  public async deletePhotoToPost(photoId: string): Promise<void> {
+    return this.storage.deletePhotoToPost(StorageCommandEnum.POST, photoId)
   }
 }
