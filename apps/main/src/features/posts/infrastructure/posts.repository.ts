@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '@app/prisma'
 import { type CreatePostType } from '../domain/entities/createPost.entity'
 import { type IPostRepository } from '../application/interface'
@@ -20,5 +20,24 @@ export class PostsRepository implements IPostRepository {
         id: postId,
       },
     })
+  }
+
+  public async update(postId: number, content: string | undefined): Promise<void> {
+    try {
+      await this.prisma.post.update({
+        where: {
+          id: postId,
+        },
+        data: {
+          content,
+        },
+      })
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Record to update not found')) {
+        throw new NotFoundException()
+      } else {
+        throw error
+      }
+    }
   }
 }

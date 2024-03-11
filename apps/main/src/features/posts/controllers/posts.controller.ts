@@ -10,6 +10,9 @@ import { ApiCreatePost } from './open-api/create-post.swagger'
 import { CreatePostDto } from './dto/create-post.dto'
 import { GetPostCommand } from '../application/use-cases/get-post.handler'
 import { ApiGetPost } from './open-api/get-post.swagger'
+import { UpdatePostDto } from './dto/update-post.dto'
+import { ApiUpdatePost } from './open-api/update-post.swagger'
+import { UpdatePostCommand } from '../application/use-cases/update-post.handler'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -32,10 +35,11 @@ export class PostsController {
     return this.commandBus.execute(new GetPostCommand(+postId))
   }
 
+  @ApiUpdatePost()
   @AuthGuard()
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
-  async updatePost(@Param('id') postId: string) {
-    return this.commandBus.execute(new GetPostCommand(+postId))
+  async updatePost(@Param('id') postId: string, @Body() body: UpdatePostDto) {
+    await this.commandBus.execute(new UpdatePostCommand(+postId, body.content))
   }
 }

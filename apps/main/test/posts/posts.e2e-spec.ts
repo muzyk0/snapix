@@ -153,4 +153,28 @@ describe('PostController (e2e) - fill out', () => {
       .expect(200)
     expect(getResponse.body.content).toBe('Update description!')
   })
+
+  it('should not update content if incorrect postId', async () => {
+    // User register/confirm/login
+    accessToken = await registerConfirmAndLogin(app, correctUser)
+
+    // test post
+    await request(app.getHttpServer())
+      .post('/posts')
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({
+        photoId: 'correctId_2',
+      })
+      .expect(201)
+
+    await request(app.getHttpServer())
+      .put('/posts/0')
+      .auth(accessToken, {
+        type: 'bearer',
+      })
+      .send({ content: 'Update description!' })
+      .expect(404)
+  })
 })
