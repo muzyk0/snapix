@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -30,6 +31,8 @@ import { ApiUploadPhotoToPost } from './open-api/upload-photo-to-post.swagger'
 import { UploadPhotoToPostCommand } from '../application/use-cases/upload-photo-to-post.handler'
 import { type UploadPhotoToPostViewDto } from './dto/upload-photo-to-post.dto'
 import { randomUUID } from 'crypto'
+import { DeletePostCommand } from '../application/use-cases/delete-post.handler'
+import { ApiDeletePost } from './open-api/delete-post.swagger'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -91,5 +94,13 @@ export class PostsController {
   @HttpCode(HttpStatus.OK)
   async updatePost(@Param('id') postId: string, @Body() body: UpdatePostDto) {
     await this.commandBus.execute(new UpdatePostCommand(+postId, body.content))
+  }
+
+  @ApiDeletePost()
+  @AuthGuard()
+  @Delete('/:id')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async deletePost(@Param('id') postId: string) {
+    await this.commandBus.execute(new DeletePostCommand(+postId))
   }
 }

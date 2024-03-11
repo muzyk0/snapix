@@ -1,6 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { CreatePostDto } from '../dto/create-post.dto'
+import { UpdatePostDto } from '../dto/update-post.dto'
 
 export function ApiUpdatePost() {
   return applyDecorators(
@@ -8,7 +8,7 @@ export function ApiUpdatePost() {
       summary: 'Create post',
     }),
     ApiBody({
-      type: () => CreatePostDto,
+      type: () => UpdatePostDto,
     }),
     ApiResponse({
       status: HttpStatus.OK,

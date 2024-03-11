@@ -1,14 +1,10 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
-import { GetPostTypes } from '../../types/getPost.types'
+import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
 export function ApiGetPost() {
   return applyDecorators(
     ApiOperation({
       summary: 'Get post',
-    }),
-    ApiBody({
-      type: () => GetPostTypes,
     }),
     ApiResponse({
       status: HttpStatus.CREATED,
