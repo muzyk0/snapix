@@ -130,7 +130,6 @@ export class LocalS3StorageAdapter implements IStorageAdapter {
         Key: `content/users/${photoId}/${type}/${photoId}_posts_photo.png`,
       })
       await this.client.send(getObjectCommand)
-
       return [
         {
           url: `https://${getObjectCommand.input.Bucket}.storage.yandexcloud.net/${getObjectCommand.input.Key}`,
