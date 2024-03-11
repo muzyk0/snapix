@@ -1,4 +1,4 @@
-import { Module, type Provider } from '@nestjs/common'
+import { Module } from '@nestjs/common'
 import { CqrsModule } from '@nestjs/cqrs'
 import { NotificationModule } from '../notification/notification.module'
 import { AppConfigModule, AppConfigService } from '@app/config'
@@ -8,8 +8,9 @@ import { IPostRepository } from './application/interface'
 import { PostsRepository } from './infrastructure/posts.repository'
 import { ClientsModule, type TcpClientOptions, Transport } from '@nestjs/microservices'
 import { ServicesEnum } from '@app/core/constants'
-
-const Services: Array<Provider<unknown>> = []
+import { IStorageAdapter } from '../../core/adapters/storage-adapter.abstract'
+import { StorageServiceAdapter } from '../../core/adapters/storage-service.adapter'
+import { IPostFilesFacade, PostFilesFacade } from './service/post-files.facede'
 
 const Repositories = [
   {
@@ -41,7 +42,18 @@ const Repositories = [
     ]),
   ],
   controllers: [PostsController],
-  providers: [...Services, ...postHandlers, ...Repositories],
+  providers: [
+    {
+      provide: IStorageAdapter,
+      useClass: StorageServiceAdapter,
+    },
+    {
+      provide: IPostFilesFacade,
+      useClass: PostFilesFacade,
+    },
+    ...postHandlers,
+    ...Repositories,
+  ],
   exports: [],
 })
 export class PostsModule {}
