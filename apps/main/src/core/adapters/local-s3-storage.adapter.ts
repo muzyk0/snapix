@@ -1,10 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common'
-import { DeleteObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3'
+import {
+  DeleteObjectCommand,
+  GetObjectCommand,
+  PutObjectCommand,
+  S3Client,
+} from '@aws-sdk/client-s3'
 import { AppConfigService } from '@app/config'
 import {
   type IStorageAdapter,
   type StorageCommandEnum,
   type UploadAvatarParams,
+  type UploadPhotoToPostParams,
 } from './storage-adapter.abstract'
 import { type ImageFileInfo } from '@app/core/types/dto'
 
@@ -70,6 +76,69 @@ export class LocalS3StorageAdapter implements IStorageAdapter {
       })
 
       await this.client.send(getObjectCommand)
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public async uploadPhotoToPost(
+    type: StorageCommandEnum,
+    payload: UploadPhotoToPostParams
+  ): Promise<ImageFileInfo[]> {
+    try {
+      const command = new PutObjectCommand({
+        Bucket: 'snapix',
+        Key: `content/posts/${payload.photoId}/${type}/${payload.photoId}_posts_photo.png`,
+        Body: payload.buffer,
+        ContentType: 'image/png',
+      })
+      await this.client.send(command)
+
+      return [
+        {
+          url: `https://${command.input.Bucket}.storage.yandexcloud.net/${command.input.Key}`,
+          width: 300,
+          height: 300,
+          size: 300,
+        },
+      ]
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public async deletePhotoToPost(type: StorageCommandEnum, photoId: string): Promise<void> {
+    try {
+      const deleteObjectCommand = new DeleteObjectCommand({
+        Bucket: 'snapix',
+        Key: `content/users/${photoId}/${type}/${photoId}_posts_photo.png`,
+      })
+
+      await this.client.send(deleteObjectCommand)
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public async getPhotoToPost(type: StorageCommandEnum, photoId: string): Promise<ImageFileInfo[]> {
+    try {
+      const getObjectCommand = new GetObjectCommand({
+        Bucket: 'snapix',
+        Key: `content/users/${photoId}/${type}/${photoId}_posts_photo.png`,
+      })
+      await this.client.send(getObjectCommand)
+
+      return [
+        {
+          url: `https://${getObjectCommand.input.Bucket}.storage.yandexcloud.net/${getObjectCommand.input.Key}`,
+          width: 300,
+          height: 300,
+          size: 300,
+        },
+      ]
     } catch (e) {
       this.logger.error(e)
       throw e

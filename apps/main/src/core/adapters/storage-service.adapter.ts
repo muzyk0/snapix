@@ -60,6 +60,21 @@ export class StorageServiceAdapter implements IStorageAdapter {
     }
   }
 
+  public async getPhotoToPost(type: StorageCommandEnum, photoId: string): Promise<ImageFileInfo[]> {
+    try {
+      const response = this.client
+        .send<ImageFileInfo[]>({ cmd: 'get-file', type }, photoId)
+        .pipe(timeout(defaultTimeoutTcpRequest))
+
+      const images = await firstValueFrom(response)
+
+      return images
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
   public async uploadPhotoToPost(
     type: StorageCommandEnum,
     payload: UploadPhotoToPostParams
@@ -72,6 +87,17 @@ export class StorageServiceAdapter implements IStorageAdapter {
       const images = await firstValueFrom(response)
 
       return images
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public async deletePhotoToPost(type: StorageCommandEnum, photoId: string): Promise<void> {
+    try {
+      this.client
+        .emit<number>({ cmd: 'delete-file', type }, photoId)
+        .pipe(timeout(defaultTimeoutTcpRequest))
     } catch (e) {
       this.logger.error(e)
       throw e
