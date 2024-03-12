@@ -30,12 +30,11 @@ describe('PostController (e2e) - fill out', () => {
     jest.clearAllTimers()
   })
 
-  let accessToken = ''
   const badToken = '97603996-b7d5-4a80-a4fb-2b4334131b1d'
 
   it('should not create post, with bad request input', async () => {
     // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
+    const accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test post
     await request(app.getHttpServer())
@@ -49,9 +48,6 @@ describe('PostController (e2e) - fill out', () => {
   })
 
   it('should not create post, with incorrect auth', async () => {
-    // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
-
     // test posts
     await request(app.getHttpServer())
       .post('/posts')
@@ -67,7 +63,7 @@ describe('PostController (e2e) - fill out', () => {
 
   it('should create new post', async () => {
     // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
+    const accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test posts
     await request(app.getHttpServer())
@@ -84,7 +80,7 @@ describe('PostController (e2e) - fill out', () => {
 
   it('should create post without content', async () => {
     // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
+    const accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test post
     await request(app.getHttpServer())
@@ -101,7 +97,7 @@ describe('PostController (e2e) - fill out', () => {
   // todo: need to add in test correct upload photo
   it.skip('should get content without content', async () => {
     // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
+    const accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test post
     const postResponse = await request(app.getHttpServer())
@@ -125,7 +121,7 @@ describe('PostController (e2e) - fill out', () => {
 
   it('should update content', async () => {
     // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
+    const accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test post
     const postResponse = await request(app.getHttpServer())
@@ -149,7 +145,7 @@ describe('PostController (e2e) - fill out', () => {
 
   it('should not update content if incorrect postId', async () => {
     // User register/confirm/login
-    accessToken = await registerConfirmAndLogin(app, correctUser)
+    const accessToken = await registerConfirmAndLogin(app, correctUser)
 
     // test post
     await request(app.getHttpServer())

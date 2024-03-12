@@ -19,7 +19,7 @@ export class GetAllPostHandler implements ICommandHandler<GetAllPostCommand> {
     const post = await this.postRepository.findMany(dto.userId)
 
     if (isNil(post)) throw new NotFoundException()
-    // const photo = this.storage.getPhotoToPost(post.photoId)
+
     return Promise.all(
       post.map(async p => {
         return {
