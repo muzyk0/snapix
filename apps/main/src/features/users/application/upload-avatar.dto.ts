@@ -1,8 +1,9 @@
 import { IsNotEmpty, IsString } from 'class-validator'
+import { type User } from '@prisma/client'
 
 export class UploadAvatarDto {
   @IsString()
-  ownerId!: string
+  userId!: User['id']
 
   @IsNotEmpty()
   buffer!: Buffer

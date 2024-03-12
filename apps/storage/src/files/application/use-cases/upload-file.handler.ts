@@ -1,7 +1,7 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IStorageAdapter, type StorageCommandEnum } from '../../adapters/storage-adapter.abstract'
-import { type ImageFileInfo } from '@app/core/types/dto/upload-avatar-view.dto'
-import { type UploadAvatarDto } from '../../controllers/dto/upload-avatar.dto'
+import { type UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
+import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
@@ -10,7 +10,7 @@ import { isNil } from 'lodash'
 export class UploadAvatarFileCommand {
   constructor(
     readonly type: StorageCommandEnum.AVATAR,
-    readonly payload: UploadAvatarDto
+    readonly payload: UploadFileDto
   ) {}
 }
 
@@ -21,16 +21,16 @@ export class UploadFileHandler implements ICommandHandler<UploadAvatarFileComman
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute({ type, payload }: UploadAvatarFileCommand): Promise<ImageFileInfo[]> {
+  async execute({ type, payload }: UploadAvatarFileCommand): Promise<UploadFilesOutputDto> {
     const result = await this.storage.upload({
-      dirKey: `content/users/${payload.ownerId}/${type}`,
+      dirKey: `content/users/${payload.referenceId}/${type}`,
       buffer: payload.buffer,
       mimetype: payload.mimetype,
     })
 
     const fileForRemove = await this.fileModel.findOneAndDelete({
       type,
-      ownerId: payload.ownerId,
+      referenceId: payload.referenceId,
     })
 
     if (!isNil(fileForRemove)) {
@@ -39,20 +39,25 @@ export class UploadFileHandler implements ICommandHandler<UploadAvatarFileComman
 
     const file = await this.fileModel.create({
       type,
-      ownerId: payload.ownerId,
+      referenceId: payload.referenceId,
       ETag: result.ETag,
       key: result.key,
     })
 
+    console.log(file)
+
     await file.save()
 
-    return [
-      {
-        url: result.path,
-        width: 0,
-        height: 0,
-        size: 0,
-      },
-    ]
+    return {
+      id: file.id,
+      files: [
+        {
+          url: result.path,
+          width: 0,
+          height: 0,
+          size: 0,
+        },
+      ],
+    }
   }
 }

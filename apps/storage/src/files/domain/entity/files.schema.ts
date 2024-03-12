@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
 import { type HydratedDocument } from 'mongoose'
+import { randomUUID } from 'crypto'
 
 export type FileDocument = HydratedDocument<File>
 
@@ -11,7 +12,10 @@ export type FileDocument = HydratedDocument<File>
 })
 export class File {
   @Prop({ required: true })
-  ownerId!: string
+  referenceId!: string
+
+  @Prop({ default: randomUUID() })
+  id!: string
 
   @Prop({ required: true })
   type!: string

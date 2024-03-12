@@ -1,26 +1,11 @@
-import { IsArray, ValidateNested, IsNumber, Min, Max, IsUrl } from 'class-validator'
+import { IsArray, IsNotEmpty, ValidateNested } from 'class-validator'
+import { type ImageFileInfo } from '@app/core/types/dto'
 
-export class ImageFileInfo {
-  @IsUrl()
-  url!: string
+export class UploadPhotoForPostViewDto {
+  @IsNotEmpty()
+  id!: string
 
-  @IsNumber()
-  @Min(1)
-  @Max(4096)
-  width!: number
-
-  @IsNumber()
-  @Min(1)
-  @Max(4096)
-  height!: number
-
-  @IsNumber()
-  @Min(1)
-  size!: number
-}
-
-export class UploadPhotoToPostViewDto {
   @IsArray()
   @ValidateNested({ each: true })
-  photo!: ImageFileInfo[]
+  files!: ImageFileInfo[]
 }

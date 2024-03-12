@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common'
 import { type User } from '@prisma/client'
+import { type UploadFilesViewDto } from '@app/core/types/dto'
 import {
   IStorageAdapter,
   StorageCommandEnum,
-  type UploadAvatarParams,
-} from '../../../core/adapters/storage-adapter.abstract'
-import { type ImageFileInfo } from '@app/core/types/dto'
+} from '../../../core/adapters/storage/storage-adapter.abstract'
+import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 
 export abstract class IUserFilesFacade {
-  abstract getAvatar(userId: User['id']): Promise<ImageFileInfo[]>
+  abstract getAvatar(userId: User['id']): Promise<UploadFilesViewDto>
 
-  abstract uploadAvatar(payload: UploadAvatarParams): Promise<ImageFileInfo[]>
+  abstract uploadAvatar(payload: UploadFileDto): Promise<UploadFilesViewDto>
 
   abstract deleteAvatar(userId: User['id']): Promise<void>
 }
@@ -19,11 +19,11 @@ export abstract class IUserFilesFacade {
 export class UserFilesFacade implements IUserFilesFacade {
   constructor(private readonly storage: IStorageAdapter) {}
 
-  public async getAvatar(userId: User['id']): Promise<ImageFileInfo[]> {
+  public async getAvatar(userId: User['id']): Promise<UploadFilesViewDto> {
     return this.storage.get(StorageCommandEnum.AVATAR, String(userId))
   }
 
-  public async uploadAvatar(payload: UploadAvatarParams): Promise<ImageFileInfo[]> {
+  public async uploadAvatar(payload: UploadFileDto): Promise<UploadFilesViewDto> {
     return this.storage.upload(StorageCommandEnum.AVATAR, payload)
   }
 

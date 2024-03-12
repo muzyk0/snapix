@@ -20,7 +20,7 @@ import { isNil } from 'lodash'
 export class FilesStorageAdapter implements IStorageAdapter {
   private readonly client: S3Client
   private readonly logger = new Logger(FilesStorageAdapter.name)
-  private readonly bucket = 'snapix'
+  private readonly bucket = 'snapix-prod'
 
   constructor(config: AppConfigService) {
     this.client = new S3Client({

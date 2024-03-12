@@ -1,21 +1,26 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IUserFilesFacade } from '../../services/user-files.facede'
-import { type UploadAvatarParams } from '../../../../core/adapters/storage-adapter.abstract'
-import { type UploadAvatarViewDto } from '@app/core/types/dto'
+import { type UploadFilesViewDto } from '@app/core/types/dto'
+import { type UploadAvatarDto } from '../upload-avatar.dto'
 
 export class UploadAvatarCommand {
-  constructor(readonly payload: UploadAvatarParams) {}
+  constructor(readonly payload: UploadAvatarDto) {}
 }
 
 @CommandHandler(UploadAvatarCommand)
 export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand> {
   constructor(private readonly storage: IUserFilesFacade) {}
 
-  async execute({ payload }: UploadAvatarCommand): Promise<UploadAvatarViewDto> {
-    const imageFiles = await this.storage.uploadAvatar(payload)
+  async execute({ payload }: UploadAvatarCommand): Promise<UploadFilesViewDto> {
+    const imageFiles = await this.storage.uploadAvatar({
+      referenceId: String(payload.userId),
+      buffer: payload.buffer,
+      mimetype: payload.mimetype,
+      originalname: payload.originalname,
+    })
 
     return {
-      avatars: imageFiles,
+      files: imageFiles.files,
     }
   }
 }
