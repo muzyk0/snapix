@@ -7,27 +7,21 @@ import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { isNil } from 'lodash'
 
-export class UploadAvatarFileCommand {
+export class UploadFileCommand {
   constructor(
     readonly type: StorageCommandEnum.AVATAR,
     readonly payload: UploadFileDto
   ) {}
 }
 
-@CommandHandler(UploadAvatarFileCommand)
-export class UploadFileHandler implements ICommandHandler<UploadAvatarFileCommand> {
+@CommandHandler(UploadFileCommand)
+export class UploadFileHandler implements ICommandHandler<UploadFileCommand> {
   constructor(
     private readonly storage: IStorageAdapter,
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute({ type, payload }: UploadAvatarFileCommand): Promise<UploadFilesOutputDto> {
-    const result = await this.storage.upload({
-      dirKey: `content/users/${payload.referenceId}/${type}`,
-      buffer: payload.buffer,
-      mimetype: payload.mimetype,
-    })
-
+  async execute({ type, payload }: UploadFileCommand): Promise<UploadFilesOutputDto> {
     const fileForRemove = await this.fileModel.findOneAndDelete({
       type,
       referenceId: payload.referenceId,
@@ -36,6 +30,12 @@ export class UploadFileHandler implements ICommandHandler<UploadAvatarFileComman
     if (!isNil(fileForRemove)) {
       await this.storage.delete(fileForRemove.key)
     }
+
+    const result = await this.storage.upload({
+      dirKey: `content/users/${payload.referenceId}/${type}`,
+      buffer: payload.buffer,
+      mimetype: payload.mimetype,
+    })
 
     const file = await this.fileModel.create({
       type,

@@ -19,7 +19,7 @@ export interface GetFileOutput {
 }
 
 export abstract class IStorageAdapter {
-  abstract get(key: string): Promise<GetFileOutput>
+  abstract get(key: string): Promise<GetFileOutput | null>
 
   abstract upload(payload: UploadFileParams): Promise<UploadFileOutput>
 

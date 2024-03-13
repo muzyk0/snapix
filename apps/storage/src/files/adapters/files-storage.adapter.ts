@@ -33,23 +33,20 @@ export class FilesStorageAdapter implements IStorageAdapter {
     })
   }
 
-  public async get(key: string): Promise<GetFileOutput> {
+  public async get(key: string): Promise<GetFileOutput | null> {
     try {
       const command = new GetObjectCommand({
         Bucket: this.bucket,
         Key: key,
       })
 
-      const response = await this.client.send(command)
-
-      console.log('response GetObjectCommand', response)
+      await this.client.send(command)
 
       return {
         path: `https://${this.bucket}.storage.yandexcloud.net/${command.input.Key}`,
       }
     } catch (e) {
-      this.logger.error(e)
-      throw e
+      return null
     }
   }
 
@@ -68,9 +65,8 @@ export class FilesStorageAdapter implements IStorageAdapter {
         ContentType: mime.contentType(mimetype) || 'application/octet-stream',
       })
 
-      console.log('putObjectCommand', command)
       const response = await this.client.send(command)
-      console.log('upload response', response)
+
       if (isNil(command.input.Key) || isNil(response.ETag)) {
         throw new InternalServerErrorException()
       }
@@ -87,12 +83,12 @@ export class FilesStorageAdapter implements IStorageAdapter {
 
   public async delete(key: string): Promise<void> {
     try {
-      const getObjectCommand = new DeleteObjectCommand({
+      const deleteCommand = new DeleteObjectCommand({
         Bucket: this.bucket,
         Key: key,
       })
 
-      await this.client.send(getObjectCommand)
+      await this.client.send(deleteCommand)
     } catch (e) {
       this.logger.error(e)
       throw e

@@ -1,7 +1,7 @@
 import { Controller } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
-import { UploadAvatarFileCommand } from '../application/use-cases/upload-file.handler'
+import { UploadFileCommand } from '../application/use-cases/upload-file.handler'
 import { UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 import type { UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
 import { StorageCommandEnum } from '../adapters/storage-adapter.abstract'
@@ -16,16 +16,16 @@ export class FilesController {
   ) {}
 
   @MessagePattern({ cmd: 'get-file', type: StorageCommandEnum.AVATAR })
-  async getAvatar(ownerId: string): Promise<UploadFilesOutputDto> {
+  async getAvatar(referenceId: string): Promise<UploadFilesOutputDto> {
     return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
-      new GetFileQuery(StorageCommandEnum.AVATAR, ownerId)
+      new GetFileQuery(StorageCommandEnum.AVATAR, referenceId)
     )
   }
 
   @MessagePattern({ cmd: 'upload-file', type: StorageCommandEnum.AVATAR })
   async uploadAvatar(payload: UploadFileDto): Promise<UploadFilesOutputDto> {
-    return await this.commandBus.execute<UploadAvatarFileCommand, UploadFilesOutputDto>(
-      new UploadAvatarFileCommand(StorageCommandEnum.AVATAR, payload)
+    return await this.commandBus.execute<UploadFileCommand, UploadFilesOutputDto>(
+      new UploadFileCommand(StorageCommandEnum.AVATAR, payload)
     )
   }
 

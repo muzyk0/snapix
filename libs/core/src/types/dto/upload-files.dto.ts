@@ -1,4 +1,13 @@
-import { IsArray, IsNumber, IsString, IsUrl, Max, Min, ValidateNested } from 'class-validator'
+import {
+  IsArray,
+  IsNumber,
+  IsOptional,
+  IsString,
+  IsUrl,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator'
 
 export class ImageFileInfo {
   @IsUrl()
@@ -21,7 +30,8 @@ export class ImageFileInfo {
 
 export class UploadFilesOutputDto {
   @IsString()
-  id!: string
+  @IsOptional()
+  id!: string | null
 
   @IsArray()
   @ValidateNested({ each: true })
