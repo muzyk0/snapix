@@ -15,7 +15,7 @@ export class UploadPhotoToPostHandler implements ICommandHandler<UploadPhotoToPo
   async execute({ payload }: UploadPhotoToPostCommand): Promise<UploadPhotoForPostViewDto> {
     const referenceId = randomUUID()
     const imageFiles = await this.storage.uploadPhotoToPost({
-      referenceId,
+      ownerId: referenceId,
       buffer: payload.buffer,
       mimetype: payload.mimetype,
       originalname: payload.originalname,

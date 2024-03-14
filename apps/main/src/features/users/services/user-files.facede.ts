@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common'
-import { type User } from '@prisma/client'
 import { type UploadFilesViewDto } from '@app/core/types/dto'
 import {
   IStorageAdapter,
@@ -8,26 +7,26 @@ import {
 import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 
 export abstract class IUserFilesFacade {
-  abstract getAvatar(userId: User['id']): Promise<UploadFilesViewDto>
+  abstract getAvatar(referenceId: string): Promise<UploadFilesViewDto>
 
   abstract uploadAvatar(payload: UploadFileDto): Promise<UploadFilesViewDto>
 
-  abstract deleteAvatar(userId: User['id']): Promise<void>
+  abstract deleteAvatar(referenceId: string): Promise<void>
 }
 
 @Injectable()
 export class UserFilesFacade implements IUserFilesFacade {
   constructor(private readonly storage: IStorageAdapter) {}
 
-  public async getAvatar(userId: User['id']): Promise<UploadFilesViewDto> {
-    return this.storage.get(StorageCommandEnum.AVATAR, String(userId))
+  public async getAvatar(referenceId: string): Promise<UploadFilesViewDto> {
+    return this.storage.get(StorageCommandEnum.AVATAR, referenceId)
   }
 
   public async uploadAvatar(payload: UploadFileDto): Promise<UploadFilesViewDto> {
     return this.storage.upload(StorageCommandEnum.AVATAR, payload)
   }
 
-  public async deleteAvatar(userId: User['id']): Promise<void> {
-    return this.storage.delete(StorageCommandEnum.AVATAR, String(userId))
+  public async deleteAvatar(referenceId: string): Promise<void> {
+    return this.storage.delete(StorageCommandEnum.AVATAR, referenceId)
   }
 }

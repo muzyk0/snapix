@@ -83,8 +83,7 @@ export class UsersController {
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
     return this.commandBus.execute<UploadAvatarCommand, UploadFilesOutputDto>(
-      new UploadAvatarCommand({
-        userId: ctx.user.id,
+      new UploadAvatarCommand(ctx.user.id, {
         buffer: file.buffer,
         mimetype: file.mimetype,
         originalname: file.originalname,

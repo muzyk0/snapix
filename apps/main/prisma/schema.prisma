@@ -139,4 +139,5 @@ model Profile {
   city      String?
   aboutMe   String?
   updatedAt DateTime  @updatedAt()
+  avatarId String?
 }
