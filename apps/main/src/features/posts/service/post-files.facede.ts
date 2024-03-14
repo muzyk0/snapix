@@ -11,7 +11,7 @@ export abstract class IPostFilesFacade {
 
   abstract uploadPhotoToPost(payload: UploadFileDto): Promise<UploadFilesOutputDto>
 
-  abstract deletePhotoToPost(photoId: string): Promise<void>
+  abstract deletePhotoToPost(photoId: string): Promise<boolean>
 }
 
 @Injectable()
@@ -26,7 +26,7 @@ export class PostFilesFacade implements IPostFilesFacade {
     return this.storage.upload(StorageCommandEnum.POST, payload)
   }
 
-  public async deletePhotoToPost(photoId: string): Promise<void> {
+  public async deletePhotoToPost(photoId: string): Promise<boolean> {
     return this.storage.delete(StorageCommandEnum.POST, photoId)
   }
 }

@@ -11,5 +11,5 @@ export abstract class IStorageAdapter {
 
   abstract upload(type: StorageCommandEnum, payload: UploadFileDto): Promise<UploadFilesOutputDto>
 
-  abstract delete(type: StorageCommandEnum, ownerId: string): Promise<void>
+  abstract delete(type: StorageCommandEnum, ownerId: string): Promise<boolean>
 }

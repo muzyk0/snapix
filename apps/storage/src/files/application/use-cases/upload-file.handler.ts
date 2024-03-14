@@ -5,7 +5,7 @@ import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
-import { isNil } from 'lodash'
+import { randomUUID } from 'crypto'
 
 export class UploadFileCommand {
   constructor(
@@ -22,34 +22,35 @@ export class UploadFileHandler implements ICommandHandler<UploadFileCommand> {
   ) {}
 
   async execute({ type, payload }: UploadFileCommand): Promise<UploadFilesOutputDto> {
-    const fileForRemove = await this.fileModel.findOneAndDelete({
-      type,
-      referenceId: payload.referenceId,
-    })
+    // const fileForRemove = await this.fileModel.findOneAndDelete({
+    //   type,
+    //   referenceId: payload.ownerId,
+    // })
+    //
+    // if (!isNil(fileForRemove)) {
+    //   await this.storage.delete(fileForRemove.key)
+    // }
 
-    if (!isNil(fileForRemove)) {
-      await this.storage.delete(fileForRemove.key)
-    }
+    const referenceId = randomUUID()
 
     const result = await this.storage.upload({
-      dirKey: `content/users/${payload.referenceId}/${type}`,
+      dirKey: `content/users/${payload.ownerId}/${type}/${referenceId}`,
       buffer: payload.buffer,
       mimetype: payload.mimetype,
     })
 
     const file = await this.fileModel.create({
       type,
-      referenceId: payload.referenceId,
+      referenceId,
+      ownerId: payload.ownerId,
       ETag: result.ETag,
       key: result.key,
     })
 
-    console.log(file)
-
     await file.save()
 
     return {
-      id: file.id,
+      referenceId: file.referenceId,
       files: [
         {
           url: result.path,

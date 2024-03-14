@@ -1,7 +1,7 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IUserFilesFacade } from '../../services/user-files.facede'
-import { type User } from '@prisma/client'
 import { PrismaService } from '@app/prisma'
+import { type User } from '@prisma/client'
 
 export class DeleteAvatarCommand {
   constructor(readonly userId: User['id']) {}
@@ -26,6 +26,15 @@ export class DeleteAvatarHandler implements ICommandHandler<DeleteAvatarCommand>
 
     if (user.profile.avatarId) {
       await this.storage.deleteAvatar(user.profile.avatarId)
+
+      await this.prisma.profile.update({
+        where: {
+          id: user.profile.id,
+        },
+        data: {
+          avatarId: null,
+        },
+      })
     }
   }
 }

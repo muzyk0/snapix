@@ -9,7 +9,7 @@ import { BadRequestException } from '@nestjs/common'
 export class DeleteAvatarFileCommand {
   constructor(
     readonly type: StorageCommandEnum.AVATAR,
-    readonly ownerId: string
+    readonly referenceId: string
   ) {}
 }
 
@@ -21,7 +21,10 @@ export class DeleteFileHandler implements ICommandHandler<DeleteAvatarFileComman
   ) {}
 
   async execute(payload: DeleteAvatarFileCommand): Promise<void> {
-    const file = await this.fileModel.findOne(payload)
+    const file = await this.fileModel.findOne({
+      type: payload.type,
+      referenceId: payload.referenceId,
+    })
 
     if (isNil(file)) {
       throw new BadRequestException()

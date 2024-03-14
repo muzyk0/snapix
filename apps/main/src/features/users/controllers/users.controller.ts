@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
   Post,
   Put,
@@ -31,6 +32,7 @@ import { GetAvatarQuery } from '../application/use-cases/get-avatar.query.handle
 import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
 import { ApiGetUserProfile } from './open-api/get-profile.swagger'
+import { GetAvatarDto } from './dto/get-avatar.dto'
 
 @ApiTags('Users')
 @Controller('users')
@@ -53,10 +55,10 @@ export class UsersController {
 
   @ApiGetUserAvatar()
   @AuthGuard()
-  @Get('/profile/avatar')
-  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload) {
+  @Get('/:userId/profile/avatar')
+  async getAvatar(@Param() params: GetAvatarDto) {
     return this.queryBus.execute<GetAvatarQuery, UploadFilesViewDto>(
-      new GetAvatarQuery(ctx.user.id)
+      new GetAvatarQuery(Number(params.userId))
     )
   }
 

@@ -5,7 +5,6 @@ import { type UploadAvatarDto } from '../upload-avatar.dto'
 import { PrismaService } from '@app/prisma'
 import { BadRequestException } from '@nestjs/common'
 import { isNil } from 'lodash'
-import { randomUUID } from 'crypto'
 
 export class UploadAvatarCommand {
   constructor(
@@ -35,20 +34,16 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
       throw new BadRequestException('User does not exists')
     }
 
-    const newReferenceId = randomUUID()
-
-    const imageFiles = await this.storage.uploadAvatar({
-      referenceId: newReferenceId,
-      buffer: payload.buffer,
-      mimetype: payload.mimetype,
-      originalname: payload.originalname,
-    })
-
     if (user.profile.avatarId) {
       await this.storage.deleteAvatar(user.profile.avatarId)
     }
 
-    user.profile.avatarId = newReferenceId
+    const response = await this.storage.uploadAvatar({
+      ownerId: String(userId),
+      buffer: payload.buffer,
+      mimetype: payload.mimetype,
+      originalname: payload.originalname,
+    })
 
     await this.prisma.user.update({
       where: {
@@ -57,7 +52,7 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
       data: {
         profile: {
           update: {
-            avatarId: newReferenceId,
+            avatarId: response.referenceId,
           },
         },
       },
@@ -67,7 +62,7 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
     })
 
     return {
-      files: imageFiles.files,
+      files: response.files,
     }
   }
 }

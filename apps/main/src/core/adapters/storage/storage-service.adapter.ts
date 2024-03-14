@@ -45,14 +45,16 @@ export class StorageServiceAdapter implements IStorageAdapter {
     }
   }
 
-  public async delete(type: StorageCommandEnum, referenceId: string): Promise<void> {
+  public async delete(type: StorageCommandEnum, referenceId: string): Promise<boolean> {
     try {
       this.client
         .emit<number>({ cmd: 'delete-file', type }, referenceId)
         .pipe(timeout(defaultTimeoutTcpRequest))
+
+      return true
     } catch (e) {
       this.logger.error(e)
-      throw e
+      return false
     }
   }
 }

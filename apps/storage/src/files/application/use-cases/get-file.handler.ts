@@ -4,7 +4,7 @@ import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { isNil } from 'lodash'
-import type { UploadFilesOutputDto } from '@app/core/types/dto'
+import { type GetFilesDto } from '@app/core/types/dto'
 
 export class GetFileQuery {
   constructor(
@@ -20,13 +20,12 @@ export class GetFileHandler implements IQueryHandler<GetFileQuery> {
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute(payload: GetFileQuery): Promise<UploadFilesOutputDto> {
+  async execute(payload: GetFileQuery): Promise<GetFilesDto> {
     const file = await this.fileModel.findOne(payload)
 
     if (isNil(file)) {
       return {
         files: [],
-        id: null,
       }
     }
 
@@ -35,12 +34,10 @@ export class GetFileHandler implements IQueryHandler<GetFileQuery> {
     if (isNil(result)) {
       return {
         files: [],
-        id: null,
       }
     }
 
     return {
-      id: file.id,
       files: [
         {
           url: result.path,
