@@ -87,8 +87,8 @@ model Post {
   id        Int      @id @default(autoincrement())
   photoId   String
   content   String?
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
@@ -139,5 +139,5 @@ model Profile {
   city      String?
   aboutMe   String?
   updatedAt DateTime  @updatedAt()
-  avatarId String?
+  avatarId  String?
 }

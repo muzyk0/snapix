@@ -49,13 +49,10 @@ describe('PostController (e2e) - fill out', () => {
   })
 
   it('should not create post, with incorrect auth', async () => {
-    // add
-    const badToken = '97603996-b7d5-4a80-a4fb-2b4334131b1d'
-
     // test posts
     await request(app.getHttpServer())
       .post('/posts')
-      .auth(badToken, {
+      .auth('badToken', {
         type: 'bearer',
       })
       .send({
