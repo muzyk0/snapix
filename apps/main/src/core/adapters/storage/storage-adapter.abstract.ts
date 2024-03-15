@@ -7,9 +7,9 @@ export enum StorageCommandEnum {
 }
 
 export abstract class IStorageAdapter {
-  abstract get(type: StorageCommandEnum, ownerId: string): Promise<UploadFilesOutputDto>
+  abstract get(type: StorageCommandEnum, referenceId: string): Promise<UploadFilesOutputDto>
 
   abstract upload(type: StorageCommandEnum, payload: UploadFileDto): Promise<UploadFilesOutputDto>
 
-  abstract delete(type: StorageCommandEnum, ownerId: string): Promise<boolean>
+  abstract delete(type: StorageCommandEnum, referenceId: string): Promise<boolean>
 }

@@ -9,7 +9,7 @@ import { randomUUID } from 'crypto'
 
 export class UploadFileCommand {
   constructor(
-    readonly type: StorageCommandEnum.AVATAR,
+    readonly type: StorageCommandEnum,
     readonly payload: UploadFileDto
   ) {}
 }

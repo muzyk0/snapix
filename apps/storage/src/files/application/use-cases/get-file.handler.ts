@@ -8,7 +8,7 @@ import { type GetFilesDto } from '@app/core/types/dto'
 
 export class GetFileQuery {
   constructor(
-    readonly type: StorageCommandEnum.AVATAR,
+    readonly type: StorageCommandEnum,
     readonly referenceId: string
   ) {}
 }

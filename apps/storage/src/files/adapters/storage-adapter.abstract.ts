@@ -1,5 +1,6 @@
 export enum StorageCommandEnum {
   AVATAR = 'avatars',
+  POST = 'posts',
 }
 
 export interface UploadFileParams {

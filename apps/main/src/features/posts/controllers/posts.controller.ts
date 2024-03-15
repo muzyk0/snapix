@@ -40,6 +40,7 @@ import { ApiGetAllPost } from './open-api/get-all-posts.swagger'
 export class PostsController {
   constructor(private readonly commandBus: CommandBus) {}
 
+  // todo: Переписать на загрузку нескольких файлов
   @ApiUploadPhotoToPost()
   @AuthGuard()
   @Post('/image')
@@ -59,10 +60,11 @@ export class PostsController {
           errorHttpStatusCode: HttpStatus.PAYLOAD_TOO_LARGE,
         })
     )
-    file: Express.Multer.File
+    file: Express.Multer.File,
+    @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
     return this.commandBus.execute<UploadPhotoToPostCommand, UploadPhotoForPostViewDto>(
-      new UploadPhotoToPostCommand({
+      new UploadPhotoToPostCommand(ctx.user.id, {
         buffer: file.buffer,
         mimetype: file.mimetype,
         originalname: file.originalname,
@@ -70,12 +72,13 @@ export class PostsController {
     )
   }
 
+  // todo: Переписать создание поста с несколькими загруженными картинками
   @ApiCreatePost()
   @AuthGuard()
   @Post('')
   @HttpCode(HttpStatus.CREATED)
   async createPost(@Body() body: CreatePostDto, @GetUserContextDecorator() ctx: JwtAtPayload) {
-    return this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content, body.photoId))
+    return this.commandBus.execute(new CreatePostCommand(ctx.user.id, body.content, body.imageId))
   }
 
   @ApiGetAllPost()
@@ -98,8 +101,8 @@ export class PostsController {
   @AuthGuard()
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
-  async updatePost(@Param('id') postId: string, @Body() body: UpdatePostDto) {
-    await this.commandBus.execute(new UpdatePostCommand(+postId, body.content))
+  async updatePost(@Param('id') postId: number, @Body() body: UpdatePostDto) {
+    await this.commandBus.execute(new UpdatePostCommand(postId, body.content))
   }
 
   @ApiDeletePost()

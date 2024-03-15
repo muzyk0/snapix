@@ -15,9 +15,9 @@ export class CreatePostDto {
   content?: string
 
   @ApiProperty({
-    example: 'photoId',
+    example: 'imageId',
     required: true,
   })
   @IsString()
-  photoId!: string
+  imageId!: string
 }

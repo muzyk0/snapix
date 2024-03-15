@@ -1,17 +1,22 @@
-import { Module } from '@nestjs/common'
+import { Global, Module } from '@nestjs/common'
 import { AppConfigModule, AppConfigService } from '@app/config'
 import { ClientsModule, type TcpClientOptions, Transport } from '@nestjs/microservices'
 import { ServicesEnum } from '@app/core/constants'
 import { IStorageAdapter } from './storage-adapter.abstract'
 import { StorageServiceAdapter } from './storage-service.adapter'
+import { StorageService } from './storage.service'
+import { StorageRepository } from './storage.repository'
 
 const providers = [
   {
     provide: IStorageAdapter,
     useClass: StorageServiceAdapter,
   },
+  StorageService,
+  StorageRepository,
 ]
 
+@Global()
 @Module({
   imports: [
     ClientsModule.registerAsync([

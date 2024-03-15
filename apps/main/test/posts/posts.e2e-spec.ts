@@ -30,9 +30,6 @@ describe('PostController (e2e) - fill out', () => {
     jest.clearAllTimers()
   })
 
-  // removed
-  // const badToken = '97603996-b7d5-4a80-a4fb-2b4334131b1d'
-
   it('should not create post, with bad request input', async () => {
     // User register/confirm/login
     const accessToken = await registerConfirmAndLogin(app, correctUser)
@@ -43,7 +40,7 @@ describe('PostController (e2e) - fill out', () => {
       .auth(accessToken, { type: 'bearer' })
       .send({
         content: true,
-        photoId: false,
+        imageId: false,
       })
       .expect(400)
   })
@@ -57,7 +54,7 @@ describe('PostController (e2e) - fill out', () => {
       })
       .send({
         content: 'Good day!',
-        photoId: 'correctId',
+        imageId: 'correctId',
       })
       .expect(401)
   })
@@ -74,7 +71,7 @@ describe('PostController (e2e) - fill out', () => {
       })
       .send({
         content: 'Good day!',
-        photoId: 'correctId',
+        imageId: 'correctId',
       })
       .expect(201)
   })
@@ -90,7 +87,7 @@ describe('PostController (e2e) - fill out', () => {
         type: 'bearer',
       })
       .send({
-        photoId: 'correctId_2',
+        imageId: 'correctId_2',
       })
       .expect(201)
   })
@@ -107,7 +104,7 @@ describe('PostController (e2e) - fill out', () => {
         type: 'bearer',
       })
       .send({
-        photoId: 'correctId_2',
+        imageId: 'correctId_2',
       })
       .expect(201)
 
@@ -131,12 +128,12 @@ describe('PostController (e2e) - fill out', () => {
         type: 'bearer',
       })
       .send({
-        photoId: 'correctId_2',
+        imageId: 'correctId_2',
       })
       .expect(201)
 
     await request(app.getHttpServer())
-      .put(`/posts/${postResponse.body.postId}`)
+      .put(`/posts/${postResponse.body.id}`)
       .auth(accessToken, {
         type: 'bearer',
       })
@@ -155,7 +152,7 @@ describe('PostController (e2e) - fill out', () => {
         type: 'bearer',
       })
       .send({
-        photoId: 'correctId_2',
+        imageId: 'correctId_2',
       })
       .expect(201)
 

@@ -37,4 +37,27 @@ export class FilesController {
 
     return true
   }
+
+  @MessagePattern({ cmd: 'get-file', type: StorageCommandEnum.POST })
+  async getPostImage(referenceId: string): Promise<UploadFilesOutputDto> {
+    return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
+      new GetFileQuery(StorageCommandEnum.POST, referenceId)
+    )
+  }
+
+  @MessagePattern({ cmd: 'upload-file', type: StorageCommandEnum.POST })
+  async uploadPostImage(payload: UploadFileDto): Promise<UploadFilesOutputDto> {
+    return await this.commandBus.execute<UploadFileCommand, UploadFilesOutputDto>(
+      new UploadFileCommand(StorageCommandEnum.POST, payload)
+    )
+  }
+
+  @MessagePattern({ cmd: 'delete-file', type: StorageCommandEnum.POST })
+  async deletePostImage(ownerId: string): Promise<boolean> {
+    await this.commandBus.execute<DeleteAvatarFileCommand, undefined>(
+      new DeleteAvatarFileCommand(StorageCommandEnum.POST, ownerId)
+    )
+
+    return true
+  }
 }

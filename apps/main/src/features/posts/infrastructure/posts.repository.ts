@@ -1,6 +1,6 @@
 import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from '@app/prisma'
-import { type CreatePostType } from '../domain/entities/createPost.entity'
+import { type CreatePostType } from '../domain/entities/post.entity'
 import { type IPostRepository } from '../application/interface'
 import { type Post } from '@prisma/client'
 
