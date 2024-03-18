@@ -90,23 +90,23 @@ export class PostsController {
   @AuthGuard()
   @Get('/:id')
   @HttpCode(HttpStatus.OK)
-  async getPost(@Param('id') postId: string) {
-    return this.commandBus.execute(new GetPostCommand(+postId))
+  async getPost(@Param('id') postId: number) {
+    return this.commandBus.execute(new GetPostCommand(postId))
   }
 
   @ApiUpdatePost()
   @AuthGuard()
   @Put('/:id')
   @HttpCode(HttpStatus.OK)
-  async updatePost(@Param('id') postId: string, @Body() body: UpdatePostDto) {
-    await this.commandBus.execute(new UpdatePostCommand(+postId, body.content))
+  async updatePost(@Param('id') postId: number, @Body() body: UpdatePostDto) {
+    await this.commandBus.execute(new UpdatePostCommand(postId, body.content))
   }
 
   @ApiDeletePost()
   @AuthGuard()
   @Delete('/:id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async deletePost(@Param('id') postId: string) {
-    await this.commandBus.execute(new DeletePostCommand(+postId))
+  async deletePost(@Param('id') postId: number) {
+    await this.commandBus.execute(new DeletePostCommand(postId))
   }
 }
