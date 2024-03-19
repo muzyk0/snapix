@@ -1,1 +1,1 @@
-export * from './upload-avatar-view.dto'
+export * from './upload-files.dto'

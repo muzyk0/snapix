@@ -6,33 +6,10 @@ import { NotificationModule } from '../notification/notification.module'
 import { usersHandlers } from './application/use-cases/handlers'
 import { CqrsModule } from '@nestjs/cqrs'
 import { IUserFilesFacade, UserFilesFacade } from './services/user-files.facede'
-import { IStorageAdapter } from '../../core/adapters/storage-adapter.abstract'
-import { StorageServiceAdapter } from '../../core/adapters/storage-service.adapter'
-import { ClientsModule, type TcpClientOptions, Transport } from '@nestjs/microservices'
-import { ServicesEnum } from '@app/core/constants'
-import { AppConfigModule, AppConfigService } from '@app/config'
+import { StorageModule } from '../../core/adapters/storage/storage.module'
 
 @Module({
-  imports: [
-    CqrsModule,
-    NotificationModule,
-    ClientsModule.registerAsync([
-      {
-        name: ServicesEnum.STORAGE_SERVICE,
-        imports: [AppConfigModule],
-        useFactory: (configService: AppConfigService) => {
-          return {
-            transport: Transport.TCP,
-            options: {
-              host: configService.storageService.host,
-              port: configService.storageService.port,
-            },
-          } satisfies TcpClientOptions
-        },
-        inject: [AppConfigService],
-      },
-    ]),
-  ],
+  imports: [CqrsModule, NotificationModule, StorageModule],
   controllers: [UsersController],
   providers: [
     UsersQueryRepository,
@@ -40,10 +17,6 @@ import { AppConfigModule, AppConfigService } from '@app/config'
     {
       provide: IUserService,
       useClass: UserService,
-    },
-    {
-      provide: IStorageAdapter,
-      useClass: StorageServiceAdapter,
     },
     {
       provide: IUserFilesFacade,

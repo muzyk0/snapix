@@ -4,12 +4,12 @@ import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { isNil } from 'lodash'
-import type { ImageFileInfo } from '@app/core/types/dto'
+import { type GetFilesDto } from '@app/core/types/dto'
 
 export class GetFileQuery {
   constructor(
     readonly type: StorageCommandEnum.AVATAR,
-    readonly ownerId: string
+    readonly referenceId: string
   ) {}
 }
 
@@ -20,22 +20,32 @@ export class GetFileHandler implements IQueryHandler<GetFileQuery> {
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute(payload: GetFileQuery): Promise<ImageFileInfo[]> {
+  async execute(payload: GetFileQuery): Promise<GetFilesDto> {
     const file = await this.fileModel.findOne(payload)
 
     if (isNil(file)) {
-      return []
+      return {
+        files: [],
+      }
     }
 
     const result = await this.storage.get(file.key)
 
-    return [
-      {
-        url: result.path,
-        width: 0,
-        height: 0,
-        size: 0,
-      },
-    ]
+    if (isNil(result)) {
+      return {
+        files: [],
+      }
+    }
+
+    return {
+      files: [
+        {
+          url: result.path,
+          width: 0,
+          height: 0,
+          size: 0,
+        },
+      ],
+    }
   }
 }

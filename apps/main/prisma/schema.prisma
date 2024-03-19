@@ -85,11 +85,12 @@ model PasswordRecovery {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  title     String
+  photoId   String
   content   String?
-  published Boolean? @default(false)
-  author    User?    @relation(fields: [authorId], references: [id])
-  authorId  Int?
+  author    User     @relation(fields: [authorId], references: [id])
+  authorId  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
 
 model AuditLog {
@@ -138,4 +139,5 @@ model Profile {
   city      String?
   aboutMe   String?
   updatedAt DateTime  @updatedAt()
+  avatarId  String?
 }

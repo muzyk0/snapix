@@ -5,6 +5,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   ParseFilePipeBuilder,
   Post,
   Put,
@@ -25,12 +26,13 @@ import { UpdateProfileCommand } from '../application/use-cases/update-profile.ha
 import { GetProfileCommand } from '../application/use-cases/get-profile.handler'
 import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
 import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
-import { type UploadAvatarViewDto } from '@app/core/types/dto'
+import { type UploadFilesOutputDto, type UploadFilesViewDto } from '@app/core/types/dto'
 import { UpdateProfileDto } from './dto/update-profile.dto'
 import { GetAvatarQuery } from '../application/use-cases/get-avatar.query.handler'
 import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
 import { ApiGetUserProfile } from './open-api/get-profile.swagger'
+import { GetAvatarDto } from './dto/get-avatar.dto'
 
 @ApiTags('Users')
 @Controller('users')
@@ -53,10 +55,10 @@ export class UsersController {
 
   @ApiGetUserAvatar()
   @AuthGuard()
-  @Get('/profile/avatar')
-  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload) {
-    return this.queryBus.execute<GetAvatarQuery, UploadAvatarViewDto>(
-      new GetAvatarQuery(ctx.user.id)
+  @Get('/:userId/profile/avatar')
+  async getAvatar(@Param() params: GetAvatarDto) {
+    return this.queryBus.execute<GetAvatarQuery, UploadFilesViewDto>(
+      new GetAvatarQuery(Number(params.userId))
     )
   }
 
@@ -82,9 +84,8 @@ export class UsersController {
     file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
-    return this.commandBus.execute<UploadAvatarCommand, UploadAvatarViewDto>(
-      new UploadAvatarCommand({
-        ownerId: String(ctx.user.id),
+    return this.commandBus.execute<UploadAvatarCommand, UploadFilesOutputDto>(
+      new UploadAvatarCommand(ctx.user.id, {
         buffer: file.buffer,
         mimetype: file.mimetype,
         originalname: file.originalname,

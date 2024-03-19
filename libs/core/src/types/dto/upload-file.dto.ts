@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator'
 
-export class UploadAvatarDto {
+export class UploadFileDto {
   @IsString()
   ownerId!: string
 

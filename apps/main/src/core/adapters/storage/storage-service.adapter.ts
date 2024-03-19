@@ -1,13 +1,10 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
-import {
-  type IStorageAdapter,
-  type StorageCommandEnum,
-  type UploadAvatarParams,
-} from './storage-adapter.abstract'
+import { type IStorageAdapter, type StorageCommandEnum } from './storage-adapter.abstract'
 import { ClientProxy } from '@nestjs/microservices'
 import { defaultTimeoutTcpRequest, ServicesEnum } from '@app/core/constants'
 import { firstValueFrom, timeout } from 'rxjs'
-import { type ImageFileInfo } from '@app/core/types/dto'
+import { type UploadFilesOutputDto } from '@app/core/types/dto'
+import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 
 @Injectable()
 export class StorageServiceAdapter implements IStorageAdapter {
@@ -15,15 +12,15 @@ export class StorageServiceAdapter implements IStorageAdapter {
 
   constructor(@Inject(ServicesEnum.STORAGE_SERVICE) private readonly client: ClientProxy) {}
 
-  public async get(type: StorageCommandEnum, ownerId: string): Promise<ImageFileInfo[]> {
+  public async get(type: StorageCommandEnum, referenceId: string): Promise<UploadFilesOutputDto> {
     try {
-      const response = this.client
-        .send<ImageFileInfo[]>({ cmd: 'get-file', type }, ownerId)
-        .pipe(timeout(defaultTimeoutTcpRequest))
+      const response = await firstValueFrom(
+        this.client
+          .send<UploadFilesOutputDto>({ cmd: 'get-file', type }, referenceId)
+          .pipe(timeout(defaultTimeoutTcpRequest))
+      )
 
-      const images = await firstValueFrom(response)
-
-      return images
+      return response
     } catch (e) {
       this.logger.error(e)
       throw e
@@ -32,11 +29,11 @@ export class StorageServiceAdapter implements IStorageAdapter {
 
   public async upload(
     type: StorageCommandEnum,
-    payload: UploadAvatarParams
-  ): Promise<ImageFileInfo[]> {
+    payload: UploadFileDto
+  ): Promise<UploadFilesOutputDto> {
     try {
       const response = this.client
-        .send<ImageFileInfo[]>({ cmd: 'upload-file', type }, payload)
+        .send<UploadFilesOutputDto>({ cmd: 'upload-file', type }, payload)
         .pipe(timeout(defaultTimeoutTcpRequest))
 
       const images = await firstValueFrom(response)
@@ -48,14 +45,16 @@ export class StorageServiceAdapter implements IStorageAdapter {
     }
   }
 
-  public async delete(type: StorageCommandEnum, ownerId: string): Promise<void> {
+  public async delete(type: StorageCommandEnum, referenceId: string): Promise<boolean> {
     try {
       this.client
-        .emit<number>({ cmd: 'delete-file', type }, ownerId)
+        .emit<number>({ cmd: 'delete-file', type }, referenceId)
         .pipe(timeout(defaultTimeoutTcpRequest))
+
+      return true
     } catch (e) {
       this.logger.error(e)
-      throw e
+      return false
     }
   }
 }

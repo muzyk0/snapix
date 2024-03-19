@@ -11,7 +11,7 @@ export type FileDocument = HydratedDocument<File>
 })
 export class File {
   @Prop({ required: true })
-  ownerId!: string
+  referenceId!: string
 
   @Prop({ required: true })
   type!: string
