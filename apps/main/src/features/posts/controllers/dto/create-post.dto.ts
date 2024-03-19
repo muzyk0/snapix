@@ -7,10 +7,6 @@ export class CreatePostDto {
   @Matches(/^[0-9a-zA-Zа-яА-Я\s!,.?":;'\-()/=+*&%$#@^<>[\]{}|~`€£¥§]+$/)
   content?: string
 
-  @ApiProperty({
-    example: 'imageId',
-    required: true,
-  })
   @IsString()
   imageId!: string
 }
