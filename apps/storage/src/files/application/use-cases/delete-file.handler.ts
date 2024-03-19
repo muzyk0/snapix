@@ -8,7 +8,7 @@ import { BadRequestException } from '@nestjs/common'
 
 export class DeleteAvatarFileCommand {
   constructor(
-    readonly type: StorageCommandEnum.AVATAR,
+    readonly type: StorageCommandEnum,
     readonly referenceId: string
   ) {}
 }

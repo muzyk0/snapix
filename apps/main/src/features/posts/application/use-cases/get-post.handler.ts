@@ -20,10 +20,10 @@ export class GetPostHandler implements ICommandHandler<GetPostCommand> {
 
     if (isNil(post)) throw new NotFoundException()
 
-    const photo = await this.storage.getPhotoToPost(post.photoId)
+    const photo = await this.storage.getPhotoToPost(post.imageId)
     return {
       id: post.id,
-      photoId: post.photoId,
+      photoId: post.imageId,
       content: post.content,
       authorId: post.authorId,
       createdAt: post.createdAt,

@@ -18,9 +18,13 @@ import * as path from 'path'
 import { ClientsModule, type TcpClientOptions, Transport } from '@nestjs/microservices'
 import { ServicesEnum } from '@app/core/constants'
 import { PostsModule } from './features/posts/posts.module'
+import { ScheduleModule } from '@nestjs/schedule'
+import { EventEmitterModule } from '@nestjs/event-emitter'
 
 @Module({
   imports: [
+    ScheduleModule.forRoot(),
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       envFilePath: ['.env', '.env.test'],

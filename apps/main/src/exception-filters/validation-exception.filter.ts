@@ -46,8 +46,6 @@ export class ValidationExceptionFilter implements ExceptionFilter {
       }),
     })
 
-    this.logger.error(exception.message, exception.stack)
-
     // send the custom JSON response to the client
     response.status(status).json({
       message: exception.message,

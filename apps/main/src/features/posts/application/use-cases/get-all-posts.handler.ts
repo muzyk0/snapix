@@ -24,12 +24,12 @@ export class GetAllPostHandler implements ICommandHandler<GetAllPostCommand> {
       post.map(async p => {
         return {
           id: p.id,
-          photoId: p.photoId,
+          photoId: p.imageId,
           content: p.content,
           authorId: p.authorId,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
-          photo: await this.storage.getPhotoToPost(p.photoId),
+          photo: await this.storage.getPhotoToPost(p.imageId),
         }
       })
     )

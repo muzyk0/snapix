@@ -4,6 +4,7 @@ import { type UploadFilesViewDto } from '@app/core/types/dto'
 import { isNil } from 'lodash'
 import { PrismaService } from '@app/prisma'
 import { type User } from '@prisma/client'
+import { NotFoundException } from '@nestjs/common'
 
 export class GetAvatarQuery {
   constructor(readonly userId: User['id']) {}
@@ -17,7 +18,7 @@ export class GetAvatarQueryHandler implements IQueryHandler<GetAvatarQuery> {
   ) {}
 
   async execute({ userId }: GetAvatarQuery): Promise<UploadFilesViewDto> {
-    const user = await this.prisma.user.findUniqueOrThrow({
+    const user = await this.prisma.user.findUnique({
       where: {
         id: userId,
       },
@@ -25,6 +26,10 @@ export class GetAvatarQueryHandler implements IQueryHandler<GetAvatarQuery> {
         profile: true,
       },
     })
+
+    if (isNil(user)) {
+      throw new NotFoundException('User not found')
+    }
 
     if (isNil(user.profile.avatarId)) {
       return { files: [] }

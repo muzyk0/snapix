@@ -85,7 +85,7 @@ model PasswordRecovery {
 
 model Post {
   id        Int      @id @default(autoincrement())
-  photoId   String
+  imageId   String
   content   String?
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
@@ -138,6 +138,15 @@ model Profile {
   birthDate DateTime? @db.Date
   city      String?
   aboutMe   String?
+  createdAt DateTime  @default(now())
   updatedAt DateTime  @updatedAt()
   avatarId  String?
+}
+
+model StorageTempFiles {
+  id        Int      @id @default(autoincrement())
+  referenceId      String @unique()
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt()
 }
