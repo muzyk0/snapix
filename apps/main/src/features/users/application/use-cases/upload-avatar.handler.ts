@@ -34,16 +34,16 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
       throw new BadRequestException('User does not exists')
     }
 
-    if (user.profile.avatarId) {
-      await this.storage.deleteAvatar(user.profile.avatarId)
-    }
-
     const response = await this.storage.uploadAvatar({
       ownerId: String(userId),
       buffer: payload.buffer,
       mimetype: payload.mimetype,
       originalname: payload.originalname,
     })
+
+    if (user.profile.avatarId) {
+      await this.storage.deleteAvatar(user.profile.avatarId)
+    }
 
     await this.prisma.user.update({
       where: {
