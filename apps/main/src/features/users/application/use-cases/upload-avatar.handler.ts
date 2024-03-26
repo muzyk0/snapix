@@ -1,10 +1,11 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { IUserFilesFacade } from '../../services/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
 import { type UploadFilesViewDto } from '@app/core/types/dto'
 import { type UploadAvatarDto } from '../upload-avatar.dto'
 import { PrismaService } from '@app/prisma'
 import { BadRequestException } from '@nestjs/common'
 import { isNil } from 'lodash'
+import { StorageFileTypeEnum } from '@app/core/enums/storage-command.enum'
 
 export class UploadAvatarCommand {
   constructor(
@@ -16,7 +17,7 @@ export class UploadAvatarCommand {
 @CommandHandler(UploadAvatarCommand)
 export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand> {
   constructor(
-    private readonly storage: IUserFilesFacade,
+    private readonly storage: IImageFilesFacade,
     private readonly prisma: PrismaService
   ) {}
 
@@ -34,15 +35,16 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
       throw new BadRequestException('User does not exists')
     }
 
-    const response = await this.storage.uploadAvatar({
+    const response = await this.storage.uploadImage({
       ownerId: String(userId),
       buffer: payload.buffer,
       mimetype: payload.mimetype,
       originalname: payload.originalname,
+      type: StorageFileTypeEnum.AVATAR,
     })
 
     if (user.profile.avatarId) {
-      await this.storage.deleteAvatar(user.profile.avatarId)
+      await this.storage.deleteImage(user.profile.avatarId)
     }
 
     await this.prisma.user.update({

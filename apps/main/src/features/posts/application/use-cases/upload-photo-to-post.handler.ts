@@ -1,9 +1,10 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { type UploadPhotoForPostViewDto } from '../../controllers/dto/upload-photo-to-post.dto'
-import { IPostFilesFacade } from '../../service/post-files.facede'
 import { type UploadPhotoForPostDto } from '../dto/upload-photo-for-post.dto'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { UploadPostImageEvent } from '../../domain/events/upload-post-image.event'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
+import { StorageFileTypeEnum } from '@app/core/enums/storage-command.enum'
 
 export class UploadPhotoToPostCommand {
   constructor(
@@ -15,16 +16,17 @@ export class UploadPhotoToPostCommand {
 @CommandHandler(UploadPhotoToPostCommand)
 export class UploadPhotoToPostHandler implements ICommandHandler<UploadPhotoToPostCommand> {
   constructor(
-    private readonly storage: IPostFilesFacade,
+    private readonly storage: IImageFilesFacade,
     private readonly eventEmitter: EventEmitter2
   ) {}
 
   async execute({ userId, payload }: UploadPhotoToPostCommand): Promise<UploadPhotoForPostViewDto> {
-    const imageFiles = await this.storage.uploadPhotoToPost({
+    const imageFiles = await this.storage.uploadImage({
       ownerId: String(userId),
       buffer: payload.buffer,
       mimetype: payload.mimetype,
       originalname: payload.originalname,
+      type: StorageFileTypeEnum.POST,
     })
 
     this.eventEmitter.emit('post.photo.uploaded', new UploadPostImageEvent(imageFiles.referenceId))

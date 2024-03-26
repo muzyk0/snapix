@@ -1,5 +1,5 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { IUserFilesFacade } from '../../services/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
 import { PrismaService } from '@app/prisma'
 import { type User } from '@prisma/client'
 
@@ -10,7 +10,7 @@ export class DeleteAvatarCommand {
 @CommandHandler(DeleteAvatarCommand)
 export class DeleteAvatarHandler implements ICommandHandler<DeleteAvatarCommand> {
   constructor(
-    private readonly storage: IUserFilesFacade,
+    private readonly storage: IImageFilesFacade,
     private readonly prisma: PrismaService
   ) {}
 
@@ -25,7 +25,7 @@ export class DeleteAvatarHandler implements ICommandHandler<DeleteAvatarCommand>
     })
 
     if (user.profile.avatarId) {
-      await this.storage.deleteAvatar(user.profile.avatarId)
+      await this.storage.deleteImage(user.profile.avatarId)
 
       await this.prisma.profile.update({
         where: {

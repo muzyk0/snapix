@@ -1,5 +1,5 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { IStorageAdapter, type StorageCommandEnum } from '../../adapters/storage-adapter.abstract'
+import { IStorageAdapter } from '../../adapters/storage-adapter.abstract'
 import { type UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
 import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 import { File } from '../../domain/entity/files.schema'
@@ -8,10 +8,7 @@ import { Model } from 'mongoose'
 import { randomUUID } from 'crypto'
 
 export class UploadFileCommand {
-  constructor(
-    readonly type: StorageCommandEnum,
-    readonly payload: UploadFileDto
-  ) {}
+  constructor(readonly payload: UploadFileDto) {}
 }
 
 @CommandHandler(UploadFileCommand)
@@ -21,26 +18,17 @@ export class UploadFileHandler implements ICommandHandler<UploadFileCommand> {
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute({ type, payload }: UploadFileCommand): Promise<UploadFilesOutputDto> {
-    // const fileForRemove = await this.fileModel.findOneAndDelete({
-    //   type,
-    //   referenceId: payload.ownerId,
-    // })
-    //
-    // if (!isNil(fileForRemove)) {
-    //   await this.storage.delete(fileForRemove.key)
-    // }
-
+  async execute({ payload }: UploadFileCommand): Promise<UploadFilesOutputDto> {
     const referenceId = randomUUID()
 
     const result = await this.storage.upload({
-      dirKey: `content/users/${payload.ownerId}/${type}/${referenceId}`,
+      dirKey: `content/users/${payload.ownerId}/${payload.type}/${referenceId}`,
       buffer: payload.buffer,
       mimetype: payload.mimetype,
     })
 
     const file = await this.fileModel.create({
-      type,
+      type: payload.type,
       referenceId,
       ownerId: payload.ownerId,
       ETag: result.ETag,

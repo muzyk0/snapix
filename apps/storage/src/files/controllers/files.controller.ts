@@ -4,9 +4,9 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { UploadFileCommand } from '../application/use-cases/upload-file.handler'
 import { UploadFileDto } from '@app/core/types/dto/upload-file.dto'
 import type { UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
-import { StorageCommandEnum } from '../adapters/storage-adapter.abstract'
 import { DeleteAvatarFileCommand } from '../application/use-cases/delete-file.handler'
 import { GetFileQuery } from '../application/use-cases/get-file.handler'
+import { StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
 @Controller('files')
 export class FilesController {
@@ -15,47 +15,24 @@ export class FilesController {
     private readonly queryBus: QueryBus
   ) {}
 
-  @MessagePattern({ cmd: 'get-file', type: StorageCommandEnum.AVATAR })
+  @MessagePattern({ cmd: 'get-file', type: StorageCommandEnum.IMAGE })
   async getAvatar(referenceId: string): Promise<UploadFilesOutputDto> {
     return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
-      new GetFileQuery(StorageCommandEnum.AVATAR, referenceId)
+      new GetFileQuery(referenceId)
     )
   }
 
-  @MessagePattern({ cmd: 'upload-file', type: StorageCommandEnum.AVATAR })
+  @MessagePattern({ cmd: 'upload-file', type: StorageCommandEnum.IMAGE })
   async uploadAvatar(payload: UploadFileDto): Promise<UploadFilesOutputDto> {
     return await this.commandBus.execute<UploadFileCommand, UploadFilesOutputDto>(
-      new UploadFileCommand(StorageCommandEnum.AVATAR, payload)
+      new UploadFileCommand(payload)
     )
   }
 
-  @MessagePattern({ cmd: 'delete-file', type: StorageCommandEnum.AVATAR })
+  @MessagePattern({ cmd: 'delete-file', type: StorageCommandEnum.IMAGE })
   async deleteAvatar(ownerId: string): Promise<boolean> {
     await this.commandBus.execute<DeleteAvatarFileCommand, undefined>(
-      new DeleteAvatarFileCommand(StorageCommandEnum.AVATAR, ownerId)
-    )
-
-    return true
-  }
-
-  @MessagePattern({ cmd: 'get-file', type: StorageCommandEnum.POST })
-  async getPostImage(referenceId: string): Promise<UploadFilesOutputDto> {
-    return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
-      new GetFileQuery(StorageCommandEnum.POST, referenceId)
-    )
-  }
-
-  @MessagePattern({ cmd: 'upload-file', type: StorageCommandEnum.POST })
-  async uploadPostImage(payload: UploadFileDto): Promise<UploadFilesOutputDto> {
-    return await this.commandBus.execute<UploadFileCommand, UploadFilesOutputDto>(
-      new UploadFileCommand(StorageCommandEnum.POST, payload)
-    )
-  }
-
-  @MessagePattern({ cmd: 'delete-file', type: StorageCommandEnum.POST })
-  async deletePostImage(ownerId: string): Promise<boolean> {
-    await this.commandBus.execute<DeleteAvatarFileCommand, undefined>(
-      new DeleteAvatarFileCommand(StorageCommandEnum.POST, ownerId)
+      new DeleteAvatarFileCommand(ownerId)
     )
 
     return true

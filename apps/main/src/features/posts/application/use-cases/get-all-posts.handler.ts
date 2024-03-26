@@ -1,8 +1,8 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IPostRepository } from '../interface'
 import { NotFoundException } from '@nestjs/common'
-import { IPostFilesFacade } from '../../service/post-files.facede'
 import { isNil } from 'lodash'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
 
 export class GetAllPostCommand {
   constructor(public readonly userId: number) {}
@@ -12,7 +12,7 @@ export class GetAllPostCommand {
 export class GetAllPostHandler implements ICommandHandler<GetAllPostCommand> {
   constructor(
     private readonly postRepository: IPostRepository,
-    private readonly storage: IPostFilesFacade
+    private readonly storage: IImageFilesFacade
   ) {}
 
   async execute(dto: GetAllPostCommand) {
@@ -29,7 +29,7 @@ export class GetAllPostHandler implements ICommandHandler<GetAllPostCommand> {
           authorId: p.authorId,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
-          photo: await this.storage.getPhotoToPost(p.imageId),
+          photo: await this.storage.getImages(p.imageId),
         }
       })
     )

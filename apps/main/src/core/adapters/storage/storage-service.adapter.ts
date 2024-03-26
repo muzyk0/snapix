@@ -1,10 +1,11 @@
 import { Inject, Injectable, Logger } from '@nestjs/common'
-import { type IStorageAdapter, type StorageCommandEnum } from './storage-adapter.abstract'
+import { type IStorageAdapter } from './storage-adapter.abstract'
 import { ClientProxy } from '@nestjs/microservices'
 import { defaultTimeoutTcpRequest, ServicesEnum } from '@app/core/constants'
 import { firstValueFrom, timeout } from 'rxjs'
 import { type UploadFilesOutputDto } from '@app/core/types/dto'
 import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
+import { type StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
 @Injectable()
 export class StorageServiceAdapter implements IStorageAdapter {
