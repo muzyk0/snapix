@@ -1,13 +1,13 @@
 import { Injectable } from '@nestjs/common'
 import { type UploadFilesOutputDto } from '@app/core/types/dto'
 import { IStorageAdapter } from './storage-adapter.abstract'
-import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
+import { type UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import { StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
 export abstract class IImageFilesFacade {
   abstract getImages(referenceId: string): Promise<UploadFilesOutputDto>
 
-  abstract uploadImage(payload: UploadFileDto): Promise<UploadFilesOutputDto>
+  abstract uploadImage(payload: UploadImageDto): Promise<UploadFilesOutputDto>
 
   abstract deleteImage(referenceId: string): Promise<boolean>
 }
@@ -20,7 +20,7 @@ export class ImageFilesFacade implements IImageFilesFacade {
     return this.storage.get(StorageCommandEnum.IMAGE, referenceId)
   }
 
-  public async uploadImage(payload: UploadFileDto): Promise<UploadFilesOutputDto> {
+  public async uploadImage(payload: UploadImageDto): Promise<UploadFilesOutputDto> {
     return this.storage.upload(StorageCommandEnum.IMAGE, payload)
   }
 

@@ -37,10 +37,26 @@ export class UploadAvatarHandler implements ICommandHandler<UploadAvatarCommand>
 
     const response = await this.storage.uploadImage({
       ownerId: String(userId),
-      buffer: payload.buffer,
-      mimetype: payload.mimetype,
-      originalname: payload.originalname,
       type: StorageFileTypeEnum.AVATAR,
+      resolutions: [
+        {
+          width: 48,
+          height: 48,
+        },
+        {
+          width: 192,
+          height: 192,
+        },
+        {
+          width: 512,
+          height: 512,
+        },
+      ],
+      file: {
+        buffer: payload.buffer,
+        mimetype: payload.mimetype,
+        originalname: payload.originalname,
+      },
     })
 
     if (user.profile.avatarId) {

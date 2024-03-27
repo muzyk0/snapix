@@ -1,16 +1,17 @@
 import { Injectable, InternalServerErrorException, Logger } from '@nestjs/common'
 import {
   DeleteObjectCommand,
+  DeleteObjectsCommand,
   GetObjectCommand,
   PutObjectCommand,
   S3Client,
 } from '@aws-sdk/client-s3'
 import { AppConfigService } from '@app/config'
 import {
-  type UploadFileOutput,
-  type IStorageAdapter,
-  type UploadFileParams,
   type GetFileOutput,
+  type IStorageAdapter,
+  type UploadFileOutput,
+  type UploadFileParams,
 } from './storage-adapter.abstract'
 import * as mime from 'mime-types'
 import * as crypto from 'crypto'
@@ -33,6 +34,7 @@ export class FilesStorageAdapter implements IStorageAdapter {
     })
   }
 
+  /** @deprecated use getFullPath(key: string) instead if key exist */
   public async get(key: string): Promise<GetFileOutput | null> {
     try {
       const command = new GetObjectCommand({
@@ -51,18 +53,18 @@ export class FilesStorageAdapter implements IStorageAdapter {
   }
 
   public async upload({ dirKey, buffer, mimetype }: UploadFileParams): Promise<UploadFileOutput> {
-    // fixme: This this object {type: 'Buffer', data: number[]}
-    const fileBuffer = Buffer.from(buffer)
-
-    const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex')
+    const hash = crypto.createHash('sha256').update(buffer).digest('hex')
 
     try {
+      const fileName = `${hash}.${mime.extension(mimetype)}`
+      // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
+      const contentType = mime.contentType(mimetype) || 'application/octet-stream'
+
       const command = new PutObjectCommand({
         Bucket: this.bucket,
-        Key: `${dirKey}/${hash}.${mime.extension(mimetype)}`,
-        Body: fileBuffer,
-        // eslint-disable-next-line @typescript-eslint/strict-boolean-expressions
-        ContentType: mime.contentType(mimetype) || 'application/octet-stream',
+        Key: `${dirKey}/${fileName}`,
+        Body: buffer,
+        ContentType: contentType,
       })
 
       const response = await this.client.send(command)
@@ -70,10 +72,11 @@ export class FilesStorageAdapter implements IStorageAdapter {
       if (isNil(command.input.Key) || isNil(response.ETag)) {
         throw new InternalServerErrorException()
       }
+
       return {
         key: command.input.Key,
         ETag: response.ETag,
-        path: `https://${this.bucket}.storage.yandexcloud.net/${command.input.Key}`,
+        path: this.getFullPath(command.input.Key),
       }
     } catch (e) {
       this.logger.error(e)
@@ -93,5 +96,23 @@ export class FilesStorageAdapter implements IStorageAdapter {
       this.logger.error(e)
       throw e
     }
+  }
+
+  public async deleteMany(keys: string[]): Promise<void> {
+    try {
+      const deleteCommand = new DeleteObjectsCommand({
+        Bucket: this.bucket,
+        Delete: { Objects: keys.map(key => ({ Key: key })) },
+      })
+
+      await this.client.send(deleteCommand)
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public getFullPath(key: string): string {
+    return `https://${this.bucket}.storage.yandexcloud.net/${key}`
   }
 }

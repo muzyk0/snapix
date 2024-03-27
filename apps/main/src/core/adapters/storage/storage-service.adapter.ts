@@ -4,7 +4,7 @@ import { ClientProxy } from '@nestjs/microservices'
 import { defaultTimeoutTcpRequest, ServicesEnum } from '@app/core/constants'
 import { firstValueFrom, timeout } from 'rxjs'
 import { type UploadFilesOutputDto } from '@app/core/types/dto'
-import { type UploadFileDto } from '@app/core/types/dto/upload-file.dto'
+import { type UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import { type StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
 @Injectable()
@@ -30,7 +30,7 @@ export class StorageServiceAdapter implements IStorageAdapter {
 
   public async upload(
     type: StorageCommandEnum,
-    payload: UploadFileDto
+    payload: UploadImageDto
   ): Promise<UploadFilesOutputDto> {
     try {
       const response = this.client

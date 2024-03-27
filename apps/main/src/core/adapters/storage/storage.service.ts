@@ -18,7 +18,7 @@ export class StorageService {
     private readonly storage: IStorageAdapter
   ) {}
 
-  @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_HOUR)
   async removeExpiredPostImages(): Promise<void> {
     const files = await this.repository.getExpiresAtFiles()
 
@@ -38,7 +38,7 @@ export class StorageService {
   async handleUploadPostImageEvent(payload: UploadPostImageEvent) {
     await this.repository.createTempFile({
       referenceId: payload.referenceId,
-      expiresAt: addMinutes(new Date(), 1),
+      expiresAt: addMinutes(new Date(), 60),
     })
   }
 

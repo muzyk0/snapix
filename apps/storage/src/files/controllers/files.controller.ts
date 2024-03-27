@@ -1,8 +1,8 @@
 import { Controller } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
-import { UploadFileCommand } from '../application/use-cases/upload-file.handler'
-import { UploadFileDto } from '@app/core/types/dto/upload-file.dto'
+import { UploadImageCommand } from '../application/use-cases/upload-image.handler'
+import { UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import type { UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
 import { DeleteAvatarFileCommand } from '../application/use-cases/delete-file.handler'
 import { GetFileQuery } from '../application/use-cases/get-file.handler'
@@ -16,21 +16,35 @@ export class FilesController {
   ) {}
 
   @MessagePattern({ cmd: 'get-file', type: StorageCommandEnum.IMAGE })
-  async getAvatar(referenceId: string): Promise<UploadFilesOutputDto> {
+  async getImage(referenceId: string): Promise<UploadFilesOutputDto> {
     return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
       new GetFileQuery(referenceId)
     )
   }
 
   @MessagePattern({ cmd: 'upload-file', type: StorageCommandEnum.IMAGE })
-  async uploadAvatar(payload: UploadFileDto): Promise<UploadFilesOutputDto> {
-    return await this.commandBus.execute<UploadFileCommand, UploadFilesOutputDto>(
-      new UploadFileCommand(payload)
+  async uploadImage(payload: UploadImageDto): Promise<UploadFilesOutputDto> {
+    const { referenceId } = await this.commandBus.execute<
+      UploadImageCommand,
+      Pick<UploadFilesOutputDto, 'referenceId'>
+    >(
+      new UploadImageCommand({
+        ...payload,
+        file: {
+          ...payload.file,
+          // fixme: This this object {type: 'Buffer', data: number[]}
+          buffer: Buffer.from(payload.file.buffer),
+        },
+      })
+    )
+
+    return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
+      new GetFileQuery(referenceId)
     )
   }
 
   @MessagePattern({ cmd: 'delete-file', type: StorageCommandEnum.IMAGE })
-  async deleteAvatar(ownerId: string): Promise<boolean> {
+  async deleteImage(ownerId: string): Promise<boolean> {
     await this.commandBus.execute<DeleteAvatarFileCommand, undefined>(
       new DeleteAvatarFileCommand(ownerId)
     )

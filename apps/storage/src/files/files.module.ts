@@ -7,6 +7,7 @@ import { FilesStorageAdapter } from './adapters/files-storage.adapter'
 import { ScheduleModule } from '@nestjs/schedule'
 import { MongooseModule } from '@nestjs/mongoose'
 import { models } from './domain/entity'
+import { SharpService } from './application/services/sharp.service'
 
 @Module({
   imports: [CqrsModule, ScheduleModule.forRoot(), MongooseModule.forFeature(models)],
@@ -17,6 +18,7 @@ import { models } from './domain/entity'
       provide: IStorageAdapter,
       useClass: FilesStorageAdapter,
     },
+    SharpService,
   ],
 })
 export class FilesModule {}

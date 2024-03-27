@@ -23,10 +23,26 @@ export class UploadPhotoToPostHandler implements ICommandHandler<UploadPhotoToPo
   async execute({ userId, payload }: UploadPhotoToPostCommand): Promise<UploadPhotoForPostViewDto> {
     const imageFiles = await this.storage.uploadImage({
       ownerId: String(userId),
-      buffer: payload.buffer,
-      mimetype: payload.mimetype,
-      originalname: payload.originalname,
       type: StorageFileTypeEnum.POST,
+      resolutions: [
+        {
+          width: 48,
+          height: 48,
+        },
+        {
+          width: 192,
+          height: 192,
+        },
+        {
+          width: 512,
+          height: 512,
+        },
+      ],
+      file: {
+        buffer: payload.buffer,
+        mimetype: payload.mimetype,
+        originalname: payload.originalname,
+      },
     })
 
     this.eventEmitter.emit('post.photo.uploaded', new UploadPostImageEvent(imageFiles.referenceId))

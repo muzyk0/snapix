@@ -26,7 +26,10 @@ export class DeleteFileHandler implements ICommandHandler<DeleteAvatarFileComman
       throw new BadRequestException()
     }
 
-    await this.storage.delete(file.key)
+    await this.storage.deleteMany([
+      file.original.key,
+      ...file.resolutions.map(resolution => resolution.key),
+    ])
 
     await this.fileModel.deleteOne({ _id: file._id })
   }
