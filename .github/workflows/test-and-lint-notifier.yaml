@@ -41,7 +41,7 @@ jobs:
         run: yarn main:prisma:generate
 
       - name: TSC
-        run: tsc:notifier:check
+        run: yarn tsc:notifier:check
 
   lint:
     name: Lint
