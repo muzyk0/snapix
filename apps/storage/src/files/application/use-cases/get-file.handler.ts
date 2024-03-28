@@ -1,16 +1,13 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { IStorageAdapter, type StorageCommandEnum } from '../../adapters/storage-adapter.abstract'
+import { IStorageAdapter } from '../../adapters/storage-adapter.abstract'
 import { File } from '../../domain/entity/files.schema'
 import { InjectModel } from '@nestjs/mongoose'
 import { Model } from 'mongoose'
 import { isNil } from 'lodash'
-import { type GetFilesDto } from '@app/core/types/dto'
+import { type UploadFilesOutputDto } from '@app/core/types/dto'
 
 export class GetFileQuery {
-  constructor(
-    readonly type: StorageCommandEnum,
-    readonly referenceId: string
-  ) {}
+  constructor(readonly referenceId: string) {}
 }
 
 @QueryHandler(GetFileQuery)
@@ -20,31 +17,33 @@ export class GetFileHandler implements IQueryHandler<GetFileQuery> {
     @InjectModel(File.name) private readonly fileModel: Model<File>
   ) {}
 
-  async execute(payload: GetFileQuery): Promise<GetFilesDto> {
-    const file = await this.fileModel.findOne(payload)
+  async execute({ referenceId }: GetFileQuery): Promise<UploadFilesOutputDto> {
+    const file = await this.fileModel.findOne({
+      referenceId,
+    })
 
     if (isNil(file)) {
       return {
-        files: [],
-      }
-    }
-
-    const result = await this.storage.get(file.key)
-
-    if (isNil(result)) {
-      return {
+        referenceId,
         files: [],
       }
     }
 
     return {
+      referenceId,
       files: [
         {
-          url: result.path,
-          width: 0,
-          height: 0,
-          size: 0,
+          url: this.storage.getFullPath(file.original.key),
+          width: file.original.width,
+          height: file.original.height,
+          size: file.original.size,
         },
+        ...file.resolutions.map(resolution => ({
+          url: this.storage.getFullPath(resolution.key),
+          width: resolution.width,
+          height: resolution.height,
+          size: resolution.size,
+        })),
       ],
     }
   }

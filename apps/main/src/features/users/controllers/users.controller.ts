@@ -62,6 +62,7 @@ export class UsersController {
     )
   }
 
+  // todo: Write tests
   @ApiUploadUserAvatar()
   @AuthGuard()
   @Post('/profile/avatar')

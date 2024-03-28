@@ -1,8 +1,8 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IPostRepository } from '../interface'
 import { NotFoundException } from '@nestjs/common'
-import { IPostFilesFacade } from '../../service/post-files.facede'
 import { isNil } from 'lodash'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 
 export class DeletePostCommand {
   constructor(public readonly postId: number) {}
@@ -12,7 +12,7 @@ export class DeletePostCommand {
 export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
   constructor(
     private readonly postRepository: IPostRepository,
-    private readonly storage: IPostFilesFacade
+    private readonly storage: IImageFilesFacade
   ) {}
 
   async execute(dto: DeletePostCommand): Promise<void> {
@@ -21,6 +21,6 @@ export class DeletePostHandler implements ICommandHandler<DeletePostCommand> {
 
     // delete post and photo
     await this.postRepository.delete(dto.postId)
-    await this.storage.deletePhotoToPost(post.imageId)
+    await this.storage.deleteImage(post.imageId)
   }
 }

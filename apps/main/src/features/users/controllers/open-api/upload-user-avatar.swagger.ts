@@ -21,7 +21,7 @@ export function ApiUploadUserAvatar() {
     ApiResponse({
       status: HttpStatus.CREATED,
       description:
-        'Uploads the user avatar. Returns an array of uploaded images with must contain medium photo size (192x192) and thumbnail size (48x48).',
+        'Uploads the user avatar. Returns an array of uploaded images with must contain large photo size (512x512), medium photo size (192x192) and thumbnail size (48x48).',
       schema: {
         type: 'object',
         properties: {
@@ -48,6 +48,12 @@ export function ApiUploadUserAvatar() {
               },
             },
             example: [
+              {
+                url: 'https://cdn.com/image.png',
+                width: 512,
+                height: 512,
+                size: 1024,
+              },
               {
                 url: 'https://cdn.com/image.png',
                 width: 192,

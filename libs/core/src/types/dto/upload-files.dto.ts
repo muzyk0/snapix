@@ -19,12 +19,6 @@ export class ImageFileInfo {
   size!: number
 }
 
-export class GetFilesDto {
-  @IsArray()
-  @ValidateNested({ each: true })
-  files!: ImageFileInfo[]
-}
-
 export class UploadFilesOutputDto {
   @IsString()
   referenceId!: string

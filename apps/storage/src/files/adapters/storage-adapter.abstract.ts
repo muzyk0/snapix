@@ -1,8 +1,3 @@
-export enum StorageCommandEnum {
-  AVATAR = 'avatars',
-  POST = 'posts',
-}
-
 export interface UploadFileParams {
   dirKey: string
   buffer: Buffer
@@ -25,4 +20,8 @@ export abstract class IStorageAdapter {
   abstract upload(payload: UploadFileParams): Promise<UploadFileOutput>
 
   abstract delete(key: string): Promise<void>
+
+  abstract deleteMany(keys: string[]): Promise<void>
+
+  abstract getFullPath(key: string): string
 }

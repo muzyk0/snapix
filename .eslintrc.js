@@ -21,7 +21,9 @@ module.exports = {
         // 'no-extra-boolean-cast': 'off',
         '@typescript-eslint/brace-style': 'off',
         '@typescript-eslint/strict-boolean-expressions': 'warn',
-        '@typescript-eslint/semi': 'off'
+        '@typescript-eslint/semi': 'off',
+        '@typescript-eslint/array-type': 'off',
+        '@typescript-eslint/member-delimiter-style': 'off',
       },
     },
   ],
