@@ -22,16 +22,18 @@ export class StorageService {
   async removeExpiredPostImages(): Promise<void> {
     const files = await this.repository.getExpiresAtFiles()
 
-    const filesReferenceIds = files.map(file => file.referenceId)
+    if (files.length !== 0) {
+      const filesReferenceIds = files.map(file => file.referenceId)
 
-    this.logger.log('Removing expired files', files)
-    await Promise.all(
-      filesReferenceIds.map(async referenceId => {
-        return this.storage.delete(StorageCommandEnum.IMAGE, referenceId)
-      })
-    )
+      this.logger.log('Removing expired files', files)
+      await Promise.all(
+        filesReferenceIds.map(async referenceId => {
+          return this.storage.delete(StorageCommandEnum.IMAGE, referenceId)
+        })
+      )
 
-    await this.repository.deleteTempFiles(filesReferenceIds)
+      await this.repository.deleteTempFiles(filesReferenceIds)
+    }
   }
 
   @OnEvent('post.photo.uploaded')
