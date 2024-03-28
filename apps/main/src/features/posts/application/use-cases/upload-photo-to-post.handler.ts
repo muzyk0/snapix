@@ -3,7 +3,7 @@ import { type UploadPhotoForPostViewDto } from '../../controllers/dto/upload-pho
 import { type UploadPhotoForPostDto } from '../dto/upload-photo-for-post.dto'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { UploadPostImageEvent } from '../../domain/events/upload-post-image.event'
-import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 import { StorageFileTypeEnum } from '@app/core/enums/storage-command.enum'
 
 export class UploadPhotoToPostCommand {

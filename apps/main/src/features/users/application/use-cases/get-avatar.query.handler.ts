@@ -1,5 +1,5 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 import { type UploadFilesViewDto } from '@app/core/types/dto'
 import { isNil } from 'lodash'
 import { PrismaService } from '@app/prisma'

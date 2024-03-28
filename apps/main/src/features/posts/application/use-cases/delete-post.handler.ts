@@ -2,7 +2,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IPostRepository } from '../interface'
 import { NotFoundException } from '@nestjs/common'
 import { isNil } from 'lodash'
-import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 
 export class DeletePostCommand {
   constructor(public readonly postId: number) {}

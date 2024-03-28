@@ -1,5 +1,5 @@
 import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
-import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 import { type UploadFilesViewDto } from '@app/core/types/dto'
 import { type UploadAvatarDto } from '../upload-avatar.dto'
 import { PrismaService } from '@app/prisma'

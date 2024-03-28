@@ -7,7 +7,7 @@ import { postHandlers } from './application/use-cases/handler'
 import { IPostRepository } from './application/interface'
 import { PostsRepository } from './infrastructure/posts.repository'
 import { StorageModule } from '../../core/adapters/storage/storage.module'
-import { IImageFilesFacade, ImageFilesFacade } from '../../core/adapters/storage/user-files.facede'
+import { IImageFilesFacade, ImageFilesFacade } from '../../core/adapters/storage/user-files.facade'
 
 const Repositories = [
   {

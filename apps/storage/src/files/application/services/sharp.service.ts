@@ -4,17 +4,13 @@ import sharp from 'sharp'
 import mime from 'mime-types'
 import { isNil } from 'lodash'
 
-interface SharpImageMeta {
+interface SharpImageType {
   file: Buffer
   width: number
   height: number
   size: number
   format: string
   mimetype: string
-}
-
-interface SharpImageType extends SharpImageMeta {
-  file: Buffer
 }
 
 @Injectable()
