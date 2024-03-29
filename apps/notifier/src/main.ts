@@ -19,6 +19,8 @@ async function bootstrap() {
     },
   })
 
+  app.setGlobalPrefix(appConfigService.globalPrefix)
+
   await app.startAllMicroservices()
   logger.log('Microservice Notifier is running')
 

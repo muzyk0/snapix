@@ -22,6 +22,8 @@ async function bootstrap() {
   await app.startAllMicroservices()
   logger.log('Microservice Notifier is running')
 
+  app.setGlobalPrefix(appConfigService.globalPrefix)
+
   await app.listen(appConfigService.port)
   logger.log(`Application is running on: ${await app.getUrl()}`)
 }

@@ -46,8 +46,8 @@ export class AppConfigService {
     return this.configService.get('npm_package_version') ?? null
   }
 
-  get globalPrefix(): string | null {
-    return this.configService.get('GLOBAL_PREFIX') ?? null
+  get globalPrefix(): string {
+    return this.configService.get('GLOBAL_PREFIX', 'api/v1')
   }
 
   get rmqUrls(): string[] {

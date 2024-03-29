@@ -10,6 +10,8 @@ async function bootstrap() {
 
   const appConfigService = app.get<AppConfigService>(AppConfigService)
 
+  app.setGlobalPrefix(appConfigService.globalPrefix)
+
   await app.listen(appConfigService.port)
   logger.log(`Application is running on: ${await app.getUrl()}`)
 }
