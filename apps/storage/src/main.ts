@@ -9,23 +9,23 @@ async function bootstrap() {
   const logger = new Logger('NestBootstrap Storage')
   const app = await NestFactory.create<INestApplication<Express>>(StorageModule)
 
+  await app.init()
+
   const appConfigService = app.get<AppConfigService>(AppConfigService)
+
+  const host = appConfigService.storageService.host || '0.0.0.0'
 
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.TCP,
     options: {
-      host: appConfigService.storageService.host || '0.0.0.0',
-      port: appConfigService.storageService.port || 3247,
+      host,
+      port: appConfigService.storageService.port,
     },
   })
 
   await app.startAllMicroservices()
   logger.log('Microservice Notifier is running')
-
-  app.setGlobalPrefix(appConfigService.globalPrefix)
-
-  await app.listen(appConfigService.port)
-  logger.log(`Application is running on: ${await app.getUrl()}`)
+  logger.log(`host: ${host}:${appConfigService.storageService.port}`)
 }
 
 void bootstrap()

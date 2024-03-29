@@ -24,6 +24,7 @@ pipeline {
             steps {
                 script {
                     sh "yarn install --ignore-engines"
+                    sh "yarn add sharp --ignore-engines"
                 }
             }
         }

@@ -33,9 +33,8 @@ export class StorageServiceAdapter implements IStorageAdapter {
     payload: UploadImageDto
   ): Promise<UploadFilesOutputDto> {
     try {
-      const response = this.client
-        .send<UploadFilesOutputDto>({ cmd: 'upload-file', type }, payload)
-        .pipe(timeout(defaultTimeoutTcpRequest))
+      const response = this.client.send<UploadFilesOutputDto>({ cmd: 'upload-file', type }, payload)
+      // .pipe(timeout(defaultTimeoutTcpRequest))
 
       const images = await firstValueFrom(response)
 

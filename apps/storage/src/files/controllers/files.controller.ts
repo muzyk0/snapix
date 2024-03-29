@@ -1,11 +1,9 @@
 import { Controller } from '@nestjs/common'
 import { MessagePattern } from '@nestjs/microservices'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
-import { UploadImageCommand } from '../application/use-cases/upload-image.handler'
 import { UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import type { UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
-import { DeleteAvatarFileCommand } from '../application/use-cases/delete-file.handler'
-import { GetFileQuery } from '../application/use-cases/get-file.handler'
+import { DeleteAvatarFileCommand, GetFileQuery, UploadImageCommand } from '../application/use-cases'
 import { StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
 @Controller('files')

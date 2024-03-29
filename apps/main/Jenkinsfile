@@ -23,7 +23,7 @@ pipeline {
         stage('Install dependency') {
             steps {
                 script {
-                    sh "yarn install"
+                    sh "yarn install --ignore-engines"
                 }
             }
         }

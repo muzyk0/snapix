@@ -10,6 +10,8 @@ async function bootstrap() {
 
   const app = await NestFactory.create<INestApplication<Express>>(NotifierModule)
 
+  await app.init()
+
   const appConfigService = app.get<AppConfigService>(AppConfigService)
 
   app.connectMicroservice<MicroserviceOptions>({
