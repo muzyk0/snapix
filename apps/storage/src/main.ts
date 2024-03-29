@@ -1,31 +1,18 @@
 import { NestFactory } from '@nestjs/core'
 import { StorageModule } from './storage.module'
 import { type MicroserviceOptions, Transport } from '@nestjs/microservices'
-import { type INestApplication, Logger } from '@nestjs/common'
-import type { Express } from 'express'
-import { AppConfigService } from '@app/config'
 
 async function bootstrap() {
-  const logger = new Logger('NestBootstrap Storage')
-  const app = await NestFactory.create<INestApplication<Express>>(StorageModule)
-
-  await app.init()
-
-  const appConfigService = app.get<AppConfigService>(AppConfigService)
-
-  const host = appConfigService.storageService.host || '0.0.0.0'
-
-  app.connectMicroservice<MicroserviceOptions>({
+  const app = await NestFactory.createMicroservice<MicroserviceOptions>(StorageModule, {
     transport: Transport.TCP,
     options: {
-      host,
-      port: appConfigService.storageService.port,
+      host: process.env.STORAGE_SERVICE_HOST ?? '0.0.0.0',
+      port: Number(process.env.STORAGE_SERVICE_PORT) || 3247,
     },
   })
 
-  await app.startAllMicroservices()
-  logger.log('Microservice Notifier is running')
-  logger.log(`host: ${host}:${appConfigService.storageService.port}`)
+  console.log(process.env.STORAGE_SERVICE_PORT)
+  await app.listen()
 }
 
 void bootstrap()
