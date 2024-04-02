@@ -3,7 +3,7 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3247
+        PORT = 3291
         NAMESPACE = "9art-ru"
         REGISTRY_HOSTNAME = "burshilya2023"
         PROJECT = "snapix-back-storage"
