@@ -34,6 +34,7 @@ import { ApiDeletePost } from './open-api/delete-post.swagger'
 import { GetAllPostCommand } from '../application/use-cases/get-all-posts.handler'
 import { ApiGetPosts } from './open-api/get-all-posts.swagger'
 import { ImagesValidationPipe } from '../../../core/adapters/storage/pipes/imagesValidationPipe'
+import { UserIdParamDto } from '../../users/controllers/dto/user-id-param.dto'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -69,18 +70,17 @@ export class PostsController {
   }
 
   @ApiGetPosts()
-  @AuthGuard()
-  @Get('')
+  @Get('/user/:userId')
   @HttpCode(HttpStatus.OK)
-  async getAllPosts(@GetUserContextDecorator() ctx: JwtAtPayload) {
-    return this.commandBus.execute(new GetAllPostCommand(ctx.user.id))
+  async getAllPosts(@Param() { userId }: UserIdParamDto) {
+    return this.commandBus.execute(new GetAllPostCommand(userId))
   }
 
   @ApiGetPost()
   @AuthGuard()
-  @Get('/:id')
+  @Get('/:postId')
   @HttpCode(HttpStatus.OK)
-  async getPost(@Param('id') postId: number) {
+  async getPost(@Param('postId') postId: number) {
     return this.commandBus.execute(new GetPostCommand(postId))
   }
 
