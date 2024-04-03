@@ -31,7 +31,7 @@ import { GetAvatarQuery } from '../application/use-cases/get-avatar.query.handle
 import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
 import { ApiGetUserProfile } from './open-api/get-profile.swagger'
-import { GetAvatarDto } from './dto/get-avatar.dto'
+import { UserIdParamDto } from './dto/user-id-param.dto'
 import { ValidationPipe } from '../../../core/adapters/storage/pipes/validation.pipe'
 
 @ApiTags('Users')
@@ -56,7 +56,7 @@ export class UsersController {
   @ApiGetUserAvatar()
   @AuthGuard()
   @Get('/:userId/profile/avatar')
-  async getAvatar(@Param() params: GetAvatarDto) {
+  async getAvatar(@Param() params: UserIdParamDto) {
     return this.queryBus.execute<GetAvatarQuery, UploadFilesViewDto>(
       new GetAvatarQuery(Number(params.userId))
     )

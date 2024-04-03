@@ -1,10 +1,10 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
-export function ApiGetAllPost() {
+export function ApiGetPosts() {
   return applyDecorators(
     ApiOperation({
-      summary: 'Get all post',
+      summary: 'Get user posts',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -16,7 +16,7 @@ export function ApiGetAllPost() {
             example: 313,
             type: 'number',
           },
-          photoId: {
+          imageId: {
             example: 'string',
             type: 'string',
           },
