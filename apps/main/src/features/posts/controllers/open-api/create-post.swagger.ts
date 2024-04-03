@@ -16,11 +16,11 @@ export function ApiCreatePost() {
             example: 'Anything that can go wrong will go wrong!',
             maxLength: 2000,
           },
-          photoId: {
+          imageId: {
             type: 'string',
           },
         },
-        required: ['photoId'],
+        required: ['imageId'],
       },
     }),
     ApiResponse({

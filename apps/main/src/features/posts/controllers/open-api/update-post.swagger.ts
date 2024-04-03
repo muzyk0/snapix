@@ -4,7 +4,7 @@ import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger'
 export function ApiUpdatePost() {
   return applyDecorators(
     ApiOperation({
-      summary: 'Create post',
+      summary: 'Update post',
     }),
     ApiBody({
       schema: {
