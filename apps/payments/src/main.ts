@@ -5,7 +5,7 @@ import type { Express } from 'express'
 import { AppConfigService } from '@app/config'
 
 async function bootstrap() {
-  const logger = new Logger('NestBootstrap Storage')
+  const logger = new Logger('NestBootstrap Payments')
   const app = await NestFactory.create<INestApplication<Express>>(PaymentsModule)
 
   const appConfigService = app.get<AppConfigService>(AppConfigService)

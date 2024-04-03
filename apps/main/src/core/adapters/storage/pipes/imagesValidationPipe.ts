@@ -1,6 +1,7 @@
 import { HttpStatus, ParseFilePipeBuilder } from '@nestjs/common'
 
-export const ValidationPipe = () =>
+/** ValidationPipe используется для валидации загружаемых файлов */
+export const ImagesValidationPipe = () =>
   new ParseFilePipeBuilder()
     .addMaxSizeValidator({
       maxSize: 1024 * 1024 * 10,
