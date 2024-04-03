@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   Post,
   Put,
   UploadedFile,
@@ -33,6 +32,7 @@ import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
 import { ApiGetUserProfile } from './open-api/get-profile.swagger'
 import { GetAvatarDto } from './dto/get-avatar.dto'
+import { ValidationPipe } from '../../../core/adapters/storage/pipes/validation.pipe'
 
 @ApiTags('Users')
 @Controller('users')
@@ -68,20 +68,7 @@ export class UsersController {
   @Post('/profile/avatar')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 + 10,
-        })
-        .addFileTypeValidator({
-          fileType: ['jpeg', 'png'].join('|'),
-        })
-        .build({
-          // todo: Implement exceptionFactory
-          fileIsRequired: true,
-          errorHttpStatusCode: HttpStatus.PAYLOAD_TOO_LARGE,
-        })
-    )
+    @UploadedFile(ValidationPipe())
     file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
