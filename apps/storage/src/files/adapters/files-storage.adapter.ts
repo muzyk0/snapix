@@ -112,6 +112,11 @@ export class FilesStorageAdapter implements IStorageAdapter {
     }
   }
 
+  /**
+   +   * Constructs the full URL path for a given file key in the storage bucket.
+   +   * @param {string} key - The key of the file in the storage bucket.
+   +   * @returns {string} The full URL path to the file.
+   +   */
   public getFullPath(key: string): string {
     return `https://${this.bucket}.storage.yandexcloud.net/${key}`
   }
