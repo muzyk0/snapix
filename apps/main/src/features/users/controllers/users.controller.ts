@@ -32,7 +32,7 @@ import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
 import { ApiGetUserProfile } from './open-api/get-profile.swagger'
 import { GetAvatarDto } from './dto/get-avatar.dto'
-import { ValidationPipe } from '../../../core/adapters/storage/pipes/validation.pipe'
+import { ImagesValidationPipe } from '../../../core/adapters/storage/pipes/imagesValidationPipe'
 
 @ApiTags('Users')
 @Controller('users')
@@ -68,7 +68,7 @@ export class UsersController {
   @Post('/profile/avatar')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
-    @UploadedFile(ValidationPipe())
+    @UploadedFile(ImagesValidationPipe())
     file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {
