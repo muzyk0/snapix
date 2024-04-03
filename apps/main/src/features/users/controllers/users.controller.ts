@@ -31,8 +31,8 @@ import { GetAvatarQuery } from '../application/use-cases/get-avatar.query.handle
 import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
 import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
 import { ApiGetUserProfile } from './open-api/get-profile.swagger'
-import { UserIdParamDto } from './dto/user-id-param.dto'
-import { ValidationPipe } from '../../../core/adapters/storage/pipes/validation.pipe'
+import { GetAvatarDto } from './dto/get-avatar.dto'
+import { ImagesValidationPipe } from '../../../core/adapters/storage/pipes/imagesValidationPipe'
 
 @ApiTags('Users')
 @Controller('users')
@@ -56,7 +56,7 @@ export class UsersController {
   @ApiGetUserAvatar()
   @AuthGuard()
   @Get('/:userId/profile/avatar')
-  async getAvatar(@Param() params: UserIdParamDto) {
+  async getAvatar(@Param() params: GetAvatarDto) {
     return this.queryBus.execute<GetAvatarQuery, UploadFilesViewDto>(
       new GetAvatarQuery(Number(params.userId))
     )
@@ -68,7 +68,7 @@ export class UsersController {
   @Post('/profile/avatar')
   @UseInterceptors(FileInterceptor('file'))
   async uploadAvatar(
-    @UploadedFile(ValidationPipe())
+    @UploadedFile(ImagesValidationPipe())
     file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {

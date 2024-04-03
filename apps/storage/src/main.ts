@@ -24,7 +24,7 @@ async function bootstrap() {
   })
 
   await app.startAllMicroservices()
-  logger.log('Microservice Notifier is running')
+  logger.log('Microservice Storage is running')
   logger.log(`host: ${host}:${appConfigService.storageService.port}`)
 }
 
