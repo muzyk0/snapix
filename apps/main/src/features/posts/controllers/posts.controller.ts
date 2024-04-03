@@ -6,7 +6,6 @@ import {
   HttpCode,
   HttpStatus,
   Param,
-  ParseFilePipeBuilder,
   Post,
   Put,
   UploadedFile,
@@ -34,6 +33,7 @@ import { DeletePostCommand } from '../application/use-cases/delete-post.handler'
 import { ApiDeletePost } from './open-api/delete-post.swagger'
 import { GetAllPostCommand } from '../application/use-cases/get-all-posts.handler'
 import { ApiGetAllPost } from './open-api/get-all-posts.swagger'
+import { ValidationPipe } from '../../../core/adapters/storage/pipes/validation.pipe'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -46,20 +46,7 @@ export class PostsController {
   @Post('/image')
   @UseInterceptors(FileInterceptor('file'))
   async uploadPhotoToPost(
-    @UploadedFile(
-      new ParseFilePipeBuilder()
-        .addMaxSizeValidator({
-          maxSize: 1024 * 1024 + 10,
-        })
-        .addFileTypeValidator({
-          fileType: ['jpeg', 'png'].join('|'),
-        })
-        .build({
-          // todo: Implement exceptionFactory
-          fileIsRequired: true,
-          errorHttpStatusCode: HttpStatus.PAYLOAD_TOO_LARGE,
-        })
-    )
+    @UploadedFile(ValidationPipe())
     file: Express.Multer.File,
     @GetUserContextDecorator() ctx: JwtAtPayload
   ) {

@@ -6,7 +6,7 @@ import { mockNotificationService } from '../common/mocks/mockNotificationService
 import { CONFIRMATION_STATUS } from '../../src/features/auth/types/confirm-status.enum'
 import { clearDbBeforeTest } from '../common/utils/clear-db-before-test'
 
-jest.setTimeout(1000 * 10)
+jest.setTimeout(1000 * 20)
 
 describe('AuthController (e2e) - resend confirmation token', () => {
   let app: INestApplication

@@ -6,8 +6,8 @@ import { PostsController } from './controllers/posts.controller'
 import { postHandlers } from './application/use-cases/handler'
 import { IPostRepository } from './application/interface'
 import { PostsRepository } from './infrastructure/posts.repository'
-import { IPostFilesFacade, PostFilesFacade } from './service/post-files.facede'
 import { StorageModule } from '../../core/adapters/storage/storage.module'
+import { IImageFilesFacade, ImageFilesFacade } from '../../core/adapters/storage/user-files.facade'
 
 const Repositories = [
   {
@@ -21,8 +21,8 @@ const Repositories = [
   controllers: [PostsController],
   providers: [
     {
-      provide: IPostFilesFacade,
-      useClass: PostFilesFacade,
+      provide: IImageFilesFacade,
+      useClass: ImageFilesFacade,
     },
     ...postHandlers,
     ...Repositories,

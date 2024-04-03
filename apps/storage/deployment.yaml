@@ -22,11 +22,6 @@ spec:
             - containerPort: PORT_CONTAINER
 
           env:
-            - name: STORAGE_SERVICE_PORT
-              valueFrom:
-                secretKeyRef:
-                  name: snapix-back-storage-production-config-secret
-                  key: STORAGE_SERVICE_PORT
             - name: AWS_ACCESS_KEY_ID
               valueFrom:
                 secretKeyRef:

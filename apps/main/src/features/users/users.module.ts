@@ -5,7 +5,7 @@ import { IUserService, UserService } from './services/user.service'
 import { NotificationModule } from '../notification/notification.module'
 import { usersHandlers } from './application/use-cases/handlers'
 import { CqrsModule } from '@nestjs/cqrs'
-import { IUserFilesFacade, UserFilesFacade } from './services/user-files.facede'
+import { IImageFilesFacade, ImageFilesFacade } from '../../core/adapters/storage/user-files.facade'
 import { StorageModule } from '../../core/adapters/storage/storage.module'
 
 @Module({
@@ -19,8 +19,8 @@ import { StorageModule } from '../../core/adapters/storage/storage.module'
       useClass: UserService,
     },
     {
-      provide: IUserFilesFacade,
-      useClass: UserFilesFacade,
+      provide: IImageFilesFacade,
+      useClass: ImageFilesFacade,
     },
     ...usersHandlers,
   ],

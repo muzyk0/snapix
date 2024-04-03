@@ -1,5 +1,5 @@
 import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs'
-import { IUserFilesFacade } from '../../services/user-files.facede'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 import { type UploadFilesViewDto } from '@app/core/types/dto'
 import { isNil } from 'lodash'
 import { PrismaService } from '@app/prisma'
@@ -13,7 +13,7 @@ export class GetAvatarQuery {
 @QueryHandler(GetAvatarQuery)
 export class GetAvatarQueryHandler implements IQueryHandler<GetAvatarQuery> {
   constructor(
-    private readonly storage: IUserFilesFacade,
+    private readonly storage: IImageFilesFacade,
     private readonly prisma: PrismaService
   ) {}
 
@@ -35,7 +35,7 @@ export class GetAvatarQueryHandler implements IQueryHandler<GetAvatarQuery> {
       return { files: [] }
     }
 
-    const imageFiles = await this.storage.getAvatar(user.profile.avatarId)
+    const imageFiles = await this.storage.getImages(user.profile.avatarId)
 
     return {
       files: imageFiles.files,

@@ -46,8 +46,8 @@ export class AppConfigService {
     return this.configService.get('npm_package_version') ?? null
   }
 
-  get globalPrefix(): string | null {
-    return this.configService.get('GLOBAL_PREFIX') ?? null
+  get globalPrefix(): string {
+    return this.configService.get('GLOBAL_PREFIX', 'api/v1')
   }
 
   get rmqUrls(): string[] {
@@ -98,7 +98,7 @@ export class AppConfigService {
   } {
     return {
       host: this.configService.get('STORAGE_SERVICE_HOST') ?? '',
-      port: this.configService.get('STORAGE_SERVICE_PORT', 3247, { infer: true }),
+      port: this.configService.get('STORAGE_SERVICE_PORT', 3291, { infer: true }),
     }
   }
 
