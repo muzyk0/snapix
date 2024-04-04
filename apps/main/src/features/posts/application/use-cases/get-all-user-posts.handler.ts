@@ -4,19 +4,27 @@ import { NotFoundException } from '@nestjs/common'
 import { isNil } from 'lodash'
 import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 
-export class GetAllPostCommand {
-  constructor(public readonly userId: number) {}
+export class GetAllUserPostsCommand {
+  constructor(
+    public readonly userId: number,
+    public readonly cursor: number,
+    public readonly pageSize: number
+  ) {}
 }
 
-@CommandHandler(GetAllPostCommand)
-export class GetAllPostHandler implements ICommandHandler<GetAllPostCommand> {
+@CommandHandler(GetAllUserPostsCommand)
+export class GetAllUserPostsHandler implements ICommandHandler<GetAllUserPostsCommand> {
   constructor(
     private readonly postRepository: IPostRepository,
     private readonly storage: IImageFilesFacade
   ) {}
 
-  async execute(dto: GetAllPostCommand) {
-    const post = await this.postRepository.findMany(dto.userId)
+  async execute(dto: GetAllUserPostsCommand) {
+    const post = await this.postRepository.findManyByUserId(
+      dto.userId,
+      dto.cursor,
+      dto.pageSize ?? 10
+    )
 
     if (isNil(post)) throw new NotFoundException()
 

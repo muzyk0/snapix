@@ -22,11 +22,19 @@ export class PostsRepository implements IPostRepository {
     })
   }
 
-  public async findMany(userId: number): Promise<Post[] | null> {
+  public async findManyByUserId(
+    userId: number,
+    cursor: number | undefined,
+    pageSize: number
+  ): Promise<Post[] | null> {
+    const offset = cursor ? { id: cursor } : undefined
     return this.prisma.post.findMany({
       where: {
         authorId: userId,
+        ...(offset && { id: { gt: offset.id } }),
       },
+      take: pageSize,
+      orderBy: { id: 'asc' },
     })
   }
 

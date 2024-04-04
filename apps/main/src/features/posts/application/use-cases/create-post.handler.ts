@@ -20,6 +20,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     private readonly eventEmitter: EventEmitter2
   ) {}
 
+  // todo: Добавить проверку "imageId" на существования фотографии.
   // fixme: Исправить Partial<Post> и написать View DTO
   async execute(dto: CreatePostCommand): Promise<Partial<Post>> {
     const post = await this.postRepository.save(

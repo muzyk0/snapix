@@ -1,11 +1,13 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger'
 
 export function ApiGetPosts() {
   return applyDecorators(
     ApiOperation({
       summary: 'Get user posts',
     }),
+    ApiQuery({ name: 'cursor', description: 'last postId', type: 'number' }),
+    ApiQuery({ name: 'pageSize', description: 'Page size', type: 'number' }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'success',
