@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   Headers,
   HttpCode,
   HttpStatus,
@@ -9,6 +10,7 @@ import {
   Req,
   Res,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { ApiBody, ApiCookieAuth, ApiResponse, ApiTags } from '@nestjs/swagger'
@@ -19,8 +21,8 @@ import { Email } from '../application/dto/email.dto'
 import { SendRecoveryPasswordTempCodeCommand } from '../application/use-cases/send-recovery-password-temp-code.handler'
 import { NewPasswordDto } from '../application/dto/new-password.dto'
 import { ConfirmForgotPasswordCommand } from '../application/use-cases/confirm-forgot-password.handler'
-import { JwtRefreshAuthGuard } from '../guards/jwt-refresh-auth.guard'
-import { JwtPayloadWithRt } from '../types/jwt.type'
+import { JwtRefreshAuthGuard, RefreshAuthGuard } from '../guards/jwt-refresh-auth.guard'
+import { JwtAtPayload, JwtPayloadWithRt } from '../types/jwt.type'
 import { GetUserContextDecorator } from '../decorators/get-user-context.decorator'
 import { RefreshTokenCommand } from '../application/use-cases/refresh-token.handler'
 import { LogoutCommand } from '../application/use-cases/logout.handler'
@@ -30,6 +32,10 @@ import { ValidateUserCommand } from '../application/use-cases'
 import { ApiValidationException } from '../../../exception-filters/swagger/decorators/api-validation-exception'
 import { VerifyForgotPasswordTokenQuery } from '../application/use-cases/verify-forgot-password-token.handler'
 import type { ConfirmRegisterDto } from '../application/dto/confirm-register.dto'
+import { FileInterceptor } from '@nestjs/platform-express'
+import { GetMeQuery } from '../application/use-cases/get-me.query'
+import { type MeViewDto } from '../application/dto/me-view.dto'
+import { ApiGetMe } from './open-api/create-post.swagger'
 
 @ApiTags('auth')
 @Controller('auth')
@@ -183,5 +189,13 @@ export class AuthController {
     return this.commandBus.execute<ConfirmForgotPasswordCommand>(
       new ConfirmForgotPasswordCommand(token, password)
     )
+  }
+
+  @ApiGetMe()
+  @RefreshAuthGuard()
+  @Get('/me')
+  @UseInterceptors(FileInterceptor('file'))
+  async me(@GetUserContextDecorator() ctx: JwtAtPayload): Promise<MeViewDto> {
+    return this.queryBus.execute<GetMeQuery, MeViewDto>(new GetMeQuery(ctx.user.id))
   }
 }
