@@ -78,7 +78,6 @@ export class PostsController {
     @Query('cursor') cursor: number,
     @Query('pageSize') pageSize: number
   ) {
-    console.log('2.', cursor, pageSize)
     return this.commandBus.execute(new GetAllUserPostsCommand(userId, cursor, pageSize))
   }
 

@@ -4,6 +4,9 @@ import { PostEntity } from '../../domain/entities/post.entity'
 import { EventEmitter2 } from '@nestjs/event-emitter'
 import { CreatePostWithImageEvent } from '../../domain/events/create-post-with-image.event'
 import type { Post } from '@prisma/client'
+import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
+import { isNil } from 'lodash'
+import { NotFoundException } from '@nestjs/common'
 
 export class CreatePostCommand {
   constructor(
@@ -17,12 +20,15 @@ export class CreatePostCommand {
 export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
   constructor(
     private readonly postRepository: IPostRepository,
-    private readonly eventEmitter: EventEmitter2
+    private readonly eventEmitter: EventEmitter2,
+    private readonly storage: IImageFilesFacade
   ) {}
 
-  // todo: Добавить проверку "imageId" на существования фотографии.
   // fixme: Исправить Partial<Post> и написать View DTO
   async execute(dto: CreatePostCommand): Promise<Partial<Post>> {
+    const image = await this.storage.getImages(dto.imageId)
+    if (isNil(image)) throw new NotFoundException('Image not found')
+
     const post = await this.postRepository.save(
       PostEntity.createPost({
         authorId: dto.userId,
