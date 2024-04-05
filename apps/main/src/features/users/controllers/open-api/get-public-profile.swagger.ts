@@ -1,10 +1,10 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
 import { ApiOperation, ApiResponse } from '@nestjs/swagger'
 
-export function ApiGetUserProfile() {
+export function ApiGetPublicUserProfile() {
   return applyDecorators(
     ApiOperation({
-      summary: 'get user profile information',
+      summary: 'get public user profile information',
     }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -18,26 +18,9 @@ export function ApiGetUserProfile() {
           userName: {
             type: 'string',
           },
-          firstName: {
-            type: 'string',
-          },
-          lastName: {
-            type: 'string',
-          },
-          birthDate: {
-            type: 'string',
-            nullable: true,
-          },
-          city: {
-            type: 'string',
-            nullable: true,
-          },
           aboutMe: {
             type: 'string',
             nullable: true,
-          },
-          lastUpdate: {
-            type: 'Date',
           },
         },
       },

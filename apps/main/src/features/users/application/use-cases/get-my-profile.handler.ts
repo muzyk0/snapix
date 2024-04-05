@@ -1,18 +1,19 @@
-import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
+import { type IQueryHandler, QueryHandler } from '@nestjs/cqrs'
 import { PrismaService } from '@app/prisma'
 import { BadRequestException } from '@nestjs/common'
 import { isNil } from 'lodash'
 import { format } from 'date-fns'
+import { type MyProfileViewDto } from '../dto/my-profile-view.dto'
 
-export class GetProfileCommand {
+export class GetMyProfileQuery {
   constructor(public readonly userId: number) {}
 }
 
-@CommandHandler(GetProfileCommand)
-export class GetProfileHandler implements ICommandHandler<GetProfileCommand> {
+@QueryHandler(GetMyProfileQuery)
+export class GetMyProfileHandler implements IQueryHandler<GetMyProfileQuery> {
   constructor(private readonly prisma: PrismaService) {}
 
-  async execute(dto: GetProfileCommand) {
+  async execute(dto: GetMyProfileQuery): Promise<MyProfileViewDto> {
     const user = await this.prisma.user.findUnique({
       where: {
         id: dto.userId,
@@ -26,6 +27,7 @@ export class GetProfileHandler implements ICommandHandler<GetProfileCommand> {
     }
 
     return {
+      id: user.id,
       userName: user.name,
       firstName: user.profile.firstName,
       lastName: user.profile.lastName,

@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common'
 import { MainController } from './main.controller'
-import { MainService } from './main.service'
 import { ConfigModule } from '@nestjs/config'
 import { AppConfigModule, AppConfigService } from '@app/config'
 import { UsersModule } from './features/users/users.module'
@@ -76,7 +75,6 @@ import { EventEmitterModule } from '@nestjs/event-emitter'
   ],
   controllers: [MainController],
   providers: [
-    MainService,
     {
       provide: APP_FILTER,
       useClass: ErrorExceptionFilter,

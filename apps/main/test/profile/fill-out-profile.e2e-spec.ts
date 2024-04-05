@@ -142,6 +142,7 @@ describe('ProfileController (e2e) - fill out', () => {
       })
       .expect(200)
     expect(getProfile.body).toEqual({
+      id: expect.any(Number),
       userName: correctUser.username,
       firstName: correctUser.userFirstName,
       lastName: correctUser.userLastName,

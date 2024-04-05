@@ -7,10 +7,11 @@ import { usersHandlers } from './application/use-cases/handlers'
 import { CqrsModule } from '@nestjs/cqrs'
 import { IImageFilesFacade, ImageFilesFacade } from '../../core/adapters/storage/user-files.facade'
 import { StorageModule } from '../../core/adapters/storage/storage.module'
+import { UsersPublicController } from './controllers/public-users.controller'
 
 @Module({
   imports: [CqrsModule, NotificationModule, StorageModule],
-  controllers: [UsersController],
+  controllers: [UsersController, UsersPublicController],
   providers: [
     UsersQueryRepository,
     // UserService,

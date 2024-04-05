@@ -5,7 +5,6 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  Param,
   Post,
   Put,
   UploadedFile,
@@ -14,25 +13,31 @@ import {
 import { FileInterceptor } from '@nestjs/platform-express'
 import { CommandBus, QueryBus } from '@nestjs/cqrs'
 import { ApiResponse, ApiTags } from '@nestjs/swagger'
-
-import { UsersQueryRepository } from '../infrastructure/users.query.repository'
 import { AuthGuard } from '../../auth'
-import { UploadAvatarCommand } from '../application/use-cases/upload-avatar.handler'
+import {
+  type MyProfileViewDto,
+  UploadAvatarCommand,
+  DeleteAvatarCommand,
+  UpdateProfileCommand,
+  GetMyProfileQuery,
+  GetAvatarQuery,
+} from '../application'
 import { GetUserContextDecorator } from '../../auth/decorators/get-user-context.decorator'
 import { JwtAtPayload } from '../../auth/types/jwt.type'
-import { DeleteAvatarCommand } from '../application/use-cases/delete-avatar.command'
-import { UpdateProfileCommand } from '../application/use-cases/update-profile.handler'
-import { GetProfileCommand } from '../application/use-cases/get-profile.handler'
-import { ApiUploadUserAvatar } from './open-api/upload-user-avatar.swagger'
-import { ApiDeleteUserAvatar } from './open-api/delete-user-avatar.swagger'
+
+import {
+  ApiUploadUserAvatar,
+  ApiDeleteUserAvatar,
+  ApiUpdateUserProfile,
+  ApiGetUserProfile,
+  ApiGetUserAvatar,
+} from './open-api'
+
 import { type UploadFilesOutputDto, type UploadFilesViewDto } from '@app/core/types/dto'
-import { UpdateProfileDto } from './dto/update-profile.dto'
-import { GetAvatarQuery } from '../application/use-cases/get-avatar.query.handler'
-import { ApiGetUserAvatar } from './open-api/get-user-avatar.swagger'
-import { ApiUpdateUserProfile } from './open-api/update-profile.swagger'
-import { ApiGetUserProfile } from './open-api/get-profile.swagger'
+import { UpdateProfileDto } from './dto'
+
 import { ImagesValidationPipe } from '../../../core/adapters/storage/pipes/imagesValidationPipe'
-import { UserIdParamDto } from './dto/user-id-param.dto'
+import { UsersQueryRepository } from '../infrastructure/users.query.repository'
 
 @ApiTags('Users')
 @Controller('users')
@@ -46,20 +51,18 @@ export class UsersController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: 'Returns the count of registered users.',
-    type: Number,
+    schema: {
+      type: 'object',
+      properties: {
+        totalCount: {
+          type: 'number',
+        },
+      },
+    },
   })
-  @Get('/count-register-users')
-  async countRegisteredUsers() {
+  @Get('/total')
+  async countRegisteredUsers(): Promise<{ totalCount: number }> {
     return await this.usersQueryRepository.countRegisteredUsers()
-  }
-
-  @ApiGetUserAvatar()
-  @AuthGuard()
-  @Get('/:userId/profile/avatar')
-  async getAvatar(@Param() params: UserIdParamDto) {
-    return this.queryBus.execute<GetAvatarQuery, UploadFilesViewDto>(
-      new GetAvatarQuery(Number(params.userId))
-    )
   }
 
   // todo: Write tests
@@ -107,6 +110,17 @@ export class UsersController {
   @Get('/profile')
   @HttpCode(HttpStatus.OK)
   async getProfileInfo(@GetUserContextDecorator() ctx: JwtAtPayload) {
-    return this.commandBus.execute(new GetProfileCommand(ctx.user.id))
+    return this.queryBus.execute<GetMyProfileQuery, MyProfileViewDto>(
+      new GetMyProfileQuery(ctx.user.id)
+    )
+  }
+
+  @ApiGetUserAvatar()
+  @AuthGuard()
+  @Get('/profile/avatar')
+  async getAvatar(@GetUserContextDecorator() ctx: JwtAtPayload) {
+    return this.queryBus.execute<GetAvatarQuery, UploadFilesViewDto>(
+      new GetAvatarQuery(ctx.user.id)
+    )
   }
 }
