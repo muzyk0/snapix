@@ -11,6 +11,9 @@ import { VerifyForgotPasswordTokenHandler } from './verify-forgot-password-token
 import { CreateSessionHandler } from './create-session.handler'
 import { LoginByExternalAccountHandler } from './login-by-external-account.handler'
 import { ExchangeTokenHandler } from './exchange-token.handler'
+import { GetMeHandler } from './get-me.query'
+
+const queryHandler = [GetMeHandler]
 
 export const CommandHandlers = [
   CreateUserHandler,
@@ -26,4 +29,5 @@ export const CommandHandlers = [
   CreateSessionHandler,
   LoginByExternalAccountHandler,
   ExchangeTokenHandler,
+  ...queryHandler,
 ]
