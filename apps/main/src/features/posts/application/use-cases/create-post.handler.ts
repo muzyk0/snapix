@@ -26,7 +26,7 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
 
   // fixme: Исправить Partial<Post> и написать View DTO
   async execute(dto: CreatePostCommand): Promise<Partial<Post>> {
-    const image = await this.storage.getImages(dto.imageId)
+    const image = await this.storage.getImage(dto.imageId)
     if (isNil(image)) throw new NotFoundException('Image not found')
 
     const post = await this.postRepository.save(

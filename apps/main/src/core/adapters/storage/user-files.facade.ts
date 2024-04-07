@@ -5,7 +5,7 @@ import { type UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import { StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
 export abstract class IImageFilesFacade {
-  abstract getImages(referenceId: string): Promise<UploadFilesOutputDto>
+  abstract getImage(referenceId: string): Promise<UploadFilesOutputDto>
 
   abstract uploadImage(payload: UploadImageDto): Promise<UploadFilesOutputDto>
 
@@ -16,7 +16,7 @@ export abstract class IImageFilesFacade {
 export class ImageFilesFacade implements IImageFilesFacade {
   constructor(private readonly storage: IStorageAdapter) {}
 
-  public async getImages(referenceId: string): Promise<UploadFilesOutputDto> {
+  public async getImage(referenceId: string): Promise<UploadFilesOutputDto> {
     return this.storage.get(StorageCommandEnum.IMAGE, referenceId)
   }
 

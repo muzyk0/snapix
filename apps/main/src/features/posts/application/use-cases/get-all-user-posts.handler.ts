@@ -37,7 +37,7 @@ export class GetAllUserPostsHandler implements ICommandHandler<GetAllUserPostsCo
           authorId: p.authorId,
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
-          photo: await this.storage.getImages(p.imageId),
+          photo: await this.storage.getImage(p.imageId),
         }
       })
     )
