@@ -74,7 +74,7 @@ export class PostsController {
   @ApiGetPosts()
   @Get('/user/:userId')
   @HttpCode(HttpStatus.OK)
-  async getAllPosts(@Param() { userId }: UserIdParamDto, @Query() dto: QueryDto) {
+  async getAllUserPosts(@Param() { userId }: UserIdParamDto, @Query() dto: QueryDto) {
     return this.commandBus.execute(new GetAllUserPostsCommand(userId, dto.cursor, dto.pageSize))
   }
 
