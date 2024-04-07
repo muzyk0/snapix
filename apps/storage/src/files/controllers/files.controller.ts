@@ -5,6 +5,7 @@ import { UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import type { UploadFilesOutputDto } from '@app/core/types/dto/upload-files.dto'
 import { DeleteAvatarFileCommand, GetFileQuery, UploadImageCommand } from '../application/use-cases'
 import { StorageCommandEnum } from '@app/core/enums/storage-command.enum'
+import { GetFilesQuery } from '../application/use-cases/get-files.handler'
 
 @Controller('files')
 export class FilesController {
@@ -17,6 +18,13 @@ export class FilesController {
   async getImage(referenceId: string): Promise<UploadFilesOutputDto> {
     return await this.queryBus.execute<GetFileQuery, UploadFilesOutputDto>(
       new GetFileQuery(referenceId)
+    )
+  }
+
+  @MessagePattern({ cmd: 'get-files', type: StorageCommandEnum.IMAGE })
+  async getImages(referenceIds: string[]): Promise<UploadFilesOutputDto> {
+    return await this.queryBus.execute<GetFilesQuery, UploadFilesOutputDto>(
+      new GetFilesQuery(referenceIds)
     )
   }
 

@@ -6,7 +6,7 @@ export function ApiGetPosts() {
     ApiOperation({
       summary: 'Get user posts',
     }),
-    ApiQuery({ name: 'cursor', description: 'last postId', type: 'number' }),
+    ApiQuery({ name: 'cursor', description: 'Last postId', type: 'number' }),
     ApiQuery({ name: 'pageSize', description: 'Page size', type: 'number' }),
     ApiResponse({
       status: HttpStatus.OK,
@@ -40,7 +40,7 @@ export function ApiGetPosts() {
             type: 'string',
             format: 'date-time',
           },
-          photo: {
+          photos: {
             type: 'array',
             items: {
               type: 'object',
@@ -51,11 +51,11 @@ export function ApiGetPosts() {
                 },
                 width: {
                   type: 'number',
-                  default: 192,
+                  example: 192,
                 },
                 height: {
                   type: 'number',
-                  default: 192,
+                  example: 192,
                 },
                 size: {
                   type: 'number',

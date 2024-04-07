@@ -36,6 +36,7 @@ import { GetAllUserPostsCommand } from '../application/use-cases/get-all-user-po
 import { ApiGetPosts } from './open-api/get-all-user-posts.swagger'
 import { ImagesValidationPipe } from '../../../core/adapters/storage/pipes/imagesValidationPipe'
 import { UserIdParamDto } from '../../users/controllers/dto/user-id-param.dto'
+import { QueryDto } from './dto/query.dto'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -73,12 +74,8 @@ export class PostsController {
   @ApiGetPosts()
   @Get('/user/:userId')
   @HttpCode(HttpStatus.OK)
-  async getAllPosts(
-    @Param() { userId }: UserIdParamDto,
-    @Query('cursor') cursor: number,
-    @Query('pageSize') pageSize: number
-  ) {
-    return this.commandBus.execute(new GetAllUserPostsCommand(userId, cursor, pageSize))
+  async getAllPosts(@Param() { userId }: UserIdParamDto, @Query() dto: QueryDto) {
+    return this.commandBus.execute(new GetAllUserPostsCommand(userId, dto.cursor, dto.pageSize))
   }
 
   @ApiGetPost()

@@ -25,7 +25,7 @@ export class PostsRepository implements IPostRepository {
   public async findManyByUserId(
     userId: number,
     cursor: number | undefined,
-    pageSize: number
+    pageSize: number | undefined
   ): Promise<Post[] | null> {
     const offset = cursor ? { id: cursor } : undefined
     return this.prisma.post.findMany({
@@ -33,7 +33,7 @@ export class PostsRepository implements IPostRepository {
         authorId: userId,
         ...(offset && { id: { gt: offset.id } }),
       },
-      take: pageSize,
+      take: pageSize ?? 10,
       orderBy: { id: 'asc' },
     })
   }

@@ -7,7 +7,7 @@ export abstract class IPostRepository {
   public abstract findManyByUserId: (
     id: number,
     cursor: number | undefined,
-    pageSize: number
+    pageSize: number | undefined
   ) => Promise<Post[] | null>
 
   public abstract update: (id: number, content: string | undefined) => Promise<void>

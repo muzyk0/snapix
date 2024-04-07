@@ -7,8 +7,8 @@ import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.
 export class GetAllUserPostsCommand {
   constructor(
     public readonly userId: number,
-    public readonly cursor: number,
-    public readonly pageSize: number
+    public readonly cursor: number | undefined,
+    public readonly pageSize: number | undefined
   ) {}
 }
 
@@ -20,26 +20,43 @@ export class GetAllUserPostsHandler implements ICommandHandler<GetAllUserPostsCo
   ) {}
 
   async execute(dto: GetAllUserPostsCommand) {
-    const post = await this.postRepository.findManyByUserId(
-      dto.userId,
-      dto.cursor,
-      dto.pageSize ?? 10
-    )
+    const posts = await this.postRepository.findManyByUserId(dto.userId, dto.cursor, dto.pageSize)
 
-    if (isNil(post)) throw new NotFoundException()
+    if (isNil(posts)) throw new NotFoundException()
 
-    return Promise.all(
-      post.map(async p => {
+    const referenceIds = posts.map(post => post.imageId)
+
+    const images = await this.storage.getImages(referenceIds)
+
+    const postsWithImages = posts.map(post => {
+      const imageObjects = images.list.filter(image => image.referenceId === post.imageId)
+
+      if (imageObjects.length > 0) {
+        const photos = imageObjects.map(imageObject => ({
+          referenceId: imageObject.referenceId,
+          files: imageObject.files,
+        }))
+
         return {
-          id: p.id,
-          photoId: p.imageId,
-          content: p.content,
-          authorId: p.authorId,
-          createdAt: p.createdAt,
-          updatedAt: p.updatedAt,
-          photo: await this.storage.getImage(p.imageId),
+          id: post.id,
+          content: post.content,
+          authorId: post.authorId,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          photos,
         }
-      })
-    )
+      } else {
+        return {
+          id: post.id,
+          content: post.content,
+          authorId: post.authorId,
+          createdAt: post.createdAt,
+          updatedAt: post.updatedAt,
+          photos: [],
+        }
+      }
+    })
+
+    return postsWithImages
   }
 }
