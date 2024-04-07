@@ -10,6 +10,11 @@ export abstract class IPostRepository {
     pageSize: number | undefined
   ) => Promise<Post[] | null>
 
+  public abstract findMany: (
+    cursor: number | undefined,
+    pageSize: number | undefined
+  ) => Promise<Post[] | null>
+
   public abstract update: (id: number, content: string | undefined) => Promise<void>
   public abstract delete: (id: number) => Promise<void>
 }

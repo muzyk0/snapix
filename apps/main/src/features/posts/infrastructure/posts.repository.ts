@@ -38,6 +38,21 @@ export class PostsRepository implements IPostRepository {
     })
   }
 
+  public async findMany(
+    cursor: number | undefined,
+    pageSize: number | undefined
+  ): Promise<Post[] | null> {
+    console.log('pageSize:', pageSize)
+    const offset = cursor ? { id: cursor } : undefined
+    return this.prisma.post.findMany({
+      where: {
+        ...(offset && { id: { gt: offset.id } }),
+      },
+      take: pageSize ?? 10,
+      orderBy: { id: 'asc' },
+    })
+  }
+
   public async update(postId: number, content: string | undefined): Promise<void> {
     try {
       await this.prisma.post.update({
