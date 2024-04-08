@@ -17,6 +17,7 @@ model User {
   email               String             @unique()
   name                String             @unique()
   posts               Post[]
+  comments            Comment[]
   password            String?
   emailConfirmed      DateTime?
   emailConfirmation   EmailConfirmation? @relation(fields: [emailConfirmationId], references: [id])
@@ -85,11 +86,23 @@ model PasswordRecovery {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  imageId   String
+  id        Int       @id @default(autoincrement())
+  imageId   String[]
   content   String?
+  author    User      @relation(fields: [authorId], references: [id])
+  authorId  Int
+  comments  Comment[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt()
+}
+
+model Comment {
+  id        Int      @id @default(autoincrement())
+  content   String
   author    User     @relation(fields: [authorId], references: [id])
   authorId  Int
+  post      Post     @relation(fields: [postId], references: [id])
+  postId    Int
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt()
 }
