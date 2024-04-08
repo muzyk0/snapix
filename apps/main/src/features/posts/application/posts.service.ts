@@ -7,12 +7,12 @@ export class PostsService {
   constructor(private readonly storage: IImageFilesFacade) {}
 
   async mapImagesWithPosts(posts: Post[]) {
-    const referenceIds = posts.map(post => post.imageId)
+    const referenceIds = posts.map(post => post.imageId).flat()
 
     const images = await this.storage.getImages(referenceIds)
 
     const postsWithImages = posts.map(post => {
-      const imageObjects = images.list.filter(image => image.referenceId === post.imageId)
+      const imageObjects = images.list.filter(image => post.imageId.includes(image.referenceId))
 
       if (imageObjects.length > 0) {
         const photos = imageObjects.map(imageObject => ({
@@ -27,6 +27,7 @@ export class PostsService {
           createdAt: post.createdAt,
           updatedAt: post.updatedAt,
           photos,
+          comments: [],
         }
       } else {
         return {
@@ -36,6 +37,7 @@ export class PostsService {
           createdAt: post.createdAt,
           updatedAt: post.updatedAt,
           photos: [],
+          comments: [],
         }
       }
     })

@@ -94,7 +94,6 @@ describe('PostController (e2e) - fill out', () => {
       .expect(201)
   })
 
-  // todo: need to add in test correct upload photo
   it.skip('should get content without content', async () => {
     // User register/confirm/login
     const accessToken = await registerConfirmAndLogin(app, correctUser)

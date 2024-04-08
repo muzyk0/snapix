@@ -35,6 +35,7 @@ export class PostsRepository implements IPostRepository {
       },
       take: pageSize ?? 10,
       orderBy: { id: 'asc' },
+      include: { comments: true },
     })
   }
 
@@ -42,7 +43,6 @@ export class PostsRepository implements IPostRepository {
     cursor: number | undefined,
     pageSize: number | undefined
   ): Promise<Post[] | null> {
-    console.log('pageSize:', pageSize)
     const offset = cursor ? { id: cursor } : undefined
     return this.prisma.post.findMany({
       where: {
@@ -50,6 +50,7 @@ export class PostsRepository implements IPostRepository {
       },
       take: pageSize ?? 10,
       orderBy: { id: 'asc' },
+      include: { comments: true },
     })
   }
 
