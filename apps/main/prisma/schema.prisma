@@ -2,7 +2,7 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -145,9 +145,9 @@ model Profile {
 }
 
 model StorageTempFiles {
-  id        Int      @id @default(autoincrement())
-  referenceId      String @unique()
-  expiresAt DateTime
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt()
+  id          Int      @id @default(autoincrement())
+  referenceId String   @unique()
+  expiresAt   DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
 }

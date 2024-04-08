@@ -7,6 +7,7 @@ import type { Post } from '@prisma/client'
 import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
 import { isNil } from 'lodash'
 import { NotFoundException } from '@nestjs/common'
+import { CreatePostViewDto } from '../dto/outputPostView.dto'
 
 export class CreatePostCommand {
   constructor(
@@ -24,10 +25,9 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
     private readonly storage: IImageFilesFacade
   ) {}
 
-  // fixme: Исправить Partial<Post> и написать View DTO
   async execute(dto: CreatePostCommand): Promise<Partial<Post>> {
     const image = await this.storage.getImage(dto.imageId)
-    if (isNil(image)) throw new NotFoundException('Image not found')
+    if (isNil(image.files.length)) throw new NotFoundException('Image not found')
 
     const post = await this.postRepository.save(
       PostEntity.createPost({
@@ -39,13 +39,13 @@ export class CreatePostHandler implements ICommandHandler<CreatePostCommand> {
 
     this.eventEmitter.emit('post.create', new CreatePostWithImageEvent(post))
 
-    return {
-      id: post.id,
-      imageId: post.imageId,
-      content: post.content,
-      authorId: post.authorId,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-    }
+    return new CreatePostViewDto(
+      post.id,
+      post.imageId,
+      post.content,
+      post.authorId,
+      post.createdAt,
+      post.updatedAt
+    )
   }
 }
