@@ -2,7 +2,7 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IPostRepository } from '../interface'
 import { NotFoundException } from '@nestjs/common'
 import { isNil } from 'lodash'
-import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
+import { PostsService } from '../posts.service'
 
 export class GetPostCommand {
   constructor(public readonly postId: number) {}
@@ -12,7 +12,7 @@ export class GetPostCommand {
 export class GetPostHandler implements ICommandHandler<GetPostCommand> {
   constructor(
     private readonly postRepository: IPostRepository,
-    private readonly storage: IImageFilesFacade
+    private readonly postsService: PostsService
   ) {}
 
   async execute(dto: GetPostCommand) {
@@ -20,15 +20,6 @@ export class GetPostHandler implements ICommandHandler<GetPostCommand> {
 
     if (isNil(post)) throw new NotFoundException()
 
-    const photo = await this.storage.getImages(post.imageId)
-    return {
-      id: post.id,
-      photoId: post.imageId,
-      content: post.content,
-      authorId: post.authorId,
-      createdAt: post.createdAt,
-      updatedAt: post.updatedAt,
-      photo,
-    }
+    return this.postsService.mapImagesWithPosts([post])
   }
 }

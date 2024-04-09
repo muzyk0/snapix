@@ -3,7 +3,7 @@ import { type IStorageAdapter } from './storage-adapter.abstract'
 import { ClientProxy } from '@nestjs/microservices'
 import { defaultTimeoutTcpRequest, ServicesEnum } from '@app/core/constants'
 import { firstValueFrom, timeout } from 'rxjs'
-import { type UploadFilesOutputDto } from '@app/core/types/dto'
+import { type UploadFilesOutputDto, type UploadManyFilesOutputDto } from '@app/core/types/dto'
 import { type UploadImageDto } from '@app/core/types/dto/upload-image.dto'
 import { type StorageCommandEnum } from '@app/core/enums/storage-command.enum'
 
@@ -18,6 +18,24 @@ export class StorageServiceAdapter implements IStorageAdapter {
       const response = await firstValueFrom(
         this.client
           .send<UploadFilesOutputDto>({ cmd: 'get-file', type }, referenceId)
+          .pipe(timeout(defaultTimeoutTcpRequest))
+      )
+
+      return response
+    } catch (e) {
+      this.logger.error(e)
+      throw e
+    }
+  }
+
+  public async getMany(
+    type: StorageCommandEnum,
+    referenceIds: string[]
+  ): Promise<UploadManyFilesOutputDto> {
+    try {
+      const response = await firstValueFrom(
+        this.client
+          .send<UploadManyFilesOutputDto>({ cmd: 'get-files', type }, referenceIds)
           .pipe(timeout(defaultTimeoutTcpRequest))
       )
 
