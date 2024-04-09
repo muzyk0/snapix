@@ -1,0 +1,6 @@
+export * from './get-public-profile.swagger'
+export * from './get-profile.swagger'
+export * from './delete-user-avatar.swagger'
+export * from './get-user-avatar.swagger'
+export * from './update-profile.swagger'
+export * from './upload-user-avatar.swagger'

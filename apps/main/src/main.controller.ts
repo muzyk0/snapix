@@ -1,12 +1,10 @@
-import { Controller, Get } from '@nestjs/common'
-import { MainService } from './main.service'
+import { Controller, Get, Redirect } from '@nestjs/common'
+import { ApiExcludeController } from '@nestjs/swagger'
 
+@ApiExcludeController()
 @Controller()
 export class MainController {
-  constructor(private readonly mainService: MainService) {}
-
   @Get()
-  getHello(): string {
-    return this.mainService.getHello()
-  }
+  @Redirect('/', 302)
+  redirectToHomePage(): void {}
 }

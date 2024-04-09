@@ -6,6 +6,8 @@ export class UsersQueryRepository {
   constructor(private readonly prisma: PrismaService) {}
 
   async countRegisteredUsers() {
-    return await this.prisma.user.count()
+    return {
+      totalCount: await this.prisma.user.count(),
+    }
   }
 }

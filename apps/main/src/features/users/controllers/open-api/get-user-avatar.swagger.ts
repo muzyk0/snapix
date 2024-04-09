@@ -13,7 +13,7 @@ export function ApiGetUserAvatar() {
       schema: {
         type: 'object',
         properties: {
-          avatars: {
+          files: {
             type: 'array',
             items: {
               type: 'object',
