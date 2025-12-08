@@ -8,5 +8,5 @@ export class CreatePostDto {
   content?: string
 
   @IsString()
-  imageId!: string
+  imageId!: string[]
 }

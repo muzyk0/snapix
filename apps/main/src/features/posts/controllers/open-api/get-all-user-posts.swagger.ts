@@ -1,11 +1,13 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common'
-import { ApiOperation, ApiResponse } from '@nestjs/swagger'
+import { ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger'
 
 export function ApiGetPosts() {
   return applyDecorators(
     ApiOperation({
       summary: 'Get user posts',
     }),
+    ApiQuery({ name: 'cursor', description: 'Last postId', type: 'number' }),
+    ApiQuery({ name: 'pageSize', description: 'Page size', type: 'number' }),
     ApiResponse({
       status: HttpStatus.OK,
       description: 'success',
@@ -38,7 +40,7 @@ export function ApiGetPosts() {
             type: 'string',
             format: 'date-time',
           },
-          photo: {
+          photos: {
             type: 'array',
             items: {
               type: 'object',
@@ -49,11 +51,11 @@ export function ApiGetPosts() {
                 },
                 width: {
                   type: 'number',
-                  default: 192,
+                  example: 192,
                 },
                 height: {
                   type: 'number',
-                  default: 192,
+                  example: 192,
                 },
                 size: {
                   type: 'number',

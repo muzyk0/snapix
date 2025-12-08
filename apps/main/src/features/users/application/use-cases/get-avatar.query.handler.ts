@@ -35,7 +35,7 @@ export class GetAvatarQueryHandler implements IQueryHandler<GetAvatarQuery> {
       return { files: [] }
     }
 
-    const imageFiles = await this.storage.getImages(user.profile.avatarId)
+    const imageFiles = await this.storage.getImage(user.profile.avatarId)
 
     return {
       files: imageFiles.files,

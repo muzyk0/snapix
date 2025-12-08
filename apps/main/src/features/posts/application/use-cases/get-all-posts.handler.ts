@@ -2,36 +2,27 @@ import { CommandHandler, type ICommandHandler } from '@nestjs/cqrs'
 import { IPostRepository } from '../interface'
 import { NotFoundException } from '@nestjs/common'
 import { isNil } from 'lodash'
-import { IImageFilesFacade } from '../../../../core/adapters/storage/user-files.facade'
+import { PostsService } from '../posts.service'
 
-export class GetAllPostCommand {
-  constructor(public readonly userId: number) {}
+export class GetAllPostsCommand {
+  constructor(
+    public readonly cursor: number | undefined,
+    public readonly pageSize: number | undefined
+  ) {}
 }
 
-@CommandHandler(GetAllPostCommand)
-export class GetAllPostHandler implements ICommandHandler<GetAllPostCommand> {
+@CommandHandler(GetAllPostsCommand)
+export class GetAllPostsHandler implements ICommandHandler<GetAllPostsCommand> {
   constructor(
     private readonly postRepository: IPostRepository,
-    private readonly storage: IImageFilesFacade
+    private readonly postsService: PostsService
   ) {}
 
-  async execute(dto: GetAllPostCommand) {
-    const post = await this.postRepository.findMany(dto.userId)
+  async execute(dto: GetAllPostsCommand) {
+    const posts = await this.postRepository.findMany(dto.cursor, dto.pageSize)
 
-    if (isNil(post)) throw new NotFoundException()
+    if (isNil(posts)) throw new NotFoundException()
 
-    return Promise.all(
-      post.map(async p => {
-        return {
-          id: p.id,
-          photoId: p.imageId,
-          content: p.content,
-          authorId: p.authorId,
-          createdAt: p.createdAt,
-          updatedAt: p.updatedAt,
-          photo: await this.storage.getImages(p.imageId),
-        }
-      })
-    )
+    return this.postsService.mapImagesWithPosts(posts)
   }
 }

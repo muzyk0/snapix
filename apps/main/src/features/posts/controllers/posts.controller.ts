@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UploadedFile,
   UseInterceptors,
 } from '@nestjs/common'
@@ -31,10 +32,12 @@ import { UploadPhotoToPostCommand } from '../application/use-cases/upload-photo-
 import { type UploadPhotoForPostViewDto } from './dto/upload-photo-to-post.dto'
 import { DeletePostCommand } from '../application/use-cases/delete-post.handler'
 import { ApiDeletePost } from './open-api/delete-post.swagger'
-import { GetAllPostCommand } from '../application/use-cases/get-all-posts.handler'
-import { ApiGetPosts } from './open-api/get-all-posts.swagger'
+import { GetAllUserPostsCommand } from '../application/use-cases/get-all-user-posts.handler'
+import { ApiGetPosts } from './open-api/get-all-user-posts.swagger'
 import { ImagesValidationPipe } from '../../../core/adapters/storage/pipes/imagesValidationPipe'
 import { UserIdParamDto } from '../../users/controllers/dto/user-id-param.dto'
+import { QueryDto } from './dto/query.dto'
+import { GetAllPostsCommand } from '../application/use-cases/get-all-posts.handler'
 
 @ApiTags('Posts')
 @Controller('/posts')
@@ -70,10 +73,17 @@ export class PostsController {
   }
 
   @ApiGetPosts()
+  @Get('')
+  @HttpCode(HttpStatus.OK)
+  async getAllPosts(@Query('cursor') cursor: number, @Query('pageSize') pageSize: number) {
+    return this.commandBus.execute(new GetAllPostsCommand(cursor, pageSize))
+  }
+
+  @ApiGetPosts()
   @Get('/user/:userId')
   @HttpCode(HttpStatus.OK)
-  async getAllPosts(@Param() { userId }: UserIdParamDto) {
-    return this.commandBus.execute(new GetAllPostCommand(userId))
+  async getAllUserPosts(@Param() { userId }: UserIdParamDto, @Query() dto: QueryDto) {
+    return this.commandBus.execute(new GetAllUserPostsCommand(userId, dto.cursor, dto.pageSize))
   }
 
   @ApiGetPost()

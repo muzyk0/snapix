@@ -3,13 +3,13 @@ import { AggregateRoot } from '@nestjs/cqrs'
 
 export interface CreatePostType {
   authorId: User['id']
-  imageId: string
+  imageId: string[]
   content: string | undefined
 }
 
 export class PostEntity extends AggregateRoot implements Partial<Post> {
   authorId!: number
-  imageId: string
+  imageId: string[]
   content: string | undefined
 
   constructor({ authorId, imageId, content }: CreatePostType) {

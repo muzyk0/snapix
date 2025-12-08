@@ -33,3 +33,18 @@ export class UploadFilesViewDto {
   @ValidateNested({ each: true })
   files!: ImageFileInfo[]
 }
+
+export class ManyFilesViewDto {
+  @IsString()
+  referenceId!: string
+
+  @IsArray()
+  @ValidateNested({ each: true })
+  files!: ImageFileInfo[]
+}
+
+export class UploadManyFilesOutputDto {
+  @IsArray()
+  @ValidateNested({ each: true })
+  list!: ManyFilesViewDto[]
+}
